@@ -21,10 +21,12 @@ createdb -O carpooling -E UTF8 carpooling
 
 API REST
 --------
-(Completar)
+
 
 Referencias
 -----------
 Se tomaron como referencia estos tutoriales:
 * PostgreSQL and NodeJS
 	http://mherman.org/blog/2015/02/12/postgresql-and-nodejs/#.V4LjKu1XaMV
+* Beer Locker: Building a RESTful API With Node
+	http://scottksmith.com/blog/2014/05/02/building-restful-apis-with-node/
