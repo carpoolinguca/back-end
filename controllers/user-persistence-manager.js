@@ -1,5 +1,5 @@
 var pg = require('pg');
-var connectionString = process.env.DATABASE_URL || 'postgres://carpooling:carpooling@localhost:5432/carpoling';
+var connectionString = process.env.DATABASE_URL || 'postgres://carpooling:carpooling@localhost:5432/carpooling';
 
 function UserPersistenceManager() {
 
@@ -14,7 +14,7 @@ UserPersistenceManager.prototype.create = function (user, callback){
       done();
     }
     var sql;
-    sql = "INSERT INTO users( username, password) values($1, $2))";
+    sql = "INSERT INTO users( username, password) values($1, $2);";
     query = client.query(sql, [user.username, user.password]);
     query.on('end', function() {
       done();
@@ -52,7 +52,7 @@ UserPersistenceManager.prototype.update = function(user,updateUser, callback) {
       done();
     }
     var sqlQuery = "UPDATE users SET password=$1 WHERE username=$2";
-    query = client.query(sqlQuery, [updateUser.password]);
+    query = client.query(sqlQuery, [updateUser.password , updateUser.username]);
     query.on('end', function() {
       done();
       callback(updateUser);

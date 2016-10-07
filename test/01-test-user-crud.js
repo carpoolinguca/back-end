@@ -1,26 +1,20 @@
 var assert = require('chai').assert;
-var PersistenceManager = require('../routes/persistence-manager');
+var UserPersistenceManager = require('../controllers/user-persistence-manager');
 
-describe('Managing a travel', function() {
-  var travel =
+describe('Managing a user', function() {
+  var user =
           {
-            driver: 'Fangio',
-            name: 'Belgrano',
-            origin: 'Belgrano 280, Bernal, Buenos Aires, Argentina',
-            destination: 'Belgrano 380, Bernal, Buenos Aires, Argentina',
-            trajectory: 'LINESTRING( -34.71256 -58.2798, -34.71204 -58.28095, -34.71165 -58.2818)'
+            username: 'Juana',
+            password: '1234',
           };
-  var updateTravel =
+  var updateUser =
           {
-            driver: 'Meteoro',
-            name: 'Belgrano',
-            origin: 'Belgrano 280, Bernal, Buenos Aires, Argentina',
-            destination: 'Belgrano 380, Bernal, Buenos Aires, Argentina',
-            trajectory: 'LINESTRING( -34.71256 -58.2798, -34.71204 -58.28095, -34.71165 -58.2818)'
+            username: 'Juana',
+            password: '4321',
           };
-  var persistenceManager = new PersistenceManager();
+  var userPersistenceManager = new UserPersistenceManager();
   before(function(done) {
-    persistenceManager.create(travel , function(err) {
+    userPersistenceManager.create(user , function(err) {
         if (err) throw err;
         done();
       }); 
@@ -28,20 +22,20 @@ describe('Managing a travel', function() {
   describe('#read()', function() {
     
     it('should read without error', function(done) {
-      persistenceManager.read(function  (readDrivers){
-        assert.equal(readDrivers[0].driver,'Fangio');
+      userPersistenceManager.read(function  (readUsers){
+        assert.equal(readUsers[0].username,'Juana');
         done();
       });
     });
     it('should update without error', function(done){
-      persistenceManager.update(travel, updateTravel, function(updatedTravel){
-        assert.equal(updatedTravel.driver,'Meteoro');
+      userPersistenceManager.update(user, updateUser, function(updatedUser){
+        assert.equal(updatedUser.password,'4321');
         done();
       });
     })
   });
   after(function(done) {
-    persistenceManager.delete(updateTravel , function(err) {
+    userPersistenceManager.delete(updateUser , function(err) {
         if (err) throw err;
         done();
       });
