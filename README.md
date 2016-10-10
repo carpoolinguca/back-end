@@ -21,7 +21,11 @@ createdb -O carpooling -E UTF8 carpooling
 
 API REST
 --------
+GET todos los usuarios: 
+http://localhost:3000/users
 
+POST un usuario: 
+curl --data "username=Fangio&password=1111" http://localhost:3000/users
 
 Referencias
 -----------
