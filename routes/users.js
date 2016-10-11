@@ -1,18 +1,18 @@
 var express = require('express');
 var router = express.Router();
 
-var UserPersistenceManager = require('../controllers/user-persistence-manager.js');
-var userPersistenceManager = new UserPersistenceManager();
+var authController = require('../controllers/auth.js');
+
+var UserPersistenceManagery = require('../controllers/user-persistence-manager.js');
+var userPersistenceManagery = new UserPersistenceManagery();
 
 /* GET users listing. */
-router.get('/', function(req, res) {
-	userPersistenceManager.read(function(users){
+router.route('/').get(authController.isAuthenticated, function(req, res) {
+	userPersistenceManagery.read(function (users) {
 		res.json(users);
 	});
-});
-
-router.post('/', function(req, res) {
-	userPersistenceManager.create(req.body , function(){
+}).post(function(req, res) {
+	userPersistenceManagery.create(req.body , function(){
 		res.json({user : req.body , receibed : 'Ok'});
 	});
 });

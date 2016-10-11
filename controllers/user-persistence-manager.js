@@ -78,5 +78,32 @@ UserPersistenceManager.prototype.delete = function(user, callback) {
   });
 };
 
+UserPersistenceManager.prototype.findOne = function (username , callback){
+  
+  
+  pg.connect(connectionString, function (err, clie, done) {
+
+    if (err) {
+      done();
+    }
+    var results = [];
+
+    var query = clie.query("Select * from users where username =($1);",[username]);
+
+    query.on('row', function(row) {
+      results.push(row);
+    });
+
+    query.on('end', function(result){
+      done();
+      if (result.rowCount === 0)
+        callback(false);
+      else
+        callback(results[0]);
+    });
+
+  } );
+  
+};
 
 module.exports = UserPersistenceManager;
