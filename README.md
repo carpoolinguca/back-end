@@ -21,7 +21,7 @@ createdb -O carpooling -E UTF8 carpooling
 
 API REST
 --------
-Se utiliza Basic Authentication.
+Se utiliza Basic Authentication utilizando usuario y contraseña previamente cargado mediante el POST de usuario.
 
 GET todos los usuarios: 
 http://localhost:3000/users
@@ -39,5 +39,7 @@ Se tomaron como referencia estos tutoriales:
 
 To do:
 ------
+Revisar creación de tablas.
+Guardar datos sensibles hasheados.
 Agregar OAuth2.
 Agregar servicios faltantes.

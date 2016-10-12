@@ -7,7 +7,7 @@ describe('Managing a user', function() {
             username: 'Juana',
             password: '1234',
           };
-  var updateUser =
+  var userUpdate =
           {
             username: 'Juana',
             password: '4321',
@@ -28,14 +28,14 @@ describe('Managing a user', function() {
       });
     });
     it('should update without error', function(done){
-      userPersistenceManager.update(user, updateUser, function(updatedUser){
+      userPersistenceManager.update(user, userUpdate, function(updatedUser){
         assert.equal(updatedUser.password,'4321');
         done();
       });
     })
   });
   after(function(done) {
-    userPersistenceManager.delete(updateUser , function(err) {
+    userPersistenceManager.delete(userUpdate , function(err) {
         if (err) throw err;
         done();
       });
