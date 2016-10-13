@@ -106,4 +106,31 @@ ClientPersistenceManager.prototype.findByUserId = function (userId , callback){
   
 };
 
+ClientPersistenceManager.prototype.findOneById = function (id , callback){
+  
+  
+  pg.connect(connectionString, function (err, clie, done) {
+
+    if (err) {
+      done();
+    }
+    var results = [];
+
+    var query = clie.query("Select * from clients where id =($1);",[id]);
+
+    query.on('row', function(row) {
+      results.push(row);
+    });
+
+    query.on('end', function(result){
+      done();
+      if (result.rowCount === 0)
+        callback(false);
+      else
+        callback(results[0]);
+    });
+
+  } );
+  
+};
 module.exports = ClientPersistenceManager;

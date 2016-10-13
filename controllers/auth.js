@@ -1,9 +1,14 @@
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
+
 var UserPersistenceManagerForAuth = require('./user-persistence-manager.js');
 var userPersistenceManagerForAuth = new UserPersistenceManagerForAuth();
 
-passport.use(new BasicStrategy(
+var ClientPersistenceManagerForAuth = require('./client-persistence-manager.js');
+var clientPersistenceManagerForAuth = new ClientPersistenceManagerForAuth();
+
+
+passport.use('basic', new BasicStrategy(
   function(username, password, callback) {
     userPersistenceManagerForAuth.findOne(username , function (user) {
       // No user found with that username
@@ -17,4 +22,20 @@ passport.use(new BasicStrategy(
       });
     }));
 
+passport.use('client-basic', new BasicStrategy(
+  function(username, password, callback) {
+    clientPersistenceManagerForAuth.findOneById(username, function (err, client) {
+      if (err) { return callback(err); }
+
+      // No client found with that id or bad password
+      if (!client || client.secret !== password) { return callback(null, false); }
+
+      // Success
+      return callback(null, client);
+    });
+  }
+));
+
+
 exports.isAuthenticated = passport.authenticate('basic', { session : false });
+exports.isClientAuthenticated = passport.authenticate('client-basic', { session : false });
