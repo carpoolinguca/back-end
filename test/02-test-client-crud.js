@@ -25,8 +25,8 @@ describe('Managing a client', function() {
   });
   describe('#read()', function() {
     
-    it('should read without error', function(done) {
-      clientPersistenceManager.read(function  (readClients){
+    it('should find by userId without error', function(done) {
+      clientPersistenceManager.findByUserId('1', function  (readClients){
         assert.equal(readClients[0].name,'Shumi');
         done();
       });

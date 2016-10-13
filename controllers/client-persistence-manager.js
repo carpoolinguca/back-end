@@ -60,7 +60,7 @@ ClientPersistenceManager.prototype.update = function(client,updateClient, callba
   });
 };
 
-ClientPersistenceManager.prototype.delete = function(client, callback) {
+ClientPersistenceManager.prototype.delete = function(clientForDelete, callback) {
 
   pg.connect(connectionString, function(err, client, done) {
 
@@ -69,7 +69,7 @@ ClientPersistenceManager.prototype.delete = function(client, callback) {
       done();
     }
 
-    query = client.query("DELETE FROM clients WHERE name=($1)", [client.name]);
+    query = client.query("DELETE FROM clients WHERE name=$1", [clientForDelete.name]);
 
     query.on('end', function() {
       done();
@@ -78,7 +78,7 @@ ClientPersistenceManager.prototype.delete = function(client, callback) {
   });
 };
 
-ClientPersistenceManager.prototype.findOne = function (name , callback){
+ClientPersistenceManager.prototype.findByUserId = function (userId , callback){
   
   
   pg.connect(connectionString, function (err, clie, done) {
@@ -88,7 +88,7 @@ ClientPersistenceManager.prototype.findOne = function (name , callback){
     }
     var results = [];
 
-    var query = clie.query("Select * from clients where name =($1);",[username]);
+    var query = clie.query("Select * from clients where userid =($1);",[userId]);
 
     query.on('row', function(row) {
       results.push(row);
@@ -99,7 +99,7 @@ ClientPersistenceManager.prototype.findOne = function (name , callback){
       if (result.rowCount === 0)
         callback(false);
       else
-        callback(results[0]);
+        callback(results);
     });
 
   } );

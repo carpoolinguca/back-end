@@ -39,6 +39,7 @@ Se tomaron como referencia estos tutoriales:
 
 To do:
 ------
+Agregar descripción a todos los servicios.
 Revisar creación de tablas.
 Guardar datos sensibles hasheados.
 Agregar OAuth2.
