@@ -4,13 +4,21 @@ var UserPersistenceManager = require('../controllers/user-persistence-manager');
 describe('Managing a user', function() {
   var user =
           {
-            username: 'Juana',
+            email: 'juana@gmail.com',
             password: '1234',
+            name: 'Juana',
+            lastname: 'La Loca',
+            ucaid: '020800233',
+            sex: 'Femenino',
           };
   var userUpdate =
           {
-            username: 'Juana',
+            email: 'juana@gmail.com',
             password: '4321',
+            name: 'Juana',
+            lastname: 'La Loca',
+            ucaid: '020800233',
+            sex: 'Femenino',
           };
   var userPersistenceManager = new UserPersistenceManager();
   before(function(done) {
@@ -23,7 +31,7 @@ describe('Managing a user', function() {
     
     it('should read without error', function(done) {
       userPersistenceManager.read(function  (readUsers){
-        assert.equal(readUsers[0].username,'Juana');
+        assert.equal(readUsers[0].email,'juana@gmail.com');
         done();
       });
     });

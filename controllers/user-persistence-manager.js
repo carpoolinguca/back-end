@@ -14,8 +14,8 @@ UserPersistenceManager.prototype.create = function (user, callback){
       done();
     }
     var sql;
-    sql = "INSERT INTO users( username, password) values($1, $2);";
-    query = client.query(sql, [user.username, user.password]);
+    sql = "INSERT INTO users( email, password, name, lastname, ucaid, sex) values($1, $2, $3, $4, $5, $6);";
+    query = client.query(sql, [user.email, user.password, user.name, user.lastname, user.ucaid, user.sex]);
     query.on('end', function() {
       done();
       callback();
@@ -51,7 +51,7 @@ UserPersistenceManager.prototype.update = function(user,updateUser, callback) {
     if (err) {
       done();
     }
-    var sqlQuery = "UPDATE users SET password=$1 WHERE username=$2";
+    var sqlQuery = "UPDATE users SET password=$1 WHERE email=$2";
     query = client.query(sqlQuery, [updateUser.password , updateUser.username]);
     query.on('end', function() {
       done();
@@ -69,7 +69,7 @@ UserPersistenceManager.prototype.delete = function(user, callback) {
       done();
     }
 
-    query = client.query("DELETE FROM users WHERE username=($1)", [user.username]);
+    query = client.query("DELETE FROM users WHERE email=($1)", [user.email]);
 
     query.on('end', function() {
       done();
@@ -78,7 +78,7 @@ UserPersistenceManager.prototype.delete = function(user, callback) {
   });
 };
 
-UserPersistenceManager.prototype.findOne = function (username , callback){
+UserPersistenceManager.prototype.findOne = function (email , callback){
   
   
   pg.connect(connectionString, function (err, clie, done) {
@@ -88,7 +88,7 @@ UserPersistenceManager.prototype.findOne = function (username , callback){
     }
     var results = [];
 
-    var query = clie.query("Select * from users where username =($1);",[username]);
+    var query = clie.query("Select * from users where email =($1);",[email]);
 
     query.on('row', function(row) {
       results.push(row);

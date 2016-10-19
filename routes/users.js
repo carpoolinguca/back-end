@@ -6,8 +6,7 @@ var authController = require('../controllers/auth.js');
 var UserPersistenceManagery = require('../controllers/user-persistence-manager.js');
 var userPersistenceManagery = new UserPersistenceManagery();
 
-/* GET users listing. */
-router.route('/').get(authController.isAuthenticated, function(req, res) {
+router.route('/').get( function(req, res) {
 	userPersistenceManagery.read(function (users) {
 		res.json(users);
 	});
