@@ -1,5 +1,6 @@
 var passport = require('passport');
 var BasicStrategy = require('passport-http').BasicStrategy;
+var BearerStrategy = require('passport-http-bearer');
 
 var UserPersistenceManagerForAuth = require('./user-persistence-manager.js');
 var userPersistenceManagerForAuth = new UserPersistenceManagerForAuth();
@@ -7,6 +8,8 @@ var userPersistenceManagerForAuth = new UserPersistenceManagerForAuth();
 var ClientPersistenceManagerForAuth = require('./client-persistence-manager.js');
 var clientPersistenceManagerForAuth = new ClientPersistenceManagerForAuth();
 
+var TokenPersistenceManagerForAuth = require('./token-persistence-manager.js');
+var tokenPersistenceManagerForAuth = new TokenPersistenceManagerForAuth();
 
 passport.use('basic', new BasicStrategy(
   function(username, password, callback) {
@@ -36,6 +39,27 @@ passport.use('client-basic', new BasicStrategy(
   }
 ));
 
+passport.use(new BearerStrategy(
+  function(accessToken, callback) {
+    tokenPersistenceManagerForAuth.findByValue(accessToken, function (err, token) {
+      if (err) { return callback(err); }
+
+      // No token found
+      if (!token) { return callback(null, false); }
+
+      userPersistenceManagerForAuth.findById(token.userId, function (err, user) {
+        if (err) { return callback(err); }
+
+        // No user found
+        if (!user) { return callback(null, false); }
+
+        // Simple example with no scope
+        callback(null, user, { scope: '*' });
+      });
+    });
+  }
+));
 
 exports.isAuthenticated = passport.authenticate('basic', { session : false });
 exports.isClientAuthenticated = passport.authenticate('client-basic', { session : false });
+exports.isBearerAuthenticated = passport.authenticate('bearer', { session: false });

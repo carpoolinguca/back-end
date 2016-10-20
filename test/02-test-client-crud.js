@@ -5,16 +5,16 @@ describe('Managing a client', function() {
   var client =
           {
             name: 'Shumi',
-            id: '33',
+            id: 33,
             secret: '1234',
-            userId: '1'
+            userId: 1
           };
   var updateClient =
           {
             name: 'Shumi',
-            id: '33',
+            id: 33,
             secret: '4321',
-            userId: '1'
+            userId: 1
           };
   var clientPersistenceManager = new ClientPersistenceManager();
   before(function(done) {

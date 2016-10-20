@@ -16,4 +16,21 @@ router.route('/').get( function(req, res) {
 	});
 });
 
+router.route('/login').post(function(req, res) {
+	userPersistenceManagery.findOne(req.body.email , function(user){
+	if (!user) {
+      return res.status(401).send({ message: { email: 'Incorrect email' } });
+    }
+
+    if (req.body.password == user.password) {
+
+    	delete user.password;
+
+    	var token = '123'; //createToken(user);
+    	res.send({ token: token, user: user });
+    } 
+    else {
+    	return res.status(401).send({ message: { password: 'Incorrect password' } });
+    }});
+});
 module.exports = router;

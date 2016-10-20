@@ -36,11 +36,14 @@ Se tomaron como referencia estos tutoriales:
 	http://mherman.org/blog/2015/02/12/postgresql-and-nodejs/#.V4LjKu1XaMV
 * Beer Locker: Building a RESTful API With Node
 	http://scottksmith.com/blog/2014/05/02/building-restful-apis-with-node/
+* StackOverflow: passport-local with node-jwt-simple
+	http://stackoverflow.com/questions/20228572/passport-local-with-node-jwt-simple
 
 To do:
 ------
-Agregar descripción a todos los servicios.
-Revisar creación de tablas.
-Guardar datos sensibles hasheados.
-Agregar OAuth2.
-Agregar servicios faltantes.
+* Agregar descripción a todos los servicios. (Ver ejemplos en proyecto de soapui)
+* Revisar creación de tablas. Analizar si es conveniente usar una biblioteca ORM.
+* Guardar datos sensibles hasheados.
+* Autogenerar id y secret de clientes para asegurar unicidad, aleatoridad y seguridad.
+* Agregar OAuth2.
+* Agregar servicios faltantes.
