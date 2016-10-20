@@ -6,6 +6,9 @@ var authController = require('../controllers/auth.js');
 var UserPersistenceManagery = require('../controllers/user-persistence-manager.js');
 var userPersistenceManagery = new UserPersistenceManagery();
 
+var TokenCreator = require('../controllers/token-creator.js');
+var tokenCreator = new TokenCreator();
+
 router.route('/').get( function(req, res) {
 	userPersistenceManagery.read(function (users) {
 		res.json(users);
@@ -26,7 +29,7 @@ router.route('/login').post(function(req, res) {
 
     	delete user.password;
 
-    	var token = '123'; //createToken(user);
+    	var token = tokenCreator.create(user);
     	res.send({ token: token, user: user });
     } 
     else {
