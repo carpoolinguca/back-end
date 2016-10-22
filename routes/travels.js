@@ -39,7 +39,11 @@ function isAuthenticated(req, res, next) {
   })
 }
 
-router.route('/').post(function(req, res) {
+router.route('/').get( function(req, res) {
+  travelPersistenceManagery.read(function (travels) {
+    res.json(travels);
+  });
+}).post(function(req, res) {
 	travelPersistenceManagery.create(req.body , function(){
 		res.json({travel : req.body , receibed : 'Ok'});
 	});
