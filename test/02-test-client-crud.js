@@ -7,14 +7,14 @@ describe('Managing a client', function() {
             name: 'Shumi',
             id: 33,
             secret: '1234',
-            userId: 1
+            userid: 1
           };
   var updateClient =
           {
             name: 'Shumi',
             id: 33,
             secret: '4321',
-            userId: 1
+            userid: 1
           };
   var clientPersistenceManager = new ClientPersistenceManager();
   before(function(done) {
@@ -25,7 +25,7 @@ describe('Managing a client', function() {
   });
   describe('#read()', function() {
     
-    it('should find by userId without error', function(done) {
+    it('should find by userid without error', function(done) {
       clientPersistenceManager.findByUserId('1', function  (readClients){
         assert.equal(readClients[0].name,'Shumi');
         done();

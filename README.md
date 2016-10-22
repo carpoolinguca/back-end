@@ -38,6 +38,8 @@ Se tomaron como referencia estos tutoriales:
 	http://scottksmith.com/blog/2014/05/02/building-restful-apis-with-node/
 * StackOverflow: passport-local with node-jwt-simple
 	http://stackoverflow.com/questions/20228572/passport-local-with-node-jwt-simple
+* PostgreSQL Manual
+	https://www.postgresql.org/files/documentation/pdf/9.6/postgresql-9.6-A4.pdf
 
 To do:
 ------
@@ -47,3 +49,8 @@ To do:
 * Autogenerar id y secret de clientes para asegurar unicidad, aleatoridad y seguridad.
 * Agregar OAuth2.
 * Agregar servicios faltantes.
+* Agregar manejo de errores, de muchos muchos errores.
+
+En la creación de un viaje:
+* Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.
+

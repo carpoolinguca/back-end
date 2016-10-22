@@ -14,8 +14,8 @@ ClientPersistenceManager.prototype.create = function (modelClient, callback){
       done();
     }
     var sql;
-    sql = "INSERT INTO clients( name, id, secret , userId) values($1, $2, $3, $4);";
-    query = client.query(sql, [modelClient.name, modelClient.id, modelClient.secret, modelClient.userId]);
+    sql = "INSERT INTO clients( name, id, secret , userid) values($1, $2, $3, $4);";
+    query = client.query(sql, [modelClient.name, modelClient.id, modelClient.secret, modelClient.userid]);
     query.on('end', function() {
       done();
       callback();
@@ -51,8 +51,8 @@ ClientPersistenceManager.prototype.update = function(client,updateClient, callba
     if (err) {
       done();
     }
-    var sqlQuery = "UPDATE clients SET id=$1, secret=$2 , userId=$3 WHERE name=$4";
-    query = client.query(sqlQuery, [ updateClient.id, updateClient.secret, updateClient.userId, updateClient.name ]);
+    var sqlQuery = "UPDATE clients SET id=$1, secret=$2 , userid=$3 WHERE name=$4";
+    query = client.query(sqlQuery, [ updateClient.id, updateClient.secret, updateClient.userid, updateClient.name ]);
     query.on('end', function() {
       done();
       callback(updateClient);
@@ -78,7 +78,7 @@ ClientPersistenceManager.prototype.delete = function(clientForDelete, callback) 
   });
 };
 
-ClientPersistenceManager.prototype.findByUserId = function (userId , callback){
+ClientPersistenceManager.prototype.findByUserId = function (userid , callback){
   
   
   pg.connect(connectionString, function (err, clie, done) {
@@ -88,7 +88,7 @@ ClientPersistenceManager.prototype.findByUserId = function (userId , callback){
     }
     var results = [];
 
-    var query = clie.query("Select * from clients where userid =($1);",[userId]);
+    var query = clie.query("Select * from clients where userid =($1);",[userid]);
 
     query.on('row', function(row) {
       results.push(row);
