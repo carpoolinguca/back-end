@@ -49,4 +49,8 @@ router.route('/').get( function(req, res) {
 	});
 });
 
+router.route('/suits').post(function(req, res) {
+    res.json({status : "Reserved" , receibed : 'Ok'});
+});
+
 module.exports = router;
