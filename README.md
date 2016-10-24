@@ -53,4 +53,4 @@ To do:
 
 En la creación de un viaje:
 * Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.
-
+* Verificar si para trazar la trayectoria de la ruta, alcanza con utilizar overview_polyline o si es necesario utilizar polyline.

@@ -27,11 +27,16 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 			var routes = [];
 			jsonResponse.routes.forEach(function (currentValue, index, arr){
 				var polyline = currentValue.overview_polyline.points;
+				var distance = currentValue.legs[0].distance.value;
+				var duration = currentValue.legs[0].duration.text;
 				var route = {
 					travelid : travel.id,
 					origin : travel.origin,
 					destination: travel.destination,
-					polyline : polyline};
+					polyline : polyline,
+					distance : distance,
+					duration : duration,
+					summary : currentValue.summary};
 				routes[index] = route;
 			});
 			callback(routes);
