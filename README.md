@@ -40,6 +40,10 @@ Se tomaron como referencia estos tutoriales:
 	http://stackoverflow.com/questions/20228572/passport-local-with-node-jwt-simple
 * PostgreSQL Manual
 	https://www.postgresql.org/files/documentation/pdf/9.6/postgresql-9.6-A4.pdf
+* Sequelize Documentation
+	http://docs.sequelizejs.com
+* An Introduction to Sequelize.Js – Optimism
+	https://milinaudara.wordpress.com/2014/05/24/an-introduction-to-sequelize-js/
 
 To do:
 ------
@@ -54,3 +58,6 @@ To do:
 En la creación de un viaje:
 * Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.
 * Verificar si para trazar la trayectoria de la ruta, alcanza con utilizar overview_polyline o si es necesario utilizar polyline.
+
+* Modificar todo el modelo para usar sequelize.
+* Leer mejor sobre migrations.

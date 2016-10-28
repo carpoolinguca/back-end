@@ -29,12 +29,17 @@ var User = sequelize.define('user', {
 User.sync({
 	force: true
 }).then(function() {
-	return User.create({
+	User.create({
 		email: 'juana@gmail.com',
 		password: '1234',
 		name: 'Juana',
 		lastname: 'La Loca',
 		ucaid: '020800233',
 		sex: 'Femenino',
+	}).then(function() {
+
+		User.findOne().then(function(user) {
+			console.log(user.dataValues);
+		});
 	});
 });
