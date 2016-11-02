@@ -48,3 +48,43 @@ My standing advice is to use legal, lower-case names exclusively so double-quoti
 
 http://stackoverflow.com/questions/20878932/are-postgresql-column-names-case-sensitive
 https://www.postgresql.org/docs/current/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS 
+
+2016-10-30
+==========
+* ¿Cómo pasar variables entre diferentes módulos?
+
+http://stackoverflow.com/questions/10306185/nodejs-best-way-to-pass-common-variables-into-separate-modules
+
+Nodejs. Best way to pass common variables into separate modules
+
+I have found using dependency injection, to pass things in, to be the best style. It would indeed look something like you have:
+
+// App.js
+module.exports = function App() {
+};
+
+// Database.js
+module.exports = function Database(configuration) {
+};
+
+// Routes.js
+module.exports = function Routes(app, database) {
+};
+
+// server.js: composition root
+var App = require("./App");
+var Database = require("./Database");
+var Routes = require("./Routes");
+var dbConfig = require("./dbconfig.json");
+
+var app = new App();
+var database = new Database(dbConfig);
+var routes = new Routes(app, database);
+
+// Use routes.
+This has a number of benefits:
+
+It forces you to separate your system into components with clear dependencies, instead of hiding the dependencies somewhere in the middle of the file where they call require("databaseSingleton") or worse, global.database.
+It makes unit testing very easy: if I want to test Routes in isolation, I can inject it with fake app and database params and test only the Routes code itself.
+It puts all your object-graph wiring together in a single place, namely the composition root (which in this case is server.js, the app entry point). This gives you a single place to look to see how everything fits together in the system.
+One of the better explanations for this that I've seen is an interview with Mark Seeman, author of the excellent book Dependency Injection in .NET. It applies just as much to JavaScript, and especially to Node.js: require is often used as a classic service locator, instead of just a module system.

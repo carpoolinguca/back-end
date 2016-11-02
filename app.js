@@ -5,11 +5,13 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 //var passport = require('passport');
-var ejs = require('ejs');
-var session = require('express-session');
+//var ejs = require('ejs');
+//var session = require('express-session');
+var Sequelize = require('sequelize');
+var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/carpooling');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
+var users = require('./routes/users')(sequelize);
 var clients = require('./routes/clients');
 var travels = require('./routes/travels');
 
@@ -29,6 +31,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //app.use(passport.initialize());
+
+sequelize.sync();
 
 app.use('/', routes);
 app.use('/users', users);

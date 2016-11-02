@@ -1,14 +1,31 @@
-var express = require('express');
-var router = express.Router();
+function UserRouter(sequelize){
+    var express = require('express');
+    var router = express.Router();
+     
+    var authController = require('../controllers/auth.js');
 
-var authController = require('../controllers/auth.js');
+    var userSystem = require('../models/user')(sequelize);
 
-var UserPersistenceManagery = require('../controllers/user-persistence-manager.js');
-var userPersistenceManagery = new UserPersistenceManagery();
+    var TokenCreator = require('../controllers/token-creator.js');
+    var tokenCreator = new TokenCreator();
 
-var TokenCreator = require('../controllers/token-creator.js');
-var tokenCreator = new TokenCreator();
 
+    router.route('/').get( function(req, res) {
+        userSystem.findAll().then(function (users) {
+            res.json(users);
+        });
+    }).post(function(req, res) {
+        userSystem.create(req.body).then(function(user){
+            res.json({user : user , receibed : 'Ok'});
+        });
+    });
+
+    return router;
+}
+
+module.exports = UserRouter;
+
+/*
 router.route('/').get( function(req, res) {
 	userPersistenceManagery.read(function (users) {
 		res.json(users);
@@ -36,4 +53,5 @@ router.route('/login').post(function(req, res) {
     	return res.status(401).send({ message: { password: 'Incorrect password' } });
     }});
 });
-module.exports = router;
+
+*/
