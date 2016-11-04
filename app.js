@@ -13,7 +13,7 @@ var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/c
 var routes = require('./routes/index');
 var users = require('./routes/users')(sequelize);
 var clients = require('./routes/clients');
-var travels = require('./routes/travels');
+var travels = require('./routes/travels')(sequelize);
 
 var app = express();
 

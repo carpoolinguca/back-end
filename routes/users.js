@@ -37,6 +37,7 @@ function UserRouter(sequelize){
             return res.status(401).send({ message: { password: 'Incorrect password' } });
         }});
     });
+    
     return router;
 }
 
