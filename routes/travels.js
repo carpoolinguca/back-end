@@ -44,11 +44,11 @@ function TravelRouter(sequelize) {
     })
   }
 
-  router.route('/').get(function(req, res) {
+  router.route('/').get(isAuthenticated, function(req, res) {
     travelSystem.findAll().then(function(travels) {
       res.json(travels);
     });
-  }).post(function(req, res) {
+  }).post(isAuthenticated, function(req, res) {
     travelSystem.create(req.body).then(function() {
       res.json({
         travel: req.body,

@@ -7,10 +7,11 @@ module.exports = function(sequelize) {
 	var User = require('./user')(sequelize);
 	
 	var Travel = sequelize.define('travel', {
-		user_id: {
+		userId: {
 			type: Sequelize.INTEGER,
 			model: User,
-			key: 'id'
+			key: 'id',
+			field: 'user_id'
 		},
 		origin: {
 			type: Sequelize.STRING
@@ -21,8 +22,9 @@ module.exports = function(sequelize) {
 		seats: {
 			type: Sequelize.INTEGER
 		},
-		arrival_date_time: {
-			type: Sequelize.STRING
+		arrivalDateTime: {
+			type: Sequelize.STRING,
+			field: 'arrival_date_time'
 		},
 		observations: {
 			type: Sequelize.STRING
