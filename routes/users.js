@@ -29,7 +29,7 @@ function UserRouter(sequelize){
         if (req.body.password == user.password) {
 
             //delete user.password;
-
+            
             var token = tokenCreator.create(user);
             res.send({ token: token, user: user });
         } 

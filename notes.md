@@ -88,3 +88,17 @@ It forces you to separate your system into components with clear dependencies, i
 It makes unit testing very easy: if I want to test Routes in isolation, I can inject it with fake app and database params and test only the Routes code itself.
 It puts all your object-graph wiring together in a single place, namely the composition root (which in this case is server.js, the app entry point). This gives you a single place to look to see how everything fits together in the system.
 One of the better explanations for this that I've seen is an interview with Mark Seeman, author of the excellent book Dependency Injection in .NET. It applies just as much to JavaScript, and especially to Node.js: require is often used as a classic service locator, instead of just a module system.
+
+2016-11-06
+==========
+* ¿Qué hace ST_GeomFromGeoJSON?
+http://www.postgis.org/docs/ST_GeomFromGeoJSON.html
+
+ST_GeomFromGeoJSON — Takes as input a geojson representation of a geometry and outputs a PostGIS geometry object
+
+-- a 3D linestring
+SELECT ST_AsText(ST_GeomFromGeoJSON('{"type":"LineString","coordinates":[[1,2,3],[4,5,6],[7,8,9]]}')) As wkt;
+
+wkt
+-------------------
+LINESTRING(1 2,4 5,7 8)

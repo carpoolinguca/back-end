@@ -7,6 +7,7 @@ function TravelRouter(sequelize) {
 
   var userSystem = require('../models/user')(sequelize);
   var travelSystem = require('../models/travel')(sequelize);
+  var routeSystem = require('../models/route')(sequelize);
 
   var TokenCreator = require('../controllers/token-creator.js');
   var tokenCreator = new TokenCreator();

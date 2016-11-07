@@ -1,5 +1,3 @@
-//'CREATE TABLE travels ( id serial primary key, userid integer, origin varchar(200), destination varchar(200), seats integer, arrivalDateTime timestamp, observations varchar(200));'
-
 var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {

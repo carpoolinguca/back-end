@@ -48,10 +48,7 @@ Se tomaron como referencia estos tutoriales:
 To do:
 ------
 * Agregar descripción a todos los servicios. (Ver ejemplos en proyecto de soapui)
-* Revisar creación de tablas. Analizar si es conveniente usar una biblioteca ORM.
 * Guardar datos sensibles hasheados.
-* Autogenerar id y secret de clientes para asegurar unicidad, aleatoridad y seguridad.
-* Agregar OAuth2.
 * Agregar servicios faltantes.
 * Agregar manejo de errores, de muchos muchos errores.
 
@@ -59,5 +56,4 @@ En la creación de un viaje:
 * Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.
 * Verificar si para trazar la trayectoria de la ruta, alcanza con utilizar overview_polyline o si es necesario utilizar polyline.
 
-* Modificar todo el modelo para usar sequelize.
 * Leer mejor sobre migrations.
