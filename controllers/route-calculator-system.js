@@ -1,8 +1,18 @@
 const querystring = require('querystring');
 const https = require('https');
+const polyline = require('polyline');
 
 function RouteCalculatorSystem() {
 
+}
+
+var routeWithLineStringFrom = function(route) {
+	var decodedPolyline = polyline.decode(route.polyline);
+	route.polyline = {
+		type: 'LineString',
+		coordinates: decodedPolyline
+	};
+	return route;
 }
 
 RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) {
@@ -25,19 +35,20 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 		response.on('end', () => {
 			var jsonResponse = JSON.parse(body);
 			var routes = [];
-			jsonResponse.routes.forEach(function (currentValue, index, arr){
+			jsonResponse.routes.forEach(function(currentValue, index, arr) {
 				var polyline = currentValue.overview_polyline.points;
 				var distance = currentValue.legs[0].distance.value;
 				var duration = currentValue.legs[0].duration.text;
 				var route = {
-					travelid : travel.id,
-					origin : travel.origin,
+					travelid: travel.id,
+					origin: travel.origin,
 					destination: travel.destination,
-					polyline : polyline,
-					distance : distance,
-					duration : duration,
-					summary : currentValue.summary};
-				routes[index] = route;
+					polyline: polyline,
+					distance: distance,
+					duration: duration,
+					summary: currentValue.summary
+				};
+				routes[index] = routeWithLineStringFrom(route);
 			});
 			callback(routes);
 		});
