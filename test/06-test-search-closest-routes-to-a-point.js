@@ -5,6 +5,7 @@ var assert = require('chai').assert;
 var Sequelize = require('sequelize');
 var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/carpooling');
 var routeSystem = require('../models/route')(sequelize);
+var User = require('../models/user')(sequelize);
 
 var closestRoute = {
 	travelId: 1,
@@ -12,10 +13,7 @@ var closestRoute = {
 	destination: 'Belgrano 380, Bernal, Buenos Aires, Argentina',
 	polyline: {
 		type: 'LineString',
-		coordinates: [
-			[-34.71256, -58.2798],
-			[-34.71204, -58.28095],
-			[-34.71165, -58.2818]
+		coordinates: [[-34.71275, -58.279360000000004], [-34.70375, -58.296440000000004]
 		]
 	},
 	distance: 209,
@@ -68,24 +66,32 @@ describe('Find closestRoute', function() {
 			routeSystem.create(mediumRoute).then(function() {
 				routeSystem.create(farthestRoute).then(function() {
 					done();
-				})
-			})
-		})
-	})
+				});
+			});
+		});
+	});
 
-});
 
-it('should return the closestRoute for a point', function(done) {
-	routeSystem.findClosestRoutes(route).then(function(closestRoutes) {
-		assert.equal(route.travelId, closestRoute[0].travelId);
-		done();
+
+	it('should return the closestRoute for a point', function(endingFunction) {
+
+		sequelize.query('SELECT * FROM route WHERE ST_DWithin(polyline,ST_GeographyFromText(\'SRID=4326; POINT(-34.713770000000004 -58.288590000000006)\'), 400);',{model : routeSystem}).then(function(routes) {
+			console.log(routes);
+			console.log(routes[0].summary);
+			assert.equal(routes[0].summary,'Belgrano');
+			endingFunction();
+}); /*
+		routeSystem.findClosestRoutes(route).then(function(closestRoutes) {
+			assert.equal(route.travelId, closestRoute[0].travelId);
+			done();
+		});
+		*/
+	});
+	after(function(done) {
+		routeSystem.destroy({
+			truncate: true
+		}).then(function() {
+			done();
+		});
 	});
 });
-after(function(done) {
-routeSystem.destroy({
-	truncate: true
-}).then(function() {
-	done();
-});
-});
-};
