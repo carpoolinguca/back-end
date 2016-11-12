@@ -1,51 +1,49 @@
 var assert = require('chai').assert;
-var UserPersistenceManager = require('../controllers/user-persistence-manager');
+var sequelize = require('../sequelizeConfigured');
+var User = require('../models/user')(sequelize);
 
 describe('Managing a user', function() {
-  var user =
-          {
-            email: 'juana@gmail.com',
-            password: '1234',
-            name: 'Juana',
-            lastname: 'La Loca',
-            ucaid: '020800233',
-            sex: 'Femenino',
-          };
-  var userUpdate =
-          {
-            email: 'juana@gmail.com',
-            password: '4321',
-            name: 'Juana',
-            lastname: 'La Loca',
-            ucaid: '020800233',
-            sex: 'Femenino',
-          };
-  var userPersistenceManager = new UserPersistenceManager();
+  var user = {
+    email: 'juana@gmail.com',
+    password: '1234',
+    name: 'Juana',
+    lastname: 'La Loca',
+    ucaid: '020800233',
+    sex: 'Femenino',
+  };
+  var userUpdate = {
+    email: 'juana@gmail.com',
+    password: '4321',
+    name: 'Juana',
+    lastname: 'La Loca',
+    ucaid: '020800233',
+    sex: 'Femenino',
+  };
+
   before(function(done) {
-    userPersistenceManager.create(user , function(err) {
-        if (err) throw err;
-        done();
-      }); 
+    User.create(user).then(function(createdUser) {
+      user = createdUser;
+      done();
+    });
   });
-  describe('#read()', function() {
-    
-    it('should read without error', function(done) {
-      userPersistenceManager.read(function  (readUsers){
-        assert.equal(readUsers[0].email,'juana@gmail.com');
+  describe('#findAll()', function() {
+
+    it('should find without error', function(done) {
+      User.findAll().then(function(readUsers) {
+        assert.equal(readUsers[0].email, 'juana@gmail.com');
         done();
       });
     });
-    it('should update without error', function(done){
-      userPersistenceManager.update(user, userUpdate, function(updatedUser){
-        assert.equal(updatedUser.password,'4321');
+    it('should update without error', function(done) {
+      user.update(userUpdate).then(function(updatedUser) {
+        assert.equal(updatedUser.password, '4321');
         done();
       });
     })
   });
   after(function(done) {
-    userPersistenceManager.delete(userUpdate , function(err) {
-        if (err) throw err;
-        done();
-      });
+    user.destroy().then(function() {
+      done();
+    });
   });
 });

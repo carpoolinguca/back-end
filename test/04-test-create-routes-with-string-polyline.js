@@ -1,6 +1,5 @@
 var assert = require('chai').assert;
-var Sequelize = require('sequelize');
-var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/carpooling');
+var sequelize = require('../sequelizeConfigured');
 var routeSystem = require('../models/route')(sequelize);
 var polyline = require('polyline');
 
@@ -57,7 +56,9 @@ describe('Calculating route with string polyline', function() {
 		});
 	});
 	after(function(done) {
-		routeSystem.destroy({truncate : true}).then(function() {
+		routeSystem.destroy({
+			truncate: true
+		}).then(function() {
 			done();
 		});
 	});
