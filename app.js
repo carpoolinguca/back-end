@@ -7,8 +7,7 @@ var bodyParser = require('body-parser');
 //var passport = require('passport');
 //var ejs = require('ejs');
 //var session = require('express-session');
-var Sequelize = require('sequelize');
-var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/carpooling');
+var sequelize = require('./sequelizeConfigured');
 
 var routes = require('./routes/index');
 var users = require('./routes/users')(sequelize);

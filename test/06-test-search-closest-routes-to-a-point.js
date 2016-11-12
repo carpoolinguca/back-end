@@ -2,8 +2,7 @@
 // En este caso asumo que todas las rutas van al mismo destino, con la misma hora de llegada.
 
 var assert = require('chai').assert;
-var Sequelize = require('sequelize');
-var sequelize = new Sequelize('postgres://carpooling:carpooling@localhost:5432/carpooling');
+var sequelize = require('../sequelizeConfigured');
 var routeSystem = require('../models/route')(sequelize);
 var User = require('../models/user')(sequelize);
 

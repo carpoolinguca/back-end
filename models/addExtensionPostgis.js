@@ -6,6 +6,6 @@ var client = new pg.Client(connectionString);
 client.connect();
 var query1 = client.query(
 
-	'DROP TABLE users; DROP TABLE clients; DROP TABLE codes; DROP TABLE tokens; DROP TABLE travels;');
+	'CREATE EXTENSION postgis;');
 query1;
-console.log('All tables dropped. Press control+c for exit.');
+console.log('Added extension: postgis. Press control+c for exit.');
