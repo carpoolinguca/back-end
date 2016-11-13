@@ -22,7 +22,6 @@ sequelize.sync();
 
 app.use('/', routes);
 app.use('/users', users);
-app.use('/clients', clients);
 app.use('/travels',travels);
 
 // catch 404 and forward to error handler

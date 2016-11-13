@@ -4,6 +4,7 @@ var Travel = require('../models/travel')(sequelize);
 
 describe('Managing a travel', function() {
   var travel = {
+    userId: 1,
     origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
     destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
     seats: 4,
@@ -11,6 +12,7 @@ describe('Managing a travel', function() {
     observations: "De la biblio a la facu."
   };
   var travelUpdate = {
+    userId: 1,
     origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
     destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
     seats: 4,
@@ -33,6 +35,7 @@ describe('Managing a travel', function() {
     });
     it('should update without error', function(done) {
       travel.update(travelUpdate).then(function(updatedTravel) {
+        assert.equal(updatedTravel.userId, travelUpdate.userId);
         assert.equal(updatedTravel.origin, travelUpdate.origin);
         assert.equal(updatedTravel.destination, travelUpdate.destination);
         assert.equal(updatedTravel.seats, travelUpdate.seats);
