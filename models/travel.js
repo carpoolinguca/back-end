@@ -3,13 +3,13 @@ var Sequelize = require('sequelize');
 module.exports = function(sequelize) {
 
 	var User = require('./user')(sequelize);
-	
+
 	var Travel = sequelize.define('travel', {
 		userId: {
 			type: Sequelize.INTEGER,
-			model: User,
-			key: 'id',
-			field: 'user_id'
+			references: {
+				model: User
+			}
 		},
 		origin: {
 			type: Sequelize.STRING
@@ -21,7 +21,7 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER
 		},
 		arrivalDateTime: {
-			type: Sequelize.STRING,
+			type: Sequelize.DATE,
 			field: 'arrival_date_time'
 		},
 		observations: {

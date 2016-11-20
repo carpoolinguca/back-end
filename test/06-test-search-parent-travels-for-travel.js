@@ -16,7 +16,6 @@ var createUsers = function(next) {
 		ucaid: '020800233',
 		sex: 'Femenino',
 	};
-
 	var userJacinta = {
 		email: 'jacinta@gmail.com',
 		password: '4321',
@@ -25,27 +24,60 @@ var createUsers = function(next) {
 		ucaid: '020800234',
 		sex: 'Femenino',
 	};
+	var users = [userJuana, userJacinta];
 
-	User.create(userJuana).then(function() {
-		User.create(userJacinta).then(function() {
-			next();
+	User.create(userJuana).then(function(anUser) {
+		users[0] = anUser;
+		User.create(userJacinta).then(function(anotherUser) {
+			users[1] = anotherUser;
+			next(users);
 		});
 	});
 };
 
 var createTravels = function(next) {
-
+	createUsers(function(users) {
+		var id1 = users[0].id;
+		var id2 = users[1].id;
+		var travelFromLibrary = {
+			userId: id1,
+			origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+			seats: 1,
+			arrivalDateTime: "2016-10-21 14:05:06",
+			observations: "De la biblio a la facu."
+		};
+		var travelToPurmamarca = {
+			userId: id2,
+			origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+			seats: 0,
+			arrivalDateTime: "2016-10-21 14:05:06",
+			observations: "De la biblio a la Purmamarca."
+		};
+		var travels = [];
+		Travel.create(travelFromLibrary).then(function(travel) {
+			travels[0] = travel;
+			Travel.create(travelToPurmamarca).then(function(anotherTravel) {
+				travels[1] = anotherTravel;
+				next(users, travels);
+			});
+		});
+	});
 };
 
-
+var students = [];
+var studyTravels = [];
 describe('Find closestRoute', function() {
 	before(function(done) {
-		createUsers(done);
+		createTravels(function(users, travels) {
+			students = users;
+			studyTravels = travels;
+			done();
+		});
 	});
 
-
-
-	it('should return the closestRoute for a point', function(endingFunction) {
+	it('Should exist two users.', function(endingFunction) {
 		User.findAll({
 			attributes: [
 				[sequelize.fn('COUNT', sequelize.col('email')), 'email_count']
@@ -55,11 +87,50 @@ describe('Find closestRoute', function() {
 			endingFunction();
 		});
 	});
+
+	it('Should exist two travels.', function(endingFunction) {
+		User.findAll({
+			attributes: [
+				[sequelize.fn('COUNT', sequelize.col('id')), 'id_count']
+			]
+		}).then(function(results) {
+			assert.equal(2, results[0].get('id_count'));
+			endingFunction();
+		});
+	});
+
+	it('Should return the closest travels', function(endingFunction) {
+		studentId = students[1].id;
+		Travel.findAll({
+			where: {
+				userId: {
+					$not: studentId
+				},
+				seats: {
+					$gte: 1
+				},
+				destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+				arrivalDateTime: {
+					$between: ["2016-10-21 00:00:00", "2016-10-21 23:59:59"]
+				}
+			}
+		}).then(function(results) {
+			assert.equal(1, results.length);
+			endingFunction();
+		});
+	});
+
 	after(function(done) {
-		User.destroy({
+		Travel.destroy({
 			truncate: true
 		}).then(function() {
 			done();
+		});
+		User.destroy({
+			truncate: false,
+			where: {
+				sex: 'Femenino'
+			}
 		});
 	});
 });
