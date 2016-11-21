@@ -1,9 +1,12 @@
 const querystring = require('querystring');
 const https = require('https');
 const polyline = require('polyline');
+var Sequelize;
+var Route;
 
-function RouteCalculatorSystem() {
-
+function RouteCalculatorSystem(sequelize) {
+	Route = require('../models/route')(sequelize);
+	Sequelize = sequelize;
 }
 
 var routeWithLineStringFrom = function(route) {
@@ -13,6 +16,27 @@ var routeWithLineStringFrom = function(route) {
 		coordinates: decodedPolyline
 	};
 	return route;
+}
+
+var createRecursive = function(routes, createdRoutes, callback) {
+	if (routes.length = 0) {
+		callback(createdRoutes);
+	} else {
+		Route.create(routes.pop).then(function(createdRoute) {
+			createdRoutes.push(createdRoute);
+			createRecursive(routes, createdRoutes, callback);
+		});
+	}
+}
+
+var createAllRoutes = function(routes, callback) {
+	if(routes.length > 0 && routes.length <4){
+		createRecursive(routes, [], callback);
+	}
+	else
+	{
+		callback([]);
+	}
 }
 
 RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) {
@@ -25,6 +49,7 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 	var url = baseUrl + querystring.stringify(query);
 
 	var body = '';
+	//Mejorar este código para evitar responses repetidos
 	https.get(url, (response) => {
 		response.setEncoding('utf8');
 
@@ -50,11 +75,29 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 				};
 				routes[index] = routeWithLineStringFrom(route);
 			});
-			callback(routes);
+			createAllRoutes(routes, callback);
 		});
 
 	});
 
+};
+
+RouteCalculatorSystem.prototype.destroy = function(callback) {
+	Route.destroy({
+		truncate: true
+	}).then(function() {
+		callback();
+	});
+};
+
+RouteCalculatorSystem.prototype.countAll = function(endingFunction) {
+	Route.findAll({
+		attributes: [
+			[Sequelize.fn('COUNT', Sequelize.col('id')), 'id_count']
+		]
+	}).then(function(results) {
+		endingFunction(results[0].get('id_count'));
+	});
 };
 
 module.exports = RouteCalculatorSystem;

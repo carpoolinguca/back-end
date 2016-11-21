@@ -62,7 +62,9 @@ describe('Managing a travel', function() {
     });
   });
   after(function(done) {
-    travel.destroy().then(function() {
+    Travel.destroy({
+      truncate: true
+    }).then(function() {
       done();
     });
   });

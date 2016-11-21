@@ -6,65 +6,7 @@ var assert = require('chai').assert;
 var sequelize = require('../sequelizeConfigured');
 var User = require('../models/user')(sequelize);
 var Travel = require('../models/travel')(sequelize);
-
-var createUsers = function(next) {
-	var userJuana = {
-		email: 'juana@gmail.com',
-		password: '1234',
-		name: 'Juana',
-		lastname: 'La Loca',
-		ucaid: '020800233',
-		sex: 'Femenino',
-	};
-	var userJacinta = {
-		email: 'jacinta@gmail.com',
-		password: '4321',
-		name: 'Jacinta',
-		lastname: 'La Cinta',
-		ucaid: '020800234',
-		sex: 'Femenino',
-	};
-	var users = [userJuana, userJacinta];
-
-	User.create(userJuana).then(function(anUser) {
-		users[0] = anUser;
-		User.create(userJacinta).then(function(anotherUser) {
-			users[1] = anotherUser;
-			next(users);
-		});
-	});
-};
-
-var createTravels = function(next) {
-	createUsers(function(users) {
-		var id1 = users[0].id;
-		var id2 = users[1].id;
-		var travelFromLibrary = {
-			userId: id1,
-			origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
-			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
-			seats: 1,
-			arrivalDateTime: "2016-10-21 14:05:06",
-			observations: "De la biblio a la facu."
-		};
-		var travelToPurmamarca = {
-			userId: id2,
-			origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
-			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
-			seats: 0,
-			arrivalDateTime: "2016-10-21 14:05:06",
-			observations: "De la biblio a la Purmamarca."
-		};
-		var travels = [];
-		Travel.create(travelFromLibrary).then(function(travel) {
-			travels[0] = travel;
-			Travel.create(travelToPurmamarca).then(function(anotherTravel) {
-				travels[1] = anotherTravel;
-				next(users, travels);
-			});
-		});
-	});
-};
+var createTravels = require('./createTravels')(User, Travel);
 
 var students = [];
 var studyTravels = [];
