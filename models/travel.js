@@ -17,6 +17,9 @@ module.exports = function(sequelize) {
 		destination: {
 			type: Sequelize.STRING
 		},
+		userIsDriver: {
+			type: Sequelize.BOOLEAN
+		},
 		seats: {
 			type: Sequelize.INTEGER
 		},

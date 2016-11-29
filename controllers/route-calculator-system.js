@@ -30,11 +30,9 @@ var createRecursive = function(routes, createdRoutes, callback) {
 }
 
 var createAllRoutes = function(routes, callback) {
-	if(routes.length > 0 && routes.length <4){
+	if (routes.length > 0 && routes.length < 4) {
 		createRecursive(routes, [], callback);
-	}
-	else
-	{
+	} else {
 		callback([]);
 	}
 }
@@ -74,8 +72,11 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 					summary: currentValue.summary
 				};
 				routes[index] = routeWithLineStringFrom(route);
+				Route.create(routes[index]).then(function(createdRoute) {
+					routes[index] = createdRoute.dataValues;
+				});
 			});
-			createAllRoutes(routes, callback);
+			callback(routes);
 		});
 
 	});
@@ -97,6 +98,14 @@ RouteCalculatorSystem.prototype.countAll = function(endingFunction) {
 		]
 	}).then(function(results) {
 		endingFunction(results[0].get('id_count'));
+	});
+};
+
+RouteCalculatorSystem.prototype.routesForTravel = function(travel, endingFunction) {
+	console.log(travel);
+	Route.findAll().then(function(routes) {
+		console.log('hola' + routes);
+		endingFunction(routes);
 	});
 };
 

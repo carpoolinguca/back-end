@@ -25,9 +25,9 @@ module.exports = function(User, Travel) {
 				observations: "De la biblio a la Purmamarca."
 			};
 			var travels = [];
-			Travel.create(travelFromLibrary).then(function(travel) {
+			Travel.startManagingAndCalculateRoutes(travelFromLibrary, function(travel) {
 				travels[0] = travel;
-				Travel.create(travelToPurmamarca).then(function(anotherTravel) {
+				Travel.startManagingAndCalculateRoutes(travelToPurmamarca, function(anotherTravel) {
 					travels[1] = anotherTravel;
 					next(users, travels);
 				});
