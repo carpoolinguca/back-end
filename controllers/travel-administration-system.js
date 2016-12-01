@@ -39,6 +39,33 @@ TravelAdministrationSystem.prototype.startManagingAndCalculateRoutes = function(
 	});
 };
 
+TravelAdministrationSystem.prototype.findAll = function(endFunction) {
+	Travel.findAll().then(function(results) {
+		endFunction(results);
+	});
+};
+
+TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
+	Travel.create(travel).then(function(travelCreated) {
+		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function() {
+			Travel.findAll({
+				where: {
+					userId: {
+						$not: travel.userId
+					},
+					seats: {
+						$gte: 1
+					},
+					userIsDriver: true,
+					destination: travel.destination
+				}
+			}).then(function(results) {
+				endFunction(results);
+			});
+		});
+	});
+};
+
 TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback) {
 	console.log(travel);
 	routeCalculatorSystem.routesForTravel(travel, function(routes) {

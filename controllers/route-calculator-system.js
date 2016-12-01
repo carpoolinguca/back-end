@@ -63,7 +63,7 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 				var distance = currentValue.legs[0].distance.value;
 				var duration = currentValue.legs[0].duration.text;
 				var route = {
-					travelid: travel.id,
+					travelId: travel.id,
 					origin: travel.origin,
 					destination: travel.destination,
 					polyline: polyline,
@@ -103,8 +103,11 @@ RouteCalculatorSystem.prototype.countAll = function(endingFunction) {
 
 RouteCalculatorSystem.prototype.routesForTravel = function(travel, endingFunction) {
 	console.log(travel);
-	Route.findAll().then(function(routes) {
-		console.log('hola' + routes);
+	Route.findAll({
+		where: {
+			travelId: travel.id
+		}
+	}).then(function(routes) {
 		endingFunction(routes);
 	});
 };

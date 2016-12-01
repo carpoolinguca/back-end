@@ -6,8 +6,9 @@ function TravelRouter(sequelize) {
   var config = require('../config');
 
   var userSystem = require('../models/user')(sequelize);
-  var travelSystem = require('../models/travel')(sequelize);
-  var routeSystem = require('../models/route')(sequelize);
+  var Travel = require('../models/travel')(sequelize);
+  var TravelAdministrationSystem = require('../controllers/travel-administration-system');
+  var travelAdministrationSystem = new TravelAdministrationSystem(sequelize);
 
   var TokenCreator = require('../controllers/token-creator.js');
   var tokenCreator = new TokenCreator();
@@ -42,21 +43,30 @@ function TravelRouter(sequelize) {
 
       req.user = user;
       next();
-    })
+    });
   }
 
   router.route('/').get(isAuthenticated, function(req, res) {
-    travelSystem.findAll().then(function(travels) {
+    travelAdministrationSystem.findAll(function(travels) {
       res.json(travels);
     });
   }).post(isAuthenticated, function(req, res) {
-    travelSystem.create(req.body).then(function() {
+    console.log(req.body);
+    travelAdministrationSystem.startManagingAndCalculateRoutes(req.body, function(registeredTravel) {
       res.json({
-        travel: req.body,
+        travel: registeredTravel,
         receibed: 'Ok'
       });
     });
   });
+
+  router.route('/find').post(isAuthenticated, function(req, res) {
+    travelAdministrationSystem.findClosestTravelsForTravel(req.body, function(travels) {
+      res.json(travels);
+    });
+  });
+
+
 
   router.route('/suits').post(function(req, res) {
     res.json({
