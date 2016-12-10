@@ -51,6 +51,7 @@ To do:
 * Guardar datos sensibles hasheados.
 * Agregar servicios faltantes.
 * Agregar manejo de errores, de muchos muchos errores.
+* Verificar que todos los nombres de las columnas de las tablas esten normalizados.	
 
 En la creación de un viaje:
 * Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.

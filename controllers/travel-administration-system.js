@@ -45,22 +45,13 @@ TravelAdministrationSystem.prototype.findAll = function(endFunction) {
 	});
 };
 
+//TODO: agregar filtrado por día de la fecha!
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
 	Travel.create(travel).then(function(travelCreated) {
-		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function() {
-			Travel.findAll({
-				where: {
-					userId: {
-						$not: travel.userId
-					},
-					seats: {
-						$gte: 1
-					},
-					userIsDriver: true,
-					destination: travel.destination
-				}
-			}).then(function(results) {
-				endFunction(results);
+		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
+			var queryString = 'select * from travel where id in (select ro.travel_id from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro.travel_id IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId  +' and seats > 0 and destination = \'' + travelCreated.destination + '\'));';
+			Sequelize.query(queryString).then(function(results) {
+				endFunction(results[0]);
 			});
 		});
 	});

@@ -102,3 +102,41 @@ SELECT ST_AsText(ST_GeomFromGeoJSON('{"type":"LineString","coordinates":[[1,2,3]
 wkt
 -------------------
 LINESTRING(1 2,4 5,7 8)
+
+2016-12-09
+==========
+
+*Caso de prueba:
+Viaje de usuario con auto:
+Alsina 200, Quilmes, Buenos Aires
+Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
+
+Viaje de usuario sin auto:
+9 de Julio 5, Bernal, Buenos Aires
+Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
+
+Viaje de usuario con auto:
+Brasil 10, B1868CAA Gerli, Buenos Aires
+Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
+
+
+*¿Cuales son los parámetros de ST_DWithin?
+
+http://postgis.net/stuff/postgis-2.3.pdf
+
+8.9.32
+298 / 785
+ST_DWithin
+ST_DWithin — Returns true if the geometries are within the specified distance of one another. For geometry units are in those
+of spatial reference and For geography units are in meters and measurement is defaulted to use_spheroid=true (measure around
+spheroid), for faster check, use_spheroid=false to measure along sphere.
+Synopsis
+boolean ST_DWithin(geometry g1, geometry g2, double precision distance_of_srid);
+boolean ST_DWithin(geography gg1, geography gg2, double precision distance_meters);
+boolean ST_DWithin(geography gg1, geography gg2, double precision distance_meters, boolean use_spheroid);
+Description
+Returns true if the geometries are within the specified distance of one another.
+For Geometries: The distance is specified in units defined by the spatial reference system of the geometries. For this function to
+make sense, the source geometries must both be of the same coordinate projection, having the same SRID.
+For geography units are in meters and measurement is defaulted to use_spheroid=true, for faster check, use_spheroid=false to
+measure along sphere.

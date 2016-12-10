@@ -12,7 +12,9 @@ var closestRoute = {
 	destination: 'Belgrano 380, Bernal, Buenos Aires, Argentina',
 	polyline: {
 		type: 'LineString',
-		coordinates: [[-34.71275, -58.279360000000004], [-34.70375, -58.296440000000004]
+		coordinates: [
+			[-34.71275, -58.279360000000004],
+			[-34.70375, -58.296440000000004]
 		]
 	},
 	distance: 209,
@@ -71,15 +73,17 @@ describe('Find closestRoute', function() {
 	});
 
 
-
 	it('should return the closestRoute for a point', function(endingFunction) {
-
-		sequelize.query('SELECT * FROM route WHERE ST_DWithin(polyline,ST_GeographyFromText(\'SRID=4326; POINT(-34.713770000000004 -58.288590000000006)\'), 400);',{model : routeSystem}).then(function(routes) {
+		var queryString = 'SELECT * FROM route WHERE ST_DWithin(polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + point.coordinates[0] + ' ' + point.coordinates[1] + ' )\'), 400);';
+		sequelize.query(queryString, {
+			model: routeSystem
+		}).then(function(routes) {
 			console.log(routes);
 			console.log(routes[0].summary);
-			assert.equal(routes[0].summary,'Belgrano');
+			assert.equal(routes[0].summary, 'Belgrano');
 			endingFunction();
-}); /*
+		});
+		/*
 		routeSystem.findClosestRoutes(route).then(function(closestRoutes) {
 			assert.equal(route.travelId, closestRoute[0].travelId);
 			done();
