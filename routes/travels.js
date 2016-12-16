@@ -68,10 +68,12 @@ function TravelRouter(sequelize) {
 
 
 
-  router.route('/suits').post(function(req, res) {
-    res.json({
-      status: "Reserved",
-      receibed: 'Ok'
+  router.route('/suits').post(isAuthenticated, function(req, res) {
+    travelAdministrationSystem.asignSeatWith(req, function() {
+      res.json({
+        status: "Reserved",
+        receibed: 'Ok'
+      })
     });
   });
 
