@@ -106,7 +106,7 @@ LINESTRING(1 2,4 5,7 8)
 2016-12-09
 ==========
 
-*Caso de prueba:
+* Caso de prueba:
 Viaje de usuario con auto:
 Alsina 200, Quilmes, Buenos Aires
 Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
@@ -120,7 +120,7 @@ Brasil 10, B1868CAA Gerli, Buenos Aires
 Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
 
 
-*¿Cuales son los parámetros de ST_DWithin?
+* ¿Cuales son los parámetros de ST_DWithin?
 
 http://postgis.net/stuff/postgis-2.3.pdf
 
@@ -140,3 +140,42 @@ For Geometries: The distance is specified in units defined by the spatial refere
 make sense, the source geometries must both be of the same coordinate projection, having the same SRID.
 For geography units are in meters and measurement is defaulted to use_spheroid=true, for faster check, use_spheroid=false to
 measure along sphere.
+
+2016-12-18
+==========
+
+* Viaje padre y viaje hijo:
+
+Para que sea más fácil la comprensión, se define viaje padre, al viaje que tiene que realizar el usuario en su propio auto.
+Y se define viaje hijo, a los viajes que realizan los usuarios que no van en su propio auto.
+
+* Asignación de asientos:
+
+En primera instancia, se modela la asignación directa de asientos. En segunda instancia, debería tomarse en cuenta que la solicitud de pasar a buscar tendría que ser aceptada por la persona que maneja.
+
+Para asignar un asiento, se valida que el viaje padre tenga asientos disponibles, se decrementa la cantidad de asientos disponibles y se realiza la asignación del asiento, relacionando el viaje padre con el viaje hijo, en la tabla.
+
+
+```js
+TravelAdministrationSystem.prototype.asignSeatWith = function(parentTravelId, childTravelId, callback) {
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		console.log(parentTravel.dataValues);
+		if (parentTravel.seats > 0) {
+			parentTravel.decrement('seats');
+			SeatAsignation.create({
+				parentTravel: parentTravelId,
+				childTravel: childTravelId
+			}).then(function(asignationCreated) {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
+	});
+};
+```
+Se consultó el manual de Sequelize:
+* ¿Cómo encontrar un elemento por id?
+sequelize/docs/docs/models-usage.md
+* ¿Cómo decrementar un determinado valor de una instancia?
+sequelize/docs/docs/instances.md#7

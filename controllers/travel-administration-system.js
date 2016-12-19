@@ -66,11 +66,19 @@ TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback
 };
 
 TravelAdministrationSystem.prototype.asignSeatWith = function(parentTravelId, childTravelId, callback) {
-	SeatAsignation.create({
-		parentTravel: parentTravelId,
-		childTravel: childTravelId
-	}).then(function(asignationCreated) {
-		callback();
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		console.log(parentTravel.dataValues);
+		if (parentTravel.seats > 0) {
+			parentTravel.decrement('seats');
+			SeatAsignation.create({
+				parentTravel: parentTravelId,
+				childTravel: childTravelId
+			}).then(function(asignationCreated) {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
 	});
 };
 

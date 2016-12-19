@@ -69,11 +69,18 @@ function TravelRouter(sequelize) {
 
 
   router.route('/suits').post(isAuthenticated, function(req, res) {
-    travelAdministrationSystem.asignSeatWith(req, function() {
-      res.json({
-        status: "Reserved",
-        receibed: 'Ok'
-      })
+    travelAdministrationSystem.asignSeatWith(req.body.parentTravel, req.body.childTravel, function(isAsigned) {
+      if (isAsigned) {
+        res.json({
+          asigned: isAsigned,
+          error: ''
+        });
+      } else {
+        res.json({
+          asigned: isAsigned,
+          error: 'No quedan más asientos disponibles.'
+        });
+      }
     });
   });
 
