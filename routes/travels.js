@@ -84,6 +84,12 @@ function TravelRouter(sequelize) {
     });
   });
 
+  router.route('/suits/find').post(isAuthenticated, function(req, res) {
+    travelAdministrationSystem.seatsForParentTravel(req.body.parentTravel, function(seats) {
+      res.json(seats);
+    });
+  });
+
   return router;
 }
 module.exports = TravelRouter;

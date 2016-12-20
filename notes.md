@@ -179,3 +179,9 @@ Se consultó el manual de Sequelize:
 sequelize/docs/docs/models-usage.md
 * ¿Cómo decrementar un determinado valor de una instancia?
 sequelize/docs/docs/instances.md#7
+
+
+2016-12-18
+==========
+
+* Al usuario que maneja le gustaría saber a quienes va a llevar y por donde los tiene que pasar a buscar.
