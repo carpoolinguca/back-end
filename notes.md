@@ -185,3 +185,12 @@ sequelize/docs/docs/instances.md#7
 ==========
 
 * Al usuario que maneja le gustaría saber a quienes va a llevar y por donde los tiene que pasar a buscar.
+
+```js
+TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
+	var queryString = 'select t.id, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.arrival_date_time from "user" as u inner join travel as t on (u.id = t."userId") where t.id in (select "childTravel" from seat_asignation where "parentTravel" = ' + parentTravelId + ');';
+	Sequelize.query(queryString).then(function(results) {
+		callback(results[0]);
+	});
+};
+```

@@ -82,13 +82,9 @@ TravelAdministrationSystem.prototype.asignSeatWith = function(parentTravelId, ch
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	SeatAsignation.findAll({
-		where: {
-			parentTravel: parentTravelId
-		}
-	}).then(function(seatsAsignations) {
-		console.log(seatsAsignations);
-		callback(seatsAsignations);
+	var queryString = 'select t.id, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.arrival_date_time from "user" as u inner join travel as t on (u.id = t."userId") where t.id in (select "childTravel" from seat_asignation where "parentTravel" = ' + parentTravelId + ');';
+	Sequelize.query(queryString).then(function(results) {
+		callback(results[0]);
 	});
 };
 
