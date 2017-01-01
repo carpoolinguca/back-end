@@ -194,3 +194,59 @@ TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTrave
 	});
 };
 ```
+
+2016-12-28
+==========
+
+* Caso de uso: Reportar a un usuario.
+Un usuario solo puede reportar a otro usuario sólo si viajaron juntos.
+Se podría agregar el concepto de agenda de usuario, en donde se podrían encontrar a todos los usuarios con los que viajó ese usuario.
+
+Ejemplo de JSON enviado en el request:
+{
+	reportedUser : 105,
+	fromUser : 104,
+	why : "Durante el viaje me faltó el respeto."
+}
+
+A definir: que se hace luego de que un usuario es reportado? 
+Es necesario tomar medidas, en casos de gravedad.
+
+* Caso de uso: Asignar puntaje al usuario por el viaje realizado, esto es tanto para el pasajero como para el conductor.
+
+2016-12-30
+==========
+
+* Creación de un sistema de administración de usuarios.
+El usuario comienza con cero estrellas de reputación, la reputación del usuario se irá actualizando a medida que vaya realizando viajes.
+
+* Creación de un sistema de reviews 
+
+Toda la lógica de que calcula la reputación del usuario estará contenida en el sistema de cálculo de reputación.
+Hay que tener en cuenta la puntuación como conductor y la puntuación como acompañante.
+Un usuario puede tener una muy buena puntuación como acompañante, pero una muy mala como conductor, por eso, es que es necesario calcular dos reputaciones, una como conductor y una como acompañante.
+
+El review podría o no estar ligada a un viaje específico. Por simplicidad vamos a tenerla de forma independiente al viaje.
+
+Desde el punto de vista de la implementación el sistema de reputación administrará las siguientes tablas:
+
+reputation
+----------
+id 					SEQUENTIAL INTEGER KEY
+user_id 			INTEGER FOREIGN KEY
+driving_points 		FLOAT
+passenger_points	FLOAT
+
+reviews
+-------
+id 				SECUENTIAL INTEGER KEY
+is_driver		CHAR
+driver_id		INTEGER
+points 			INTEGER
+passenger_id	INTEGER
+review 			STRING
+detail_review	STRING
+
+
+
+
