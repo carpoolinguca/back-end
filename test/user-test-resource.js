@@ -36,7 +36,7 @@ UserTestResource.prototype.registerUsers = function(callback) {
 UserTestResource.prototype.destroy = function(callback) {
 	userAdministrationSystem.destroy(users[0], function() {
         userAdministrationSystem.destroy(users[1], function() {
-          done();
+          callback();
         });
       });
 };

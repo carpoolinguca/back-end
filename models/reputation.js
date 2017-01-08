@@ -5,7 +5,7 @@ module.exports = function(sequelize) {
 
 	var User = require('./user')(sequelize);
 
-	var Reputation = sequelize.define('user', {
+	var Reputation = sequelize.define('reputation', {
 		userId: {
 			type: Sequelize.INTEGER,
 			references: {

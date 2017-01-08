@@ -9,7 +9,7 @@ var UserTestResource = require('./user-test-resource');
 var userTestResource = new UserTestResource(userAdministrationSystem);
 var students = [];
 
-describe('Managing a travel', function() {
+describe('Managing a user', function() {
   before(function(done) {
     sequelize.sync();
     userTestResource.registerUsers(function(users) {
@@ -32,11 +32,11 @@ describe('Managing a travel', function() {
 
   });
 
-    after(function(done) {
-      userTestResource.destroy(function() {
-          done();
-        });
+  after(function(done) {
+    userTestResource.destroy(function() {
+      done();
     });
+  });
 
 
 });

@@ -41,8 +41,9 @@ UserAdministrationSystem.prototype.destroy = function(callback) {
 */
 
 UserAdministrationSystem.prototype.destroy = function(user, callback) {
-	reputationSystem.destroyReputationFor(user, function(){
+	reputationSystem.destroyReputationFor(user, function() {
 		user.destroy();
+		callback();
 	});
 };
 
