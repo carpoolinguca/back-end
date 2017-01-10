@@ -36,5 +36,4 @@ describe('Managing a user', function() {
     });
   });
 
-
 });
