@@ -19,7 +19,6 @@ describe('Managing a user', function() {
   describe('#findAll()', function() {
 
     it('should find without error', function(done) {
-      console.log(students[0]);
       userAdministrationSystem.userIdentifiedBy(
         students[0].id,
         function(readUser) {

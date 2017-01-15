@@ -247,6 +247,34 @@ passenger_id	INTEGER
 review 			STRING
 detail_review	STRING
 
+complaints
+----------
+user_from	INTEGER
+user_to		INTEGER
+reason 		STRING
+
+
+2017-01-15
+==========
+En stackoverflow.com
+Call one prototype method inside another in javascript:
+```js
+Ob.prototype.add = function(){
+	this.inc();
+}
+
+Ob.prototype.inc = function(){
+	console.log('Inc called');
+}
+```
+
+
+stackoverflow.com/questions/9263694/this-function-is-not-a-function-but-function-exists
+
+La solución es:
+var self = this;
+y usar self en vez de this.
+
 
 
 
