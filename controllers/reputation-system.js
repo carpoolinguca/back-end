@@ -53,6 +53,16 @@ ReputationSystem.prototype.reputationIdentifiedBy = function(identification, cal
 	});
 };
 
+ReputationSystem.prototype.reputationForUserById = function(userId, callback) {
+	Reputation.findOne({
+		where: {
+			userId: userId
+		}
+	}).then(function(readedReputation) {
+		callback(readedReputation);
+	});
+};
+
 ReputationSystem.prototype.destroy = function(callback) {
 	Reputation.destroy({
 		truncate: true

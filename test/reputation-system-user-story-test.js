@@ -54,6 +54,16 @@ describe('Managing a user', function() {
         });
     });
 
+    it('Jacinta initial driving reputation is 0, and passenger reputation is 0', function(done) {
+      reputationSystem.reputationForUserById(students[1].id, 
+        function(reputation) {
+          console.log(reputation);
+          assert.equal(reputation.userId, students[1].id);
+          assert.equal(reputation.drivingPoints, 0);
+          assert.equal(reputation.passengerPoints, 0);
+          done();
+        });
+    });
   });
 
   after(function(done) {
