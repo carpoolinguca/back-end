@@ -25,6 +25,22 @@ ReputationSystem.prototype.registerComplaint = function(complaint, callback) {
 	});
 };
 
+ReputationSystem.prototype.complaints = function(callback) {
+	Complaint.findAll().then(function(foundComplaints) {
+		callback(foundComplaints);
+	});
+};
+
+ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
+	Complaint.findAll({
+		where: {
+			userTo: userId
+		}
+	}).then(function(foundComplaints) {
+		callback(foundComplaints);
+	});
+};
+
 ReputationSystem.prototype.reputationsFilteredBy = function(parameters, callback) {
 	Reputation.findAll(parameters).then(function(Reputations) {
 		callback(Reputations);

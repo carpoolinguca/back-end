@@ -7,6 +7,7 @@ var sequelize = require('./sequelizeConfigured');
 var routes = require('./routes/index');
 var users = require('./routes/users')(sequelize);
 var travels = require('./routes/travels')(sequelize);
+var complaints = require('./routes/complaints')(sequelize);
 
 var app = express();
 
@@ -23,6 +24,7 @@ sequelize.sync();
 app.use('/', routes);
 app.use('/users', users);
 app.use('/travels',travels);
+app.use('/complaints',complaints);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

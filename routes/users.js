@@ -2,9 +2,9 @@ function UserRouter(sequelize) {
     var express = require('express');
     var router = express.Router();
     var userSystem = require('../models/user')(sequelize);
-    var TokenCreator = require('../controllers/token-creator.js');
-    var tokenCreator = new TokenCreator();
-
+    //var userSystem = new UserSystem();
+    var AuthorizationSystem = require('../controllers/authorization-system.js');
+    var authorizationSystem = new AuthorizationSystem(sequelize);
 
     router.route('/').get(function(req, res) {
         userSystem.findAll().then(function(users) {
@@ -34,7 +34,7 @@ function UserRouter(sequelize) {
             }
 
             if (req.body.password == user.password) {
-                var token = tokenCreator.create(user);
+                var token = authorizationSystem.createTokenFor(user);
                 res.send({
                     token: token,
                     user: user
