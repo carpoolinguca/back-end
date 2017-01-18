@@ -1,10 +1,12 @@
 var Sequelize;
 var Reputation;
 var Complaint;
+var Review;
 
 function ReputationSystem(sequelize) {
 	Reputation = require('../models/reputation')(sequelize);
 	Complaint = require('../models/complaint')(sequelize);
+	Review = require('../models/review')(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -63,6 +65,24 @@ ReputationSystem.prototype.reputationForUserById = function(userId, callback) {
 	});
 };
 
+ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, callback) {
+	Review.create({
+		isDriver: true,
+		driverId: driverReview.driverId,
+		points: driverReview.points,
+		passengerId: driverReview.passengerId,
+		reviewTitle: driverReview.reviewTitle,
+		detailReview: driverReview.detailReview
+	}).then(function(reviewCreated) {
+		callback(reviewCreated);
+	});
+	this.refreshReputationForDriver(driverReview.driverId);
+};
+
+ReputationSystem.prototype.refreshReputationForDriver = function(driverId) {
+
+};
+
 ReputationSystem.prototype.destroy = function(callback) {
 	Reputation.destroy({
 		truncate: true
@@ -85,7 +105,25 @@ ReputationSystem.prototype.destroyReputationFor = function(user, next) {
 ReputationSystem.prototype.destroyAllComplaintsFor = function(user, callback) {
 	Complaint.destroy({
 		where: {
-			userTo: user.id
+			$or: [{
+				userTo: user.id
+			}, {
+				userFrom: user.id
+			}]
+		}
+	}).then(function(numberOfDeleted) {
+		callback();
+	});
+};
+
+ReputationSystem.prototype.destroyAllReviewsFor = function(user, callback) {
+	Review.destroy({
+		where: {
+			$or: [{
+				driverId: user.id
+			}, {
+				passengerId: user.id
+			}]
 		}
 	}).then(function(numberOfDeleted) {
 		callback();
@@ -96,8 +134,10 @@ ReputationSystem.prototype.destroyAllOpinionsFor = function(user, callback) {
 	var self = this;
 	self.destroyReputationFor(user, function() {
 		self.destroyAllComplaintsFor(user, function() {
-			callback();
-		})
+			self.destroyAllReviewsFor(user, function() {
+				callback();
+			});
+		});
 	});
 };
 

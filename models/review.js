@@ -1,16 +1,3 @@
-/*
-reviews
--------
-id 				SECUENTIAL INTEGER KEY
-is_driver		CHAR
-driver_id		INTEGER
-points 			INTEGER
-passenger_id	INTEGER
-review 			STRING
-detail_review	STRING
-
-*/
-
 var Sequelize = require('sequelize');
 
 module.exports = function(sequelize) {
@@ -21,22 +8,13 @@ module.exports = function(sequelize) {
 	var Review = sequelize.define('review', {
 		isDriver: {
 			type: Sequelize.BOOLEAN,
-			references: {
-				field: 'is_driver'
-			}
-		}
-		driverId: {
-			type: Sequelize.INTEGER,
-			references: {
-				model: User,
-				field: 'driver_id'
-			}
+			field: 'is_driver'
 		},
 		driverId: {
 			type: Sequelize.INTEGER,
+			field: 'driver_id',
 			references: {
-				model: User,
-				field: 'driver_id'
+				model: User
 			}
 		},
 		points: {
@@ -45,14 +23,14 @@ module.exports = function(sequelize) {
 		},
 		passengerId: {
 			type: Sequelize.INTEGER,
+			field: 'passenger_id',
 			references: {
-				model: User,
-				field: 'driver_id'
+				model: User
 			}
 		},
-		review: {
-			type: Sequelize.INTEGER,
-			field: 'review'
+		reviewTitle: {
+			type: Sequelize.STRING,
+			field: 'review_title'
 		},
 		detailReview: {
 			type: Sequelize.STRING,

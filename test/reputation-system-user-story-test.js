@@ -6,7 +6,7 @@ var userAdministrationSystem = new UserAdministrationSystem(sequelize);
 var UserTestResource = require('./user-test-resource');
 var userTestResource = new UserTestResource(userAdministrationSystem);
 var ReputationSystem = require('../controllers/reputation-system');
-var reputationSystem = new ReputationSystem(sequelize)
+var reputationSystem = new ReputationSystem(sequelize);
 var students = [];
 
 describe('Managing a user', function() {
@@ -55,7 +55,7 @@ describe('Managing a user', function() {
     });
 
     it('Jacinta initial driving reputation is 0, and passenger reputation is 0', function(done) {
-      reputationSystem.reputationForUserById(students[1].id, 
+      reputationSystem.reputationForUserById(students[1].id,
         function(reputation) {
           console.log(reputation);
           assert.equal(reputation.userId, students[1].id);
@@ -64,6 +64,28 @@ describe('Managing a user', function() {
           done();
         });
     });
+
+    it('Juana register driver review about Jacinta', function(done) {
+      var driverReview = {
+        driverId: students[0].id,
+        points: 5,
+        passengerId: students[1].id,
+        reviewTitle: 'Estupenda conductora',
+        detailReview: 'Fue muy amable conmigo y llegó a la hora que habíamos acordado.'
+      };
+      reputationSystem.registerReviewAboutDriver(driverReview,
+        function(review) {
+          console.log(review);
+          assert.equal(review.driverId, driverReview.driverId);
+          assert.equal(review.points, driverReview.points);
+          assert.equal(review.passengerId, driverReview.passengerId);
+          assert.equal(review.reviewTitle, driverReview.reviewTitle);
+          assert.equal(review.detailReview, driverReview.detailReview);
+          assert.equal(review.isDriver, true);
+          done();
+        });
+    });
+
   });
 
   after(function(done) {
