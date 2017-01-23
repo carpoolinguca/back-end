@@ -86,6 +86,44 @@ describe('Managing a user', function() {
         });
     });
 
+    it('Juana register another driver review about Jacinta', function(done) {
+      var driverReview = {
+        driverId: students[0].id,
+        points: 3,
+        passengerId: students[1].id,
+        reviewTitle: 'Condujo alterada',
+        detailReview: 'Estuvo de mal humor y paso algunos semaforos en rojo. Pero llegué bien'
+      };
+      reputationSystem.registerReviewAboutDriver(driverReview, function(review) {
+        assert.equal(review.driverId, driverReview.driverId);
+        done();
+      });
+    });
+
+    it('Reputation for driver must be 4', function(done) {
+      reputationSystem.caculateReputationForDriver(students[0].id,
+        function(reputation) {
+          assert.equal(reputation, 4);
+          done();
+        });
+    });
+
+    it('Find all reviews', function(done) {
+      reputationSystem.reviews(
+        function(foundReviews) {
+          assert.equal(foundReviews[0].driverId, students[0].id);
+          done();
+        });
+    });
+
+    it('Find driver reviews for Jacinta', function(done) {
+      reputationSystem.driverReviewsByUserId(students[0].id,
+        function(foundReviews) {
+          assert.equal(foundReviews[0].driverId, students[0].id);
+          done();
+        });
+    });
+
   });
 
   after(function(done) {

@@ -65,7 +65,24 @@ ReputationSystem.prototype.reputationForUserById = function(userId, callback) {
 	});
 };
 
+ReputationSystem.prototype.reviews = function(callback) {
+	Review.findAll().then(function(foundReviews) {
+		callback(foundReviews);
+	});
+};
+
+ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
+	Review.findAll({
+		where: {
+			driverId: userId
+		}
+	}).then(function(foundComplaints) {
+		callback(foundComplaints);
+	});
+};
+
 ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, callback) {
+	var self = this;
 	Review.create({
 		isDriver: true,
 		driverId: driverReview.driverId,
@@ -74,13 +91,46 @@ ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, ca
 		reviewTitle: driverReview.reviewTitle,
 		detailReview: driverReview.detailReview
 	}).then(function(reviewCreated) {
-		callback(reviewCreated);
+		self.refreshReputationForDriver(driverReview.driverId, function() {
+			callback(reviewCreated);
+		});
 	});
-	this.refreshReputationForDriver(driverReview.driverId);
+
 };
 
-ReputationSystem.prototype.refreshReputationForDriver = function(driverId) {
+ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
+	this.caculateReputationForDriver(driverId, function(reputationPoints) {
+		Reputation.findOne({
+			where: {
+				userId: driverId
+			}
+		}).then(function(reputation) {
+			/*
+			reputation.update({
+				drivingPoints: reputationPoints
+			}).then(function() {});
+			*/
+		});
+		callback();
+	});
+};
 
+ReputationSystem.prototype.caculateReputationForDriver = function(driverId, callback) {
+	//Hacer promedio de todas las reputaciones. 
+	//suma de reputacion / count de reputaciones
+	Review.sum('points', {
+		where: {
+			driverId: driverId
+		}
+	}).then(function(sum) {
+		Review.count({
+			where: {
+				driverId: driverId
+			}
+		}).then(function(count) {
+			callback(sum / count);
+		});
+	})
 };
 
 ReputationSystem.prototype.destroy = function(callback) {
