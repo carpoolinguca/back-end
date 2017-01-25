@@ -101,9 +101,9 @@ describe('Managing a user', function() {
     });
 
     it('Reputation for driver must be 4', function(done) {
-      reputationSystem.caculateReputationForDriver(students[0].id,
+      reputationSystem.reputationForUserById(students[0].id,
         function(reputation) {
-          assert.equal(reputation, 4);
+          assert.equal(reputation.drivingPoints, 4);
           done();
         });
     });

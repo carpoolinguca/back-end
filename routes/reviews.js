@@ -14,15 +14,15 @@ function ReviewRouter(sequelize) {
     });
   });
 
-  router.route('/find/for/driver').post(authorizationSystem.isAuthenticated, function(req, res) {
-    reputationSystem.driverReviewsByUserId(req.body.userId, function(reviews) {
-      res.json(reviews);
-    });
-  });
-
   router.route('/for/driver').post(authorizationSystem.isAuthenticated, function(req, res) {
     reputationSystem.registerReviewAboutDriver(req.body, function(review) {
       res.json(review);
+    });
+  });
+
+  router.route('/for/driver/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+    reputationSystem.driverReviewsByUserId(req.body.userId, function(reviews) {
+      res.json(reviews);
     });
   });
 

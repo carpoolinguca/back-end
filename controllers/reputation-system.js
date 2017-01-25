@@ -99,34 +99,39 @@ ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, ca
 };
 
 ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
-	this.caculateReputationForDriver(driverId, function(reputationPoints) {
-		Reputation.findOne({
-			where: {
-				userId: driverId
-			}
-		}).then(function(reputation) {
-			/*
-			reputation.update({
+	self = this;
+	self.caculateReputationForDriver(driverId, function(reputationPoints) {
+		self.reputationForUserById(driverId, function(foundReputation) {
+			foundReputation.update({
 				drivingPoints: reputationPoints
-			}).then(function() {});
-			*/
+			}).then(function() {
+				callback();
+			});
 		});
-		callback();
+
 	});
 };
 
 ReputationSystem.prototype.caculateReputationForDriver = function(driverId, callback) {
+	this.caculateReputationWhere({
+		driverId: driverId
+	}, callback);
+};
+
+ReputationSystem.prototype.caculateReputationForPassenger = function(passengerId, callback) {
+	this.caculateReputationWhere({
+		passengerId: passengerId
+	}, callback);
+};
+
+ReputationSystem.prototype.caculateReputationWhere = function(whereCondition, callback) {
 	//Hacer promedio de todas las reputaciones. 
 	//suma de reputacion / count de reputaciones
 	Review.sum('points', {
-		where: {
-			driverId: driverId
-		}
+		where: whereCondition
 	}).then(function(sum) {
 		Review.count({
-			where: {
-				driverId: driverId
-			}
+			where: whereCondition
 		}).then(function(count) {
 			callback(sum / count);
 		});
