@@ -57,7 +57,6 @@ describe('Managing a user', function() {
     it('Jacinta initial driving reputation is 0, and passenger reputation is 0', function(done) {
       reputationSystem.reputationForUserById(students[1].id,
         function(reputation) {
-          console.log(reputation);
           assert.equal(reputation.userId, students[1].id);
           assert.equal(reputation.drivingPoints, 0);
           assert.equal(reputation.passengerPoints, 0);
@@ -75,7 +74,6 @@ describe('Managing a user', function() {
       };
       reputationSystem.registerReviewAboutDriver(driverReview,
         function(review) {
-          console.log(review);
           assert.equal(review.driverId, driverReview.driverId);
           assert.equal(review.points, driverReview.points);
           assert.equal(review.passengerId, driverReview.passengerId);
@@ -120,6 +118,34 @@ describe('Managing a user', function() {
       reputationSystem.driverReviewsByUserId(students[0].id,
         function(foundReviews) {
           assert.equal(foundReviews[0].driverId, students[0].id);
+          done();
+        });
+    });
+
+    it('Jacinta register passenger review about Juana', function(done) {
+      var passengerReview = {
+        driverId: students[0].id,
+        points: 5,
+        passengerId: students[1].id,
+        reviewTitle: 'Muy buena acompañante',
+        detailReview: 'Muy crack, muy buena onda.'
+      };
+      reputationSystem.registerReviewAboutPassenger(passengerReview,
+        function(review) {
+          assert.equal(review.driverId, passengerReview.driverId);
+          assert.equal(review.points, passengerReview.points);
+          assert.equal(review.passengerId, passengerReview.passengerId);
+          assert.equal(review.reviewTitle, passengerReview.reviewTitle);
+          assert.equal(review.detailReview, passengerReview.detailReview);
+          assert.equal(review.isDriver, false);
+          done();
+        });
+    });
+
+    it('Find passenger reviews for Juana', function(done) {
+      reputationSystem.passengerReviewsByUserId(students[1].id,
+        function(foundReviews) {
+          assert.equal(foundReviews[0].passengerId, students[1].id);
           done();
         });
     });

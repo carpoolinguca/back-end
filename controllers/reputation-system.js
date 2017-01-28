@@ -74,7 +74,23 @@ ReputationSystem.prototype.reviews = function(callback) {
 ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
 	Review.findAll({
 		where: {
-			driverId: userId
+			isDriver: true,
+			$and: {
+				driverId: userId
+			}
+		}
+	}).then(function(foundComplaints) {
+		callback(foundComplaints);
+	});
+};
+
+ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback) {
+	Review.findAll({
+		where: {
+			isDriver: false,
+			$and: {
+				passengerId: userId
+			}
 		}
 	}).then(function(foundComplaints) {
 		callback(foundComplaints);
@@ -98,12 +114,42 @@ ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, ca
 
 };
 
+ReputationSystem.prototype.registerReviewAboutPassenger = function(passengerReview, callback) {
+	var self = this;
+	Review.create({
+		isDriver: false,
+		driverId: passengerReview.driverId,
+		points: passengerReview.points,
+		passengerId: passengerReview.passengerId,
+		reviewTitle: passengerReview.reviewTitle,
+		detailReview: passengerReview.detailReview
+	}).then(function(reviewCreated) {
+		self.refreshReputationForPassenger(passengerReview.passengerId, function() {
+			callback(reviewCreated);
+		});
+	});
+
+};
 ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
 	self = this;
 	self.caculateReputationForDriver(driverId, function(reputationPoints) {
 		self.reputationForUserById(driverId, function(foundReputation) {
 			foundReputation.update({
 				drivingPoints: reputationPoints
+			}).then(function() {
+				callback();
+			});
+		});
+
+	});
+};
+
+ReputationSystem.prototype.refreshReputationForPassenger = function(passengerId, callback) {
+	self = this;
+	self.caculateReputationForPassenger(passengerId, function(reputationPoints) {
+		self.reputationForUserById(passengerId, function(foundReputation) {
+			foundReputation.update({
+				passengerPoints: reputationPoints
 			}).then(function() {
 				callback();
 			});

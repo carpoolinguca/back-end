@@ -26,6 +26,18 @@ function ReviewRouter(sequelize) {
     });
   });
 
+  router.route('/for/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
+    reputationSystem.registerReviewAboutPassenger(req.body, function(review) {
+      res.json(review);
+    });
+  });
+
+  router.route('/for/passenger/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+    reputationSystem.passengerReviewsByUserId(req.body.userId, function(reviews) {
+      res.json(reviews);
+    });
+  });
+
   return router;
 }
 module.exports = ReviewRouter;
