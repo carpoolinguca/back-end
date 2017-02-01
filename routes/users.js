@@ -1,17 +1,18 @@
 function UserRouter(sequelize) {
     var express = require('express');
     var router = express.Router();
-    var userSystem = require('../models/user')(sequelize);
-    //var userSystem = new UserSystem();
+
+    var UserSystem = require('../controllers/user-administration-system');
+    var userSystem = new UserSystem(sequelize);
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
 
     router.route('/').get(function(req, res) {
-        userSystem.findAll().then(function(users) {
+        userSystem.usersFilteredBy({}, function(users) {
             res.json(users);
         });
     }).post(function(req, res) {
-        userSystem.create(req.body).then(function(user) {
+        userSystem.register(req.body, function(user) {
             res.json({
                 user: user,
                 receibed: 'Ok'
@@ -20,11 +21,11 @@ function UserRouter(sequelize) {
     });
 
     router.route('/login').post(function(req, res) {
-        userSystem.findOne({
+        userSystem.oneUserFilteredBy({
             where: {
                 email: req.body.email
             }
-        }).then(function(user) {
+        }, function(user) {
             if (!user) {
                 return res.status(401).send({
                     message: {

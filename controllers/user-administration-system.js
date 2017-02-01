@@ -18,9 +18,15 @@ UserAdministrationSystem.prototype.register = function(user, callback) {
 	});
 };
 
-UserAdministrationSystem.prototype.UsersFilteredBy = function(parameters, callback) {
-	User.findAll(parameters).then(function(Users) {
-		callback(Users);
+UserAdministrationSystem.prototype.usersFilteredBy = function(parameters, callback) {
+	User.findAll(parameters).then(function(users) {
+		callback(users);
+	});
+};
+
+UserAdministrationSystem.prototype.oneUserFilteredBy = function(parameters, callback) {
+	User.findOne(parameters).then(function(user) {
+		callback(user);
 	});
 };
 
