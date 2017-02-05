@@ -29,8 +29,12 @@ describe('Managing a user', function() {
   describe('#findAll()', function() {
 
     it('should find without error', function(done) {
-      User.findAll().then(function(readUsers) {
-        assert.equal(readUsers[0].email, 'juana@gmail.com');
+      User.findOne({
+        where: {
+          email: userUpdate.email
+        }
+      }).then(function(readUser) {
+        assert.equal(readUser.email, 'juana@gmail.com');
         done();
       });
     });

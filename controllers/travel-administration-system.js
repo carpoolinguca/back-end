@@ -18,12 +18,29 @@ TravelAdministrationSystem.prototype.travelsFilteredBy = function(parameters, ca
 	});
 };
 
+
 TravelAdministrationSystem.prototype.destroy = function(callback) {
 	Travel.destroy({
 		truncate: true
 	}).then(function() {
 		routeCalculatorSystem.destroy(callback());
 	});
+};
+
+
+TravelAdministrationSystem.prototype.destroyWithoutRoutes = function(travel, callback) {
+	SeatAsignation.destroy({
+		where: {
+			$or: [{
+				childTravel: travel.id
+			}, {
+				parentTravel: travel.id
+			}]
+		}
+	}).then(function() {
+		travel.destroy().then(callback);
+	});
+
 };
 
 TravelAdministrationSystem.prototype.startManaging = function(travel, callback) {
