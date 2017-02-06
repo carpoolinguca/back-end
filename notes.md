@@ -276,5 +276,29 @@ var self = this;
 y usar self en vez de this.
 
 
+2017-02-05
+==========
 
+* Asignación de asientos
 
+Cuando el conductor crea el viaje padre, define cuantos asientos disponibles tiene.
+Es decir el número máximo de pasajeros que puede transportar. (maximumSeats > 0)
+Por defecto tiene que ser un número mayor a cero.
+El pasajero en la busqueda de quién lo puede llevar, obtiene todos los viajes padres
+que aún tienen asientos disponibles. (availableSeats > 0).
+El pasajero solicita al conductor que eligió según el viaje padre, que lo lleve.
+(asignationStatus = pending)
+El conductor recibe la solicitud del pasajero y decide aceptar o rechazar pasarlo a
+buscar. (asignationStatus = acepted) or (asignationStatus = rejected).
+El pasajero puede cancelar la solicitud, cuando esta en estado pendiente o aceptada.
+(asignationStatus = canceled).
+Una vez que el conductor comienza el viaje, la solicitud no puede cambiar de estado.
+
+* Agregar estado de viaje.
+
+Una vez que el conductor crea el viaje, este comienza en estado planeado. 
+(travelStatus = planed)
+Cuando el conductor comienza el viaje, pasa a en proceso.
+(travelStatus = inProgress)
+Cuando el conductor indica que el viaje terminó, pasa a estado finalizado.
+(travelStatus = ended)
