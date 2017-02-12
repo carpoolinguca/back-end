@@ -20,7 +20,10 @@ module.exports = function(sequelize) {
 		userIsDriver: {
 			type: Sequelize.BOOLEAN
 		},
-		seats: {
+		maximumSeats: {
+			type: Sequelize.INTEGER
+		},
+		availableSeats: {
 			type: Sequelize.INTEGER
 		},
 		arrivalDateTime: {
