@@ -23,21 +23,31 @@ describe('Seat asignation', function() {
 
   describe('Asignations', function() {
 
-    it('should fail to asign child travel to parent travel', function(done) {
-      travelAdministrationSystem.asignSeatWith(studyTravels[0].id, studyTravels[1].id,
-        function(seatAsignationSuccessful) {
-          assert.equal(false, seatAsignationSuccessful);
+    it('should fail child travel book seat in parent travel', function(done) {
+      travelAdministrationSystem.bookSeatWith(studyTravels[0].id, studyTravels[1].id,
+        function(seatBookingSuccessful) {
+          assert.equal(false, seatBookingSuccessful);
           done();
         });
     });
 
-    it('should successful to asign child travel to parent travel', function(done) {
-      travelAdministrationSystem.asignSeatWith(studyTravels[1].id, studyTravels[0].id,
-        function(seatAsignationSuccessful) {
-          assert.equal(true, seatAsignationSuccessful);
+    it('should successful child travel book seat in parent travel', function(done) {
+      travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
+        function(seatBookingSuccessful) {
+          assert.equal(true, seatBookingSuccessful);
           done();
         });
     });
+
+    /*
+    it('should successful booking confirmation', function(done) {
+      travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
+        function(seatBookingSuccessful) {
+          assert.equal(true, seatBookingSuccessful);
+          done();
+        });
+    });
+  */
 
   });
 

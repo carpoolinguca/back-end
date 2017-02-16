@@ -92,13 +92,48 @@ TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback
 	});
 };
 
-TravelAdministrationSystem.prototype.asignSeatWith = function(parentTravelId, childTravelId, callback) {
+TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(parentTravelId, childTravelId, callback) {
 	Travel.findById(parentTravelId).then(function(parentTravel) {
 		if (parentTravel.availableSeats > 0) {
 			parentTravel.decrement('availableSeats');
 			SeatAsignation.create({
 				parentTravel: parentTravelId,
-				childTravel: childTravelId
+				childTravel: childTravelId,
+				status: 'booked'
+			}).then(function(asignationCreated) {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
+	});
+};
+
+TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(parentTravelId, childTravelId, callback) {
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		if (parentTravel.availableSeats > 0) {
+			parentTravel.decrement('availableSeats');
+			SeatAsignation.create({
+				parentTravel: parentTravelId,
+				childTravel: childTravelId,
+				status: 'booked'
+			}).then(function(asignationCreated) {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
+	});
+};
+
+TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		if (parentTravel.availableSeats > 0) {
+			parentTravel.decrement('availableSeats');
+			SeatAsignation.create({
+				parentTravel: parentTravelId,
+				childTravel: childTravelId,
+				status: 'pending'
 			}).then(function(asignationCreated) {
 				callback(true);
 			});

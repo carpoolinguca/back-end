@@ -16,6 +16,9 @@ module.exports = function(sequelize) {
 			references: {
 				model: Travel
 			}
+		},
+		status: {
+			type: Sequelize.STRING
 		}
 	}, {
 		freezeTableName: true

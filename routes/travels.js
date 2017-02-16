@@ -31,7 +31,7 @@ function TravelRouter(sequelize) {
 
 
   router.route('/suits').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.asignSeatWith(req.body.parentTravel, req.body.childTravel, function(isAsigned) {
+    travelAdministrationSystem.bookSeatWith(req.body.parentTravel, req.body.childTravel, function(isAsigned) {
       if (isAsigned) {
         res.json({
           asigned: isAsigned,
