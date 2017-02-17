@@ -10,6 +10,7 @@ var TravelTestResource = require('./travel-test-resource');
 var travelTestResource = new TravelTestResource(userAdministrationSystem, travelAdministrationSystem);
 var students = [];
 var studyTravels = [];
+var seatAssignation;
 
 describe('Seat asignation', function() {
   before(function(done) {
@@ -39,15 +40,46 @@ describe('Seat asignation', function() {
         });
     });
 
-    /*
-    it('should successful booking confirmation', function(done) {
-      travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
+    it('parent travel should has one seats booked with pending confirmation', function(done) {
+      travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+        function(bookedSeats) {
+          console.log(bookedSeats);
+          seatAssignation = bookedSeats[0];
+          assert.equal(1, bookedSeats.length);
+          assert.equal(studyTravels[1].id, seatAssignation.parentTravel);
+          assert.equal('pending', seatAssignation.status);
+          done();
+        });
+    });
+
+    it('should successful confirm seat booking', function(done) {
+      console.log(seatAssignation);
+      travelAdministrationSystem.confirmSeatBookingWith(seatAssignation.id,
         function(seatBookingSuccessful) {
           assert.equal(true, seatBookingSuccessful);
           done();
         });
     });
-  */
+
+    it('parent travel should has one seats booked confirmed', function(done) {
+      travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+        function(bookedSeats) {
+          console.log(bookedSeats);
+          assert.equal(1, bookedSeats.length);
+          assert.equal(studyTravels[1].id, bookedSeats[0].parentTravel);
+          assert.equal('booked', bookedSeats[0].status);
+          done();
+        });
+    });
+
+    it('should successful reject seat booking', function(done) {
+      console.log(seatAssignation);
+      travelAdministrationSystem.rejectSeatBookingWith(seatAssignation.id,
+        function(rejectSuccessful) {
+          assert.equal(true, rejectSuccessful);
+          done();
+        });
+    });
 
   });
 

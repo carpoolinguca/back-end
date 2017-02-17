@@ -77,7 +77,7 @@ TravelAdministrationSystem.prototype.findAll = function(endFunction) {
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
 	this.startManaging(travel, function(travelCreated) {
 		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
-			var queryString = 'select * from travel where id in (select ro.travel_id from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro.travel_id IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
+			var queryString = 'select * from travel where id in (select ro.travel_id from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro.travel_id IN (select id from travel where "userIsDriver"=\'t\' and user_id != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
 			Sequelize.query(queryString).then(function(results) {
 				endFunction(results[0]);
 			});
@@ -92,38 +92,37 @@ TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback
 	});
 };
 
-TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(parentTravelId, childTravelId, callback) {
-	Travel.findById(parentTravelId).then(function(parentTravel) {
-		if (parentTravel.availableSeats > 0) {
-			parentTravel.decrement('availableSeats');
-			SeatAsignation.create({
-				parentTravel: parentTravelId,
-				childTravel: childTravelId,
-				status: 'booked'
-			}).then(function(asignationCreated) {
-				callback(true);
-			});
-		} else {
-			callback(false);
-		}
-	});
+TravelAdministrationSystem.prototype.rejectSeatBookingWith = function(assignationId, callback) {
+	SeatAsignation.findById(assignationId).then(
+		function(seatAssignation) {
+			if (seatAssignation.status == 'pending' || seatAssignation.status == 'booked') {
+				seatAssignation.status = 'rejected';
+				seatAssignation.save().then(function() {
+					Travel.findById(seatAssignation.parentTravel).then(function(parentTravel) {
+						parentTravel.decrement('availableSeats');
+					});
+					callback(true);
+				});
+			} else {
+				callback(false);
+			}
+
+		});
 };
 
-TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(parentTravelId, childTravelId, callback) {
-	Travel.findById(parentTravelId).then(function(parentTravel) {
-		if (parentTravel.availableSeats > 0) {
-			parentTravel.decrement('availableSeats');
-			SeatAsignation.create({
-				parentTravel: parentTravelId,
-				childTravel: childTravelId,
-				status: 'booked'
-			}).then(function(asignationCreated) {
-				callback(true);
-			});
-		} else {
-			callback(false);
-		}
-	});
+TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignationId, callback) {
+	SeatAsignation.findById(assignationId).then(
+		function(seatAssignation) {
+			if (seatAssignation.status == 'pending') {
+				seatAssignation.status = 'booked';
+				seatAssignation.save().then(function() {
+					callback(true);
+				});
+			} else {
+				callback(false);
+			}
+
+		});
 };
 
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
@@ -144,9 +143,11 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'select t.id, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.arrival_date_time from "user" as u inner join travel as t on (u.id = t."userId") where t.id in (select "childTravel" from seat_asignation where "parentTravel" = ' + parentTravelId + ');';
-	Sequelize.query(queryString).then(function(results) {
-		callback(results[0]);
+	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t.user_id, u.email, u.name, u.lastname, u.sex, t.origin, t."arrivalDateTime" from seat_asignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t.user_id = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results);
 	});
 };
 

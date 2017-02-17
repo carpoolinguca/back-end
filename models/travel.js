@@ -9,7 +9,8 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			references: {
 				model: User
-			}
+			},
+			field : 'user_id'
 		},
 		origin: {
 			type: Sequelize.STRING
@@ -18,17 +19,16 @@ module.exports = function(sequelize) {
 			type: Sequelize.STRING
 		},
 		userIsDriver: {
-			type: Sequelize.BOOLEAN
+			type: Sequelize.BOOLEAN,
 		},
 		maximumSeats: {
-			type: Sequelize.INTEGER
+			type: Sequelize.INTEGER,
 		},
 		availableSeats: {
-			type: Sequelize.INTEGER
+			type: Sequelize.INTEGER,
 		},
 		arrivalDateTime: {
-			type: Sequelize.DATE,
-			field: 'arrival_date_time'
+			type: Sequelize.DATE
 		},
 		observations: {
 			type: Sequelize.STRING

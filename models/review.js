@@ -7,8 +7,7 @@ module.exports = function(sequelize) {
 
 	var Review = sequelize.define('review', {
 		isDriver: {
-			type: Sequelize.BOOLEAN,
-			field: 'is_driver'
+			type: Sequelize.BOOLEAN
 		},
 		driverId: {
 			type: Sequelize.INTEGER,
@@ -18,8 +17,7 @@ module.exports = function(sequelize) {
 			}
 		},
 		points: {
-			type: Sequelize.INTEGER,
-			field: 'driving_points'
+			type: Sequelize.INTEGER
 		},
 		passengerId: {
 			type: Sequelize.INTEGER,
@@ -29,12 +27,10 @@ module.exports = function(sequelize) {
 			}
 		},
 		reviewTitle: {
-			type: Sequelize.STRING,
-			field: 'review_title'
+			type: Sequelize.STRING
 		},
 		detailReview: {
-			type: Sequelize.STRING,
-			field: 'detail_review'
+			type: Sequelize.STRING
 		}
 	}, {
 		freezeTableName: true
