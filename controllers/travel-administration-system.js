@@ -153,16 +153,44 @@ TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTrave
 };
 
 TravelAdministrationSystem.prototype.changeToInProgressTravel = function(parentTravelId, callback) {
-	Travel.findById(parentTravelId).then(function(parentTravel) {
-		if (parentTravel.status == 'planed' || parentTravel.status == 'inProgress') {
-			parentTravel.update({
-				status: 'inProgress'
+	var self = this;
+	var condition = function(parentTravel) {
+		return (parentTravel.status == 'planed' || parentTravel.status == 'inProgress');
+	}
+	this.changeToStatusSatisfayingCondition(parentTravelId, 'inProgress', condition, function() {
+		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'inProgress', condition, callback);
+	});
+};
+
+TravelAdministrationSystem.prototype.changeToStatusSatisfayingCondition = function(travelId, status, condition, callback) {
+	var self = this;
+	Travel.findById(travelId).then(function(travel) {
+		if (condition(travel)) {
+			travel.update({
+				status: status
 			}).then(function() {
-				callback(true);
+				callback(true)
 			});
 		} else {
 			callback(false);
 		}
+	});
+};
+
+TravelAdministrationSystem.prototype.changeStatusToChildTravelsRelatedTo = function(parentTravelId, status, condition, callback) {
+	var self = this;
+	SeatAsignation.findAll({
+		where: {
+			parentTravel: parentTravelId,
+			$and: {
+				status: 'booked'
+			}
+		}
+	}).then(function(assignations) {
+		assignations.forEach(function(currentValue, index, arr) {
+			self.changeToStatusSatisfayingCondition(currentValue.childTravel, status, condition, function() {});
+		});
+		callback(true);
 	});
 };
 
