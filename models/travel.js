@@ -32,6 +32,9 @@ module.exports = function(sequelize) {
 		},
 		observations: {
 			type: Sequelize.STRING
+		},
+		status: {
+			type: Sequelize.STRING
 		}
 	}, {
 		freezeTableName: true

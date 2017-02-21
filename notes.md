@@ -284,21 +284,65 @@ y usar self en vez de this.
 Cuando el conductor crea el viaje padre, define cuantos asientos disponibles tiene.
 Es decir el número máximo de pasajeros que puede transportar. (maximumSeats > 0)
 Por defecto tiene que ser un número mayor a cero.
-El pasajero en la busqueda de quién lo puede llevar, obtiene todos los viajes padres
+- El pasajero en la busqueda de quién lo puede llevar, obtiene todos los viajes padres
 que aún tienen asientos disponibles. (availableSeats > 0).
-El pasajero solicita al conductor que eligió según el viaje padre, que lo lleve.
+- El pasajero solicita al conductor que eligió según el viaje padre, que lo lleve.
 (asignationStatus = pending)
-El conductor recibe la solicitud del pasajero y decide aceptar o rechazar pasarlo a
+- El conductor recibe la solicitud del pasajero y decide aceptar o rechazar pasarlo a
 buscar. (asignationStatus = acepted) or (asignationStatus = rejected).
-El pasajero puede cancelar la solicitud, cuando esta en estado pendiente o aceptada.
+- El pasajero puede cancelar la solicitud, cuando esta en estado pendiente o aceptada.
 (asignationStatus = canceled).
 Una vez que el conductor comienza el viaje, la solicitud no puede cambiar de estado.
 
 * Agregar estado de viaje.
 
-Una vez que el conductor crea el viaje, este comienza en estado planeado. 
+- Una vez que el conductor crea el viaje, este comienza en estado planeado. 
 (travelStatus = planed)
-Cuando el conductor comienza el viaje, pasa a en proceso.
+- Cuando el conductor comienza el viaje, pasa a en proceso.
 (travelStatus = inProgress)
-Cuando el conductor indica que el viaje terminó, pasa a estado finalizado.
+- Cuando el conductor indica que el viaje terminó, pasa a estado finalizado.
 (travelStatus = ended)
+- Cuando el conductor indica que tiene que cancelar el viaje.
+(travelStatus = canceled)
+
+2017-02-18
+==========
+
+* Mejora a los estados del viaje:
+Los estados de viaje se podrían cambiar automáticamente siguiendo el movimiento del usuario por el gps.
+Además se podría notificar a los pasajeros cuando el conductor esta cerca de llegar.
+
+2017-02-19
+==========
+
+* Es necesario agregar el estado cancelado al estado del viaje.
+El permitir la cancelación conlleva varios puntos a tener en consideración:
+
+- El conductor puede cancelar su viaje en cualquier momento, excepto cuando el viaje terminó.
+- La cancelación del viaje por el conductor, conllevará a tener una review de cero puntos, por cada pasajero que había prometido llevar. Se notificará a todos los pasajeros. 
+Además se pasarán a estado cancelado los viajes de los pasajeros.
+- La cancelación del viaje por el pasajero, conllevará a tener una review de cero puntos, por el conductor. Se notificará al conductor por lo sucedido.
+
+
+
+2017-02-20
+==========
+
+* ¿Cómo actualizo una instancia desde la base de datos con sequelize?
+http://docs.sequelizejs.com/en/v3/docs/instances/#reloading-instances
+
+Reloading instances
+
+If you need to get your instance in sync, you can use the method reload. It will fetch the current data from the database and overwrite the attributes of the model on which the method has been called on.
+
+```js
+Person.findOne({ where: { name: 'john' } }).then(function(person) {
+  person.name = 'jane'
+  console.log(person.name) // 'jane'
+ 
+  person.reload().then(function() {
+    console.log(person.name) // 'john'
+  })
+})
+```
+

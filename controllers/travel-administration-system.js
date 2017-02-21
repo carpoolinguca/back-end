@@ -52,7 +52,8 @@ TravelAdministrationSystem.prototype.startManaging = function(travel, callback) 
 		maximumSeats: travel.seats,
 		availableSeats: travel.seats,
 		arrivalDateTime: travel.arrivalDateTime,
-		observations: travel.observations
+		observations: travel.observations,
+		status: 'planed'
 	};
 	Travel.create(travelToCreate).then(function(travelCreated) {
 		callback(travelCreated);
@@ -148,6 +149,34 @@ TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTrave
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results);
+	});
+};
+
+TravelAdministrationSystem.prototype.changeToInProgressTravel = function(parentTravelId, callback) {
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		if (parentTravel.status == 'planed' || parentTravel.status == 'inProgress') {
+			parentTravel.update({
+				status: 'inProgress'
+			}).then(function() {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
+	});
+};
+
+TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravelId, callback) {
+	Travel.findById(parentTravelId).then(function(parentTravel) {
+		if (parentTravel.status == 'inProgress') {
+			parentTravel.update({
+				status: 'ended'
+			}).then(function() {
+				callback(true);
+			});
+		} else {
+			callback(false);
+		}
 	});
 };
 
