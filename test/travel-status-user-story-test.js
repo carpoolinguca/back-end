@@ -10,6 +10,8 @@ var TravelTestResource = require('./travel-test-resource');
 var travelTestResource = new TravelTestResource(userAdministrationSystem, travelAdministrationSystem);
 var students = [];
 var studyTravels = [];
+var parentTravel;
+var childTravel;
 var seatAssignation;
 
 describe('Changing travel status', function() {
@@ -18,7 +20,18 @@ describe('Changing travel status', function() {
     travelTestResource.registerUsersAndTravels(function(users, travelResources) {
       students = users;
       studyTravels = travelResources;
-      done();
+      parentTravel = studyTravels[1];
+      childTravel = studyTravels[0];
+      travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
+        function(seatBookingSuccessful) {
+          travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+            function(bookedSeats) {
+              travelAdministrationSystem.confirmSeatBookingWith(bookedSeats[0].id,
+                function(seatBookingSuccessful) {
+                  done();
+                });
+            });
+        });
     });
   });
 
@@ -36,72 +49,27 @@ describe('Changing travel status', function() {
   });
 
   it('planed child travels change status to "inProgress" too', function(done) {
-    studyTravels[0].reload().then(function(travelRelouded) {
+    childTravel.reload().then(function(travelRelouded) {
       assert.equal('inProgress', travelRelouded.status);
       done();
     });
   });
 
   it('in progress parent travel change status to "ended"', function(done) {
-    travelAdministrationSystem.changeToInProgressTravel(studyTravels[1].id,
+    travelAdministrationSystem.changeToEndedTravel(studyTravels[1].id,
       function(isEnded) {
         assert.equal(true, isEnded);
         done();
       });
   });
 
-  /*
-  it('should successful child travel book seat in parent travel', function(done) {
-    travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
-      function(seatBookingSuccessful) {
-        assert.equal(true, seatBookingSuccessful);
-        done();
-      });
+  it('in progress child travels change status to "ended" too', function(done) {
+    childTravel.reload().then(function(travelRelouded) {
+      assert.equal('ended', travelRelouded.status);
+      done();
+    });
   });
 
-  it('parent travel should has one seats booked with pending confirmation', function(done) {
-    travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
-      function(bookedSeats) {
-        console.log(bookedSeats);
-        seatAssignation = bookedSeats[0];
-        assert.equal(1, bookedSeats.length);
-        assert.equal(studyTravels[1].id, seatAssignation.parentTravel);
-        assert.equal('pending', seatAssignation.status);
-        done();
-      });
-  });
-
-  it('should successful confirm seat booking', function(done) {
-    console.log(seatAssignation);
-    travelAdministrationSystem.confirmSeatBookingWith(seatAssignation.id,
-      function(seatBookingSuccessful) {
-        assert.equal(true, seatBookingSuccessful);
-        done();
-      });
-  });
-
-  it('parent travel should has one seats booked confirmed', function(done) {
-    travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
-      function(bookedSeats) {
-        console.log(bookedSeats);
-        assert.equal(1, bookedSeats.length);
-        assert.equal(studyTravels[1].id, bookedSeats[0].parentTravel);
-        assert.equal('booked', bookedSeats[0].status);
-        done();
-      });
-  });
-
-  it('should successful reject seat booking', function(done) {
-    console.log(seatAssignation);
-    travelAdministrationSystem.rejectSeatBookingWith(seatAssignation.id,
-      function(rejectSuccessful) {
-        assert.equal(true, rejectSuccessful);
-        done();
-      });
-  });
-
-});
- */
   after(function(done) {
     travelTestResource.destroy(function() {
       done();
