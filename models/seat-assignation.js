@@ -4,7 +4,7 @@ module.exports = function(sequelize) {
 
 	var Travel = require('./travel')(sequelize);
 
-	var SeatAsignation = sequelize.define('seat_asignation', {
+	var SeatAssignation = sequelize.define('seat_assignation', {
 		parentTravel: {
 			type: Sequelize.INTEGER,
 			references: {
@@ -24,5 +24,5 @@ module.exports = function(sequelize) {
 		freezeTableName: true
 	});
 
-	return SeatAsignation;
+	return SeatAssignation;
 };

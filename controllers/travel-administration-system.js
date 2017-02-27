@@ -6,7 +6,7 @@ var Travel;
 
 function TravelAdministrationSystem(sequelize) {
 	Travel = require('../models/travel')(sequelize);
-	SeatAsignation = require('../models/seat-asignation')(sequelize);
+	SeatAsignation = require('../models/seat-assignation')(sequelize);
 	routeCalculatorSystem = new RouteCalculatorSystem(sequelize);
 	Sequelize = sequelize;
 }
@@ -18,6 +18,9 @@ TravelAdministrationSystem.prototype.travelsFilteredBy = function(parameters, ca
 	});
 };
 
+TravelAdministrationSystem.prototype.travelsForUserIdentifiedBy = function(userId, callback) {
+	this.travelsFilteredBy({where: {userId : userId}},callback);
+};
 
 TravelAdministrationSystem.prototype.destroy = function(callback) {
 	Travel.destroy({
@@ -144,7 +147,7 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t.user_id, u.email, u.name, u.lastname, u.sex, t.origin, t."arrivalDateTime" from seat_asignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t.user_id = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
+	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t.user_id, u.email, u.name, u.lastname, u.sex, t.origin, t."arrivalDateTime" from seat_assignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t.user_id = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
@@ -156,31 +159,33 @@ TravelAdministrationSystem.prototype.changeToInProgressTravel = function(parentT
 	var self = this;
 	var condition = function(travel) {
 		return (travel.status == 'planed' || travel.status == 'inProgress');
-	}
+	};
 	self.changeToStatusSatisfayingCondition(parentTravelId, 'inProgress', condition, function() {
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'inProgress', condition, function(successfull) {
 			callback(successfull);
 		});
+	}, function() {
+		callback(false);
 	});
 };
 
-TravelAdministrationSystem.prototype.changeToStatusSatisfayingCondition = function(travelId, status, condition, callback) {
+TravelAdministrationSystem.prototype.changeToStatusSatisfayingCondition = function(travelId, status, condition, successfullCallback, unsuccessfullCallback) {
 	Travel.findById(travelId).then(function(travel) {
 		if (condition(travel)) {
 			travel.update({
 				status: status
 			}).then(function() {
-				callback(true)
+				successfullCallback();
 			});
 		} else {
-			callback(false);
+			unsuccessfullCallback();
 		}
 	});
 };
 
 TravelAdministrationSystem.prototype.changeStatusToChildTravelsRelatedTo = function(parentTravelId, status, condition, callback) {
 	// Sólo me interesa cambiar el estado de los viajes hijos que fueron confirmados por el conductor, por eso busco en estado 'booked'
-	var queryString = 'UPDATE "travel" SET "status"=\'' + status + '\' WHERE "id"  IN (SELECT "childTravel" FROM "seat_asignation" WHERE "parentTravel"='+ parentTravelId + ' AND "status"=\'booked\' ) ;';
+	var queryString = 'UPDATE "travel" SET "status"=\'' + status + '\' WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"=' + parentTravelId + ' AND "status"=\'booked\' ) ;';
 	Sequelize.query(queryString).then(function(results) {
 		callback(true);
 	});
@@ -190,11 +195,33 @@ TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravel
 	var self = this;
 	var condition = function(travel) {
 		return (travel.status == 'inProgress' || travel.status == 'ended');
-	}
+	};
 	self.changeToStatusSatisfayingCondition(parentTravelId, 'ended', condition, function() {
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'ended', condition, function(successfull) {
 			callback(successfull);
 		});
+	});
+};
+
+TravelAdministrationSystem.prototype.changeToCanceledTravel = function(parentTravelId, callback) {
+	var self = this;
+	var condition = function(travel) {
+		return (travel.status != 'ended');
+	};
+	self.changeToStatusSatisfayingCondition(parentTravelId, 'canceled', condition, function() {
+		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'canceled', condition, function(successfull) {
+			callback(successfull);
+		});
+	});
+};
+
+TravelAdministrationSystem.prototype.seatIdentifiedBy = function(seatId, foundCallback, notFoundCallback) {
+	SeatAsignation.findById(seatId).then(function(foundSeat) {
+		if (foundSeat !== null) {
+			foundCallback(foundSeat);
+		} else {
+			notFoundCallback('No se ha encontrado un asiento con ese id');
+		}
 	});
 };
 

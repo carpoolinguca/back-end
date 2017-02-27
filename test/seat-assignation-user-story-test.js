@@ -12,7 +12,7 @@ var students = [];
 var studyTravels = [];
 var seatAssignation;
 
-describe('Seat asignation', function() {
+describe('Seat assignation', function() {
   before(function(done) {
     sequelize.sync();
     travelTestResource.registerUsersAndTravels(function(users, travelResources) {
@@ -22,7 +22,7 @@ describe('Seat asignation', function() {
     });
   });
 
-  describe('Asignations', function() {
+  describe('Assignations', function() {
 
     it('should fail child travel book seat in parent travel', function(done) {
       travelAdministrationSystem.bookSeatWith(studyTravels[0].id, studyTravels[1].id,
@@ -59,6 +59,15 @@ describe('Seat asignation', function() {
           assert.equal(true, seatBookingSuccessful);
           done();
         });
+    });
+
+    it('status query for the seat already confirmed should be confirmed', function(done) {
+      travelAdministrationSystem.seatIdentifiedBy(seatAssignation.id, function(seat) {
+        assert.equal('booked', seat.status);
+        done();
+      }, function(error) {
+        assert.fail('','',error);
+      });
     });
 
     it('parent travel should has one seats booked confirmed', function(done) {
