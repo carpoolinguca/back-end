@@ -22,6 +22,9 @@ module.exports = function(sequelize) {
 		},
 		sex: {
 			type: Sequelize.STRING
+		},
+		phone: {
+			type: Sequelize.STRING
 		}
 	}, {
 		freezeTableName: true

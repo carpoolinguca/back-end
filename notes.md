@@ -346,3 +346,15 @@ Person.findOne({ where: { name: 'john' } }).then(function(person) {
 })
 ```
 
+2017-02-27
+==========
+
+* Para facilitar la comunicación entre los conductores y los pasajeros sería conveniente que se comuniquen utilizando su correspondiente número celular. Por lo tanto es necesario agregar en el registro de usuarios ese campo.
+El celular del pasajero sólo debería será visible para el conductor cuando este aceptó su solicitud de pasar a buscar.
+De la misma forma, el celular del conductor será visible para el pasajero, cuando el conductor aceptó su solicitud de pasar a buscar.
+
+Tareas:
+- Modificar el registro, para que pida también el celular.
+- Agregar un servicio de detalle de usuario que muestre toda la información, incluso su teléfono.(?)
+- Analizar y crear/modificar el servicio de detalle de viaje para conductor.
+- Además actualizar soapui con todos los cambios.

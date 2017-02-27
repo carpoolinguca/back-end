@@ -10,6 +10,7 @@ describe('Managing a user', function() {
     lastname: 'La Loca',
     ucaid: '020800233',
     sex: 'Femenino',
+    phone: '1569867497'
   };
   var userUpdate = {
     email: 'juana@gmail.com',
@@ -18,6 +19,7 @@ describe('Managing a user', function() {
     lastname: 'La Loca',
     ucaid: '020800233',
     sex: 'Femenino',
+    phone: '1569867497'
   };
 
   before(function(done) {
@@ -35,6 +37,7 @@ describe('Managing a user', function() {
         }
       }).then(function(readUser) {
         assert.equal(readUser.email, 'juana@gmail.com');
+        assert.equal(readUser.phone, '1569867497');
         done();
       });
     });

@@ -28,7 +28,8 @@
 	"name" : "Victoria",
 	"lastname" : "Collins",
 	"ucaid" : "021555331",
-	"sex" : "Femenino"
+	"sex" : "Femenino",
+	"phone": "1569867497"
 }
 </con:request><con:originalUri>http://localhost/users</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request><con:request name="Phil" id="7974ddb0-069b-4ae6-be57-12e07beaaedf" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:3000</con:endpoint><con:request>{
 	"email" : "phil@gmail.com",
@@ -36,7 +37,8 @@
 	"name" : "Phil",
 	"lastname" : "Collins",
 	"ucaid" : "027551111",
-	"sex" : "Masculino"
+	"sex" : "Masculino",
+	"phone": "1569867431"
 }
 </con:request><con:originalUri>http://localhost/users</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:request></con:method></con:resource><con:resource name="travels" path="/travels" id="b4acce40-7d12-470d-baf1-fde36e4ecfe4"><con:settings/><con:parameters/><con:resource name="suits" path="suits" id="977eddeb-fe89-4213-b37e-7ac107a5a0e4"><con:settings/><con:parameters/><con:resource name="find" path="find" id="dec1653f-76ce-44ed-b898-854889e4e5b1"><con:settings/><con:parameters/><con:method name="reserved suits for travel" id="6d4571cf-9b7d-483f-8081-2e6fa8dbfe97" method="POST"><con:settings/><con:parameters/><con:representation type="FAULT"><con:mediaType>text/html; charset=utf-8</con:mediaType><con:status>400</con:status><con:params/><con:element>html</con:element></con:representation><con:representation type="REQUEST"><con:mediaType>application/json</con:mediaType><con:params/></con:representation><con:representation type="RESPONSE"><con:mediaType>application/json; charset=utf-8</con:mediaType><con:status>200</con:status><con:params/><con:element>Response</con:element></con:representation><con:representation type="RESPONSE"><con:mediaType xsi:nil="true"/><con:status>0</con:status><con:params/><con:element>data</con:element></con:representation><con:request name="reserved suits for parent travel 3" id="ba969e2b-9df4-44b7-b2af-7f06a1415e8a" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:3000</con:endpoint><con:request>{
 	"parentTravel" : 3
@@ -131,7 +133,8 @@
 	"name" : "Victoria",
 	"lastname" : "Collins",
 	"ucaid" : "021555331",
-	"sex" : "Femenino"
+	"sex" : "Femenino",
+	"phone": "1569867497"
 }
 </con:request><con:originalUri>http://localhost/users</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="restrequest" name="Phil" id="d6661802-a5a7-48ea-aa16-512ad335169a"><con:settings/><con:config service="http://localhost:3000" resourcePath="/users" methodName="register" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="Phil" id="7974ddb0-069b-4ae6-be57-12e07beaaedf" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:3000</con:endpoint><con:request>{
 	"email" : "phil@gmail.com",
@@ -139,7 +142,8 @@
 	"name" : "Phil",
 	"lastname" : "Collins",
 	"ucaid" : "027551111",
-	"sex" : "Masculino"
+	"sex" : "Masculino",
+	"phone": "1569867431"
 }
 </con:request><con:originalUri>http://localhost/users</con:originalUri><con:credentials><con:authType>No Authorization</con:authType></con:credentials><con:jmsConfig JMSDeliveryMode="PERSISTENT"/><con:jmsPropertyConfig/><con:parameters/></con:restRequest></con:config></con:testStep><con:testStep type="restrequest" name="All users" id="b1fed4f8-b0c5-4fed-92d3-3716c58a3775"><con:settings/><con:config service="http://localhost:3000" resourcePath="/users" methodName="query" xsi:type="con:RestRequestStep" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><con:restRequest name="All users" id="0e72656e-dd04-44a1-90da-ba3cba27f4f4" mediaType="application/json" postQueryString="false"><con:settings><con:setting id="com.eviware.soapui.impl.wsdl.WsdlRequest@request-headers">&lt;xml-fragment/></con:setting></con:settings><con:endpoint>http://localhost:3000</con:endpoint><con:request>{
             email: 'jacinta@gmail.com',
