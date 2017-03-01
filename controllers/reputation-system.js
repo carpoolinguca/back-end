@@ -79,8 +79,8 @@ ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
 				driverId: userId
 			}
 		}
-	}).then(function(foundComplaints) {
-		callback(foundComplaints);
+	}).then(function(foundReviews) {
+		callback(foundReviews);
 	});
 };
 
@@ -92,8 +92,8 @@ ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback)
 				passengerId: userId
 			}
 		}
-	}).then(function(foundComplaints) {
-		callback(foundComplaints);
+	}).then(function(foundReviews) {
+		callback(foundReviews);
 	});
 };
 

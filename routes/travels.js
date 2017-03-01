@@ -30,12 +30,12 @@ function TravelRouter(sequelize) {
 
 
   router.route('/for/user').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.travelsForUserIdentifiedBy(req.body, function(successful) {
+    travelAdministrationSystem.travelsForUserIdentifiedBy(req.body.userId, function(travels) {
       res.json(travels);
     });
   });
 
-  router.route('/travel/land').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/start').post(authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToInProgressTravel(req.body, function(successful) {
       res.json({
         started: successful
@@ -43,10 +43,10 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/travel/arrived').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/end').post(authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToEndedTravel(req.body, function(successful) {
       res.json({
-        arrived: successful
+        ended: successful
       });
     });
   });

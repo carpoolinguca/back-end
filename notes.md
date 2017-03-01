@@ -289,7 +289,8 @@ que aún tienen asientos disponibles. (availableSeats > 0).
 - El pasajero solicita al conductor que eligió según el viaje padre, que lo lleve.
 (asignationStatus = pending)
 - El conductor recibe la solicitud del pasajero y decide aceptar o rechazar pasarlo a
-buscar. (asignationStatus = acepted) or (asignationStatus = rejected).
+buscar. 
+(asignationStatus = acepted) or (asignationStatus = rejected).
 - El pasajero puede cancelar la solicitud, cuando esta en estado pendiente o aceptada.
 (asignationStatus = canceled).
 Una vez que el conductor comienza el viaje, la solicitud no puede cambiar de estado.
@@ -358,3 +359,20 @@ Tareas:
 - Agregar un servicio de detalle de usuario que muestre toda la información, incluso su teléfono.(?)
 - Analizar y crear/modificar el servicio de detalle de viaje para conductor.
 - Además actualizar soapui con todos los cambios.
+
+2017-02-28
+==========
+
+* Análisis del circuito de viaje a la vista del conductor. Se hace incapié en los servicios que se tienen que invocar al servidor.
+
+- User sing up: POST /users
+- User login: POST /users/user/login
+- Create a driver travel: POST /travels 
+- Travels for user: POST /travels/for/user (REVISAR)
+- Reserved suits for parent travel: POST /travels/suits/find(FALTA AGREGAR PASSENGER REPUTATION)
+- Reviews for passenger: POST /reviews/for/passenger/find (FALTA AGREGAR NOMBRE Y APELLIDO DE CADA USUARIO QUE HACE EL REVIEW)
+- Reviews for driver: POST /reviews/for/driver/find (FALTA AGREGAR NOMBRE Y APELLIDO DE CADA USUARIO QUE HACE EL REVIEW)
+- User phone: POST /users/user/phone
+- Start travel: POST /travels/travel/start
+- End travel: POST /travels/travel/end
+- Cancel travel: POST /travels/travel/cancel 

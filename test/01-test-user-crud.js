@@ -37,7 +37,7 @@ describe('Managing a user', function() {
         }
       }).then(function(readUser) {
         assert.equal(readUser.email, 'juana@gmail.com');
-        assert.equal(readUser.phone, '1569867497');
+        assert.equal(readUser.phone, user.phone);
         done();
       });
     });
@@ -46,7 +46,8 @@ describe('Managing a user', function() {
         assert.equal(updatedUser.password, '4321');
         done();
       });
-    })
+    });
+
   });
   after(function(done) {
     user.destroy().then(function() {

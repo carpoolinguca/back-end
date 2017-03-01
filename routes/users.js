@@ -50,6 +50,45 @@ function UserRouter(sequelize) {
         });
     });
 
+    router.route('/user/login').post(function(req, res) {
+        userSystem.oneUserFilteredBy({
+            where: {
+                email: req.body.email
+            }
+        }, function(user) {
+            if (!user) {
+                return res.status(401).send({
+                    message: {
+                        email: 'Incorrect email'
+                    }
+                });
+            }
+
+            if (req.body.password == user.password) {
+                var token = authorizationSystem.createTokenFor(user);
+                res.send({
+                    token: token,
+                    user: user
+                });
+            } else {
+                return res.status(401).send({
+                    message: {
+                        password: 'Incorrect password'
+                    }
+                });
+            }
+        });
+    });
+
+    router.route('/user/phone').post(authorizationSystem.isAuthenticated, function(req, res) {
+        userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
+            res.send({
+                userId: foundUser.id,
+                phone: foundUser.phone
+            });
+        });
+    });
+
     return router;
 }
 
