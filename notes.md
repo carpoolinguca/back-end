@@ -376,3 +376,19 @@ Tareas:
 - Start travel: POST /travels/travel/start
 - End travel: POST /travels/travel/end
 - Cancel travel: POST /travels/travel/cancel 
+
+2017-03-03
+==========
+
+* Agenda: cada usuario podrá ver en su agenda, a todos los usuarios que por lo menos viajó alguna vez. Se parecería a algo así como los amigos de facebook, solo que la condición de amistad es si alguna vez viajaron juntos. 
+En la agenda un usuario podrá ver el detalle de sus contactos, hacerles al menos un review y en caso de ser necesario, denunciarlos.
+Se agregará una función de guardar contacto en memoria del teléfono, así este podrá ser accedido desde fuera de la aplicación.
+Va a llegar un momento que se establecerá una relación entre los usuarios que a diario utilizan la aplicación y que viajan juntos, por lo tanto ya no la van a necesitar, porque ya van a conocer que coinciden en horarios y destino al lugar donde van. 
+Si bien esto va a generar que dejen de usar la aplicación, en el comienzo de cada cuatrimestre, entrarían nuevos usuarios y esto probablemente compense y mantenga la cantidad promedio de usuarios activos de la aplicación.
+
+Implementación:
+---------------
+
+Una vez que el conductor confirma que el viaje ha finalizado, los pasajeros se agregarán automáticamente a la agenda del conductor, y  el conductor será agregado automáticamente a la agenda de cada pasajero.
+
+La relación es: userId -> contactId. Y almacena los contactos de cada usuario. De la busqueda de todos los contactos para un usuario, se obtiene la agenda de contactos de ese usuario (address book).
