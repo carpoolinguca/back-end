@@ -9,8 +9,7 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			references: {
 				model: User
-			},
-			field : 'user_id'
+			}
 		},
 		origin: {
 			type: Sequelize.STRING

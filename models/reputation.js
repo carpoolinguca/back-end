@@ -9,17 +9,14 @@ module.exports = function(sequelize) {
 		userId: {
 			type: Sequelize.INTEGER,
 			references: {
-				model: User,
-				field: 'user_id'
+				model: User
 			}
 		},
 		drivingPoints: {
-			type: Sequelize.INTEGER,
-			field: 'driving_points'
+			type: Sequelize.INTEGER
 		},
 		passengerPoints: {
-			type: Sequelize.INTEGER,
-			field: 'passenger_points'
+			type: Sequelize.INTEGER
 		}
 	}, {
 		freezeTableName: true

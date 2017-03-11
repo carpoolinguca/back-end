@@ -81,7 +81,7 @@ TravelAdministrationSystem.prototype.findAll = function(endFunction) {
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
 	this.startManaging(travel, function(travelCreated) {
 		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
-			var queryString = 'select * from travel where id in (select ro.travel_id from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro.travel_id IN (select id from travel where "userIsDriver"=\'t\' and user_id != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
+			var queryString = 'select * from travel where id in (select ro.travel_id from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro.travel_id IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
 			Sequelize.query(queryString).then(function(results) {
 				endFunction(results[0]);
 			});
@@ -147,7 +147,7 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t.user_id, u.email, u.name, u.lastname, u.sex, t.origin, t.destination from seat_assignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t.user_id = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
+	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.destination from seat_assignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t."userId" = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {

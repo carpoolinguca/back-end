@@ -392,3 +392,29 @@ Implementación:
 Una vez que el conductor confirma que el viaje ha finalizado, los pasajeros se agregarán automáticamente a la agenda del conductor, y  el conductor será agregado automáticamente a la agenda de cada pasajero.
 
 La relación es: userId -> contactId. Y almacena los contactos de cada usuario. De la busqueda de todos los contactos para un usuario, se obtiene la agenda de contactos de ese usuario (address book).
+
+2017-03-09
+==========
+* Un review por usuario.
+* Por cada denuncia se computa como una estrella.
+
+* Url de google maps ejemplo de vaje pasando por tres lugares:
+
+https://www.google.com.ar/maps/dir/Alsina+315,+Quilmes,+Buenos+Aires/Belgrano+280,+Bernal,+Buenos+Aires/-34.6130782,-58.3660879/@-34.6670236,-58.3820252,12z/data=!3m1!4b1!4m15!4m14!1m5!1m1!1s0x95a32e4001fc3619:0x5eaee984df1bb9cb!2m2!1d-58.2576438!2d-34.7212479!1m5!1m1!1s0x95a32e074791d0f1:0x3fd67a62469a4770!2m2!1d-58.2797534!2d-34.712581!1m0!3e0
+
+* Direcciones ejemplo:
+
+Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
+
+Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina
+
+Almirante Brown 747, CABA
+
+Alicia Moreau de Justo 1500, CABA
+
+
+2017-03-11
+==========
+
+* Estandarizar todos los servicios en los que se envia el campo userId para que este como "userId" y no como "user_id". Listo!
+
