@@ -14,7 +14,8 @@ ReputationSystem.prototype.initializeReputationFor = function(user, callback) {
 	reputation = {
 		userId: user.id,
 		drivingPoints: 0,
-		passengerPoints: 0
+		passengerPoints: 0,
+		complaints: 0
 	};
 	Reputation.create(reputation).then(function(reputationCreated) {
 		callback(reputationCreated);

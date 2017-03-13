@@ -1,8 +1,8 @@
 /*
 complaints
 ----------
-user_from	INTEGER
-user_to		INTEGER
+userFrom	INTEGER
+userTo		INTEGER
 reason 		STRING
 */
 
@@ -17,20 +17,17 @@ module.exports = function(sequelize) {
 		userFrom: {
 			type: Sequelize.INTEGER,
 			references: {
-				model: User,
-				field: 'user_from'
+				model: User
 			}
 		},
 		userTo: {
 			type: Sequelize.INTEGER,
 			references: {
-				model: User,
-				field: 'user_to'
+				model: User
 			}
 		},
 		reason: {
-			type: Sequelize.STRING,
-			field: 'reason'
+			type: Sequelize.STRING
 		}
 	}, {
 		freezeTableName: true

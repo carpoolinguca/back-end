@@ -11,7 +11,6 @@ module.exports = function(sequelize) {
 		},
 		driverId: {
 			type: Sequelize.INTEGER,
-			field: 'driver_id',
 			references: {
 				model: User
 			}
@@ -21,7 +20,6 @@ module.exports = function(sequelize) {
 		},
 		passengerId: {
 			type: Sequelize.INTEGER,
-			field: 'passenger_id',
 			references: {
 				model: User
 			}

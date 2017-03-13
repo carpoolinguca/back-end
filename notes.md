@@ -418,3 +418,8 @@ Alicia Moreau de Justo 1500, CABA
 
 * Estandarizar todos los servicios en los que se envia el campo userId para que este como "userId" y no como "user_id". Listo!
 
+2017-03-12
+==========
+
+* Mejorar servicio de busqueda de viajes para que devuelva los datos del usuario, su reputación y su cantidad de denuncias, para cada uno de los viajes encontrados.
+

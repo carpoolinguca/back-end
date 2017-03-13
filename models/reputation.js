@@ -17,6 +17,9 @@ module.exports = function(sequelize) {
 		},
 		passengerPoints: {
 			type: Sequelize.INTEGER
+		},
+		complaints: {
+			type: Sequelize.INTEGER
 		}
 	}, {
 		freezeTableName: true
