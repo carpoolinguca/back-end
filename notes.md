@@ -421,5 +421,10 @@ Alicia Moreau de Justo 1500, CABA
 2017-03-12
 ==========
 
-* Mejorar servicio de busqueda de viajes para que devuelva los datos del usuario, su reputación y su cantidad de denuncias, para cada uno de los viajes encontrados.
+* Mejorar servicio de busqueda de viajes para que devuelva los datos del usuario, su reputación y su cantidad de denuncias, para cada uno de los viajes encontrados. (Falta filtrar datos que no se requieren enviar).
 
+2017-03-13
+==========
+
+* Que el servicio de busqueda de viajes, (travels/find) devuelva el viaje que origina la búsqueda, además de devolver los viajes encontrados. Listo!
+* Que el servicio de reserva de viajes, (travels/suits/book) devuelva la reserva creada, incluyendo su id. Listo!

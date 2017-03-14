@@ -19,7 +19,11 @@ TravelAdministrationSystem.prototype.travelsFilteredBy = function(parameters, ca
 };
 
 TravelAdministrationSystem.prototype.travelsForUserIdentifiedBy = function(userId, callback) {
-	this.travelsFilteredBy({where: {userId : userId}},callback);
+	this.travelsFilteredBy({
+		where: {
+			userId: userId
+		}
+	}, callback);
 };
 
 TravelAdministrationSystem.prototype.destroy = function(callback) {
@@ -82,8 +86,13 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 	this.startManaging(travel, function(travelCreated) {
 		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
 			var queryString = 'SELECT * FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
-			Sequelize.query(queryString).then(function(results) {
-				endFunction(results[0]);
+			Sequelize.query(queryString, {
+				type: Sequelize.QueryTypes.SELECT
+			}).then(function(results) {
+				endFunction({
+					queryTravel: travelCreated,
+					travelsFound: results
+				});
 			});
 		});
 	});
@@ -137,11 +146,18 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 				parentTravel: parentTravelId,
 				childTravel: childTravelId,
 				status: 'pending'
-			}).then(function(asignationCreated) {
-				callback(true);
+			}).then(function(assignationCreated) {
+				callback({
+					assignationCreated: assignationCreated,
+					booked: true,
+					error: ''
+				});
 			});
 		} else {
-			callback(false);
+			callback({
+				booked: false,
+				error: 'No quedan más asientos disponibles.'
+			});
 		}
 	});
 };

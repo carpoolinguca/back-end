@@ -23,8 +23,8 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/find').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.findClosestTravelsForTravel(req.body, function(travels) {
-      res.json(travels);
+    travelAdministrationSystem.findClosestTravelsForTravel(req.body, function(searchResult) {
+      res.json(searchResult);
     });
   });
 
@@ -60,18 +60,8 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/suits/book').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.bookSeatWith(req.body.parentTravel, req.body.childTravel, function(isAsigned) {
-      if (isAsigned) {
-        res.json({
-          booked: isAsigned,
-          error: ''
-        });
-      } else {
-        res.json({
-          booked: isAsigned,
-          error: 'No quedan más asientos disponibles.'
-        });
-      }
+    travelAdministrationSystem.bookSeatWith(req.body.parentTravel, req.body.childTravel, function(bookingResult) {
+      res.json(bookingResult);
     });
   });
 
