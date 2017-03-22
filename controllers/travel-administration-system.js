@@ -163,7 +163,7 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.destination from seat_assignation as s inner join travel as t on (s."parentTravel" = t.id) inner join "user" as u on (t."userId" = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
+	var queryString = 'select s.id, s."parentTravel", s."childTravel", s.status, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.destination from seat_assignation as s inner join travel as t on (s."childTravel" = t.id) inner join "user" as u on (t."userId" = u.id) where s."parentTravel" = ' + parentTravelId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
