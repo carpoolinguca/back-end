@@ -220,6 +220,8 @@ TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravel
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'ended', condition, function(successfull) {
 			callback(successfull);
 		});
+	}, function() {
+		callback(false);
 	});
 };
 
@@ -232,6 +234,8 @@ TravelAdministrationSystem.prototype.changeToCanceledTravel = function(parentTra
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'canceled', condition, function(successfull) {
 			callback(successfull);
 		});
+	}, function() {
+		callback(false);
 	});
 };
 

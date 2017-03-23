@@ -36,7 +36,7 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/travel/start').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.changeToInProgressTravel(req.body, function(successful) {
+    travelAdministrationSystem.changeToInProgressTravel(req.body.travelId, function(successful) {
       res.json({
         started: successful
       });
@@ -44,7 +44,7 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/travel/end').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.changeToEndedTravel(req.body, function(successful) {
+    travelAdministrationSystem.changeToEndedTravel(req.body.travelId, function(successful) {
       res.json({
         ended: successful
       });
@@ -52,7 +52,7 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/travel/cancel').post(authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.changeToCanceledTravel(req.body, function(successful) {
+    travelAdministrationSystem.changeToCanceledTravel(req.body.travelId, function(successful) {
       res.json({
         canceled: successful
       });

@@ -11,10 +11,10 @@ ContactAdministrationSystem.prototype.registerAsContacts = function(aDriver, aPa
 	Contact.create({userId : aDriver, passengerId: aPassenger}).then(function(userCreated) {
 			callback(userCreated);
 		});
-	};
 };
 
 ContactAdministrationSystem.prototype.registerAsContactsBetween = function(aDriver, aPassenger, callback) {
+	/*
 	Contact.findOrCreate({where: {username: 'sdepold'}, defaults: {job: 'Technical Lead JavaScript'}})
   .spread(function(user, created) {
     console.log(user.get({
@@ -23,6 +23,7 @@ ContactAdministrationSystem.prototype.registerAsContactsBetween = function(aDriv
     console.log(created);
     callback(created);
   });
+  */
 };
 
 ContactAdministrationSystem.prototype.destroy = function(callback) {
