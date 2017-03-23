@@ -9,13 +9,15 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			references: {
 				model: User
-			}
+			},
+			unique : 'userAndContact'
 		},
 		contactId: {
 			type: Sequelize.INTEGER,
 			references: {
 				model: User
-			}
+			},
+			unique : 'userAndContact'
 		}
 	}, {
 		freezeTableName: true
