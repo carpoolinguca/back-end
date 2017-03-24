@@ -50,6 +50,8 @@ describe('Managing a user', function() {
       reputationSystem.complaintsToUserById(students[0].id,
         function(foundComplaints) {
           assert.equal(foundComplaints[0].userFrom, students[1].id);
+          assert.equal(foundComplaints[0].name, students[1].name);
+          assert.equal(foundComplaints[0].lastname, students[1].lastname);
           assert.equal(foundComplaints[0].userTo, students[0].id);
           assert.equal(foundComplaints[0].reason, 'Me faltó el respeto');
           done();

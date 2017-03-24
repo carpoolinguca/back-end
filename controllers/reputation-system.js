@@ -2,8 +2,10 @@ var Sequelize;
 var Reputation;
 var Complaint;
 var Review;
+var User;
 
 function ReputationSystem(sequelize) {
+	User = require('../models/user')(sequelize);
 	Reputation = require('../models/reputation')(sequelize);
 	Complaint = require('../models/complaint')(sequelize);
 	Review = require('../models/review')(sequelize);
@@ -35,12 +37,11 @@ ReputationSystem.prototype.complaints = function(callback) {
 };
 
 ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
-	Complaint.findAll({
-		where: {
-			userTo: userId
-		}
-	}).then(function(foundComplaints) {
-		callback(foundComplaints);
+	var queryString = 'select c."userFrom", u.name, u.lastname, c."userTo", c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = ' + userId + ' ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results);
 	});
 };
 
@@ -73,28 +74,20 @@ ReputationSystem.prototype.reviews = function(callback) {
 };
 
 ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
-	Review.findAll({
-		where: {
-			isDriver: true,
-			$and: {
-				driverId: userId
-			}
-		}
-	}).then(function(foundReviews) {
-		callback(foundReviews);
+	var queryString = 'select d."isDriver", d."driverId",d."passengerId" , u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."passengerId" ) where d."driverId" = ' + userId + ' and d."isDriver" = true ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results);
 	});
 };
 
 ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback) {
-	Review.findAll({
-		where: {
-			isDriver: false,
-			$and: {
-				passengerId: userId
-			}
-		}
-	}).then(function(foundReviews) {
-		callback(foundReviews);
+	var queryString = 'select d."isDriver", d."driverId", u.name, u.lastname, d."passengerId" , d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."driverId" ) where d."passengerId" = ' + userId + ' and d."isDriver" = false ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results);
 	});
 };
 
