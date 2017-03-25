@@ -26,7 +26,15 @@ ReputationSystem.prototype.initializeReputationFor = function(user, callback) {
 
 ReputationSystem.prototype.registerComplaint = function(complaint, callback) {
 	Complaint.create(complaint).then(function(complaintCreated) {
-		callback(complaintCreated);
+		Reputation.findOne({
+			where: {
+				userId: complaintCreated.userTo
+			}
+		}).then(function(reputationFound) {
+			reputationFound.increment('complaints').then(function() {
+				callback(complaintCreated);
+			});
+		});
 	});
 };
 
@@ -175,7 +183,7 @@ ReputationSystem.prototype.caculateReputationWhere = function(whereCondition, ca
 		}).then(function(count) {
 			callback(sum / count);
 		});
-	})
+	});
 };
 
 ReputationSystem.prototype.destroy = function(callback) {

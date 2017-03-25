@@ -116,7 +116,7 @@ TravelAdministrationSystem.prototype.rejectSeatBookingWith = function(assignatio
 				seatAssignation.status = 'rejected';
 				seatAssignation.save().then(function() {
 					Travel.findById(seatAssignation.parentTravel).then(function(parentTravel) {
-						parentTravel.decrement('availableSeats');
+						parentTravel.increment('availableSeats');
 					});
 					callback(true);
 				});

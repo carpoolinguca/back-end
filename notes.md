@@ -428,3 +428,10 @@ Alicia Moreau de Justo 1500, CABA
 
 * Que el servicio de busqueda de viajes, (travels/find) devuelva el viaje que origina la búsqueda, además de devolver los viajes encontrados. Listo!
 * Que el servicio de reserva de viajes, (travels/suits/book) devuelva la reserva creada, incluyendo su id. Listo!
+
+2017-03-24
+==========
+
+* En la respuesta de los servicios de Complaints y Reviews se agrega el nombre y apellido del usuario que se necesita mostrar en pantalla.
+* En la respuesta del servicio /travels/find/suits se agrega el puntaje del usuario como pasajero y se agrega la cantidad de denuncias que tiene.
+* Se modificó el registro de denuncias (complaints) para que incremente el contador de denuncias del usuario denunciado.

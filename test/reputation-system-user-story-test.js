@@ -20,6 +20,14 @@ describe('Managing a user', function() {
 
   describe('#Complaints', function() {
 
+    it('Initialy Juana have got any complaint', function(done) {
+      reputationSystem.reputationForUserById(students[0].id,
+        function(reputation) {
+          assert.equal(reputation.complaints, 0);
+          done();
+        });
+    });
+
     it('Juana was complained by Jacinta', function(done) {
       reputationSystem.registerComplaint({
           userFrom: students[1].id,
@@ -30,6 +38,14 @@ describe('Managing a user', function() {
           assert.equal(complaint.userFrom, students[1].id);
           assert.equal(complaint.userTo, students[0].id);
           assert.equal(complaint.reason, 'Me faltó el respeto');
+          done();
+        });
+    });
+
+    it('Juana does have got one complaint after was complained', function(done) {
+      reputationSystem.reputationForUserById(students[0].id,
+        function(reputation) {
+          assert.equal(reputation.complaints, 1);
           done();
         });
     });
