@@ -45,7 +45,7 @@ ReputationSystem.prototype.complaints = function(callback) {
 };
 
 ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
-	var queryString = 'select c."userFrom", u.name, u.lastname, c."userTo", c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = ' + userId + ' ;';
+	var queryString = 'select c."userFrom", u.name, u.lastname, c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = ' + userId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
@@ -65,13 +65,22 @@ ReputationSystem.prototype.reputationIdentifiedBy = function(identification, cal
 	});
 };
 
-ReputationSystem.prototype.reputationForUserById = function(userId, callback) {
+ReputationSystem.prototype.nameAndReputationForUserId = function(userId, callback) {
+	var queryString = 'select r."userId", u.name, u.lastname, r.complaints, r."passengerPoints", r."drivingPoints" from "user" as u inner join reputation as r on (u.id = r."userId" ) where r."userId" = ' + userId + ' limit 1;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results[0]);
+	});
+};
+
+ReputationSystem.prototype.reputationForUserId = function(userId, callback) {
 	Reputation.findOne({
 		where: {
 			userId: userId
 		}
-	}).then(function(readedReputation) {
-		callback(readedReputation);
+	}).then(function(reputationFound) {
+		callback(reputationFound);
 	});
 };
 
@@ -135,7 +144,7 @@ ReputationSystem.prototype.registerReviewAboutPassenger = function(passengerRevi
 ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
 	self = this;
 	self.caculateReputationForDriver(driverId, function(reputationPoints) {
-		self.reputationForUserById(driverId, function(foundReputation) {
+		self.reputationForUserId(driverId, function(foundReputation) {
 			foundReputation.update({
 				drivingPoints: reputationPoints
 			}).then(function() {
@@ -149,7 +158,7 @@ ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callb
 ReputationSystem.prototype.refreshReputationForPassenger = function(passengerId, callback) {
 	self = this;
 	self.caculateReputationForPassenger(passengerId, function(reputationPoints) {
-		self.reputationForUserById(passengerId, function(foundReputation) {
+		self.reputationForUserId(passengerId, function(foundReputation) {
 			foundReputation.update({
 				passengerPoints: reputationPoints
 			}).then(function() {

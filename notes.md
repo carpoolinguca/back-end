@@ -435,3 +435,8 @@ Alicia Moreau de Justo 1500, CABA
 * En la respuesta de los servicios de Complaints y Reviews se agrega el nombre y apellido del usuario que se necesita mostrar en pantalla.
 * En la respuesta del servicio /travels/find/suits se agrega el puntaje del usuario como pasajero y se agrega la cantidad de denuncias que tiene.
 * Se modificó el registro de denuncias (complaints) para que incremente el contador de denuncias del usuario denunciado.
+
+2017-03-25
+==========
+
+* Agregar en la respuesta de los servicios: reviews/for/passenger/find, reviews/for/driver/find, complaints/find nombre y apellido y cantidad de reviews o denuncias del usuario por el que se consulta.

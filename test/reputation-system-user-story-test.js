@@ -21,9 +21,11 @@ describe('Managing a user', function() {
   describe('#Complaints', function() {
 
     it('Initialy Juana have got any complaint', function(done) {
-      reputationSystem.reputationForUserById(students[0].id,
+      reputationSystem.nameAndReputationForUserId(students[0].id,
         function(reputation) {
           assert.equal(reputation.complaints, 0);
+          assert.equal(reputation.passengerPoints, 0);
+          assert.equal(reputation.drivingPoints, 0);
           done();
         });
     });
@@ -36,14 +38,13 @@ describe('Managing a user', function() {
         },
         function(complaint) {
           assert.equal(complaint.userFrom, students[1].id);
-          assert.equal(complaint.userTo, students[0].id);
           assert.equal(complaint.reason, 'Me faltó el respeto');
           done();
         });
     });
 
     it('Juana does have got one complaint after was complained', function(done) {
-      reputationSystem.reputationForUserById(students[0].id,
+      reputationSystem.nameAndReputationForUserId(students[0].id,
         function(reputation) {
           assert.equal(reputation.complaints, 1);
           done();
@@ -68,14 +69,13 @@ describe('Managing a user', function() {
           assert.equal(foundComplaints[0].userFrom, students[1].id);
           assert.equal(foundComplaints[0].name, students[1].name);
           assert.equal(foundComplaints[0].lastname, students[1].lastname);
-          assert.equal(foundComplaints[0].userTo, students[0].id);
           assert.equal(foundComplaints[0].reason, 'Me faltó el respeto');
           done();
         });
     });
 
     it('Jacinta initial driving reputation is 0, and passenger reputation is 0', function(done) {
-      reputationSystem.reputationForUserById(students[1].id,
+      reputationSystem.reputationForUserId(students[1].id,
         function(reputation) {
           assert.equal(reputation.userId, students[1].id);
           assert.equal(reputation.drivingPoints, 0);
@@ -119,7 +119,7 @@ describe('Managing a user', function() {
     });
 
     it('Reputation for driver must be 4', function(done) {
-      reputationSystem.reputationForUserById(students[0].id,
+      reputationSystem.reputationForUserId(students[0].id,
         function(reputation) {
           assert.equal(reputation.drivingPoints, 4);
           done();

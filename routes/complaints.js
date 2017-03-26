@@ -22,8 +22,14 @@ function ComplaintRouter(sequelize) {
   });
 
   router.route('/find').post(authorizationSystem.isAuthenticated, function(req, res) {
-    reputationSystem.complaintsToUserById(req.body.userId, function(complaints) {
-      res.json(complaints);
+    reputationSystem.nameAndReputationForUserId(req.body.userId, function(userReputation) {
+      reputationSystem.complaintsToUserById(req.body.userId, function(complaints) {
+        res.json({
+          userComplained: {name: userReputation.name, lastname: userReputation.lastname},
+          numberOfComplains: userReputation.complaints,
+          complaints: complaints
+        });
+      });
     });
   });
 

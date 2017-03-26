@@ -21,8 +21,17 @@ function ReviewRouter(sequelize) {
   });
 
   router.route('/for/driver/find').post(authorizationSystem.isAuthenticated, function(req, res) {
-    reputationSystem.driverReviewsByUserId(req.body.userId, function(reviews) {
-      res.json(reviews);
+    reputationSystem.nameAndReputationForUserId(req.body.userId, function(userReputation) {
+      reputationSystem.driverReviewsByUserId(req.body.userId, function(reviews) {
+        res.json({
+          userReviewed: {
+            name: userReputation.name,
+            lastname: userReputation.lastname
+          },
+          drivingPoints: userReputation.drivingPoints,
+          reviews: reviews
+        });
+      });
     });
   });
 
@@ -33,8 +42,17 @@ function ReviewRouter(sequelize) {
   });
 
   router.route('/for/passenger/find').post(authorizationSystem.isAuthenticated, function(req, res) {
-    reputationSystem.passengerReviewsByUserId(req.body.userId, function(reviews) {
-      res.json(reviews);
+    reputationSystem.nameAndReputationForUserId(req.body.userId, function(userReputation) {
+      reputationSystem.passengerReviewsByUserId(req.body.userId, function(reviews) {
+        res.json({
+          userReviewed: {
+            name: userReputation.name,
+            lastname: userReputation.lastname
+          },
+          passengerPoints: userReputation.passengerPoints,
+          reviews: reviews
+        });
+      });
     });
   });
 
