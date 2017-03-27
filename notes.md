@@ -440,3 +440,49 @@ Alicia Moreau de Justo 1500, CABA
 ==========
 
 * Agregar en la respuesta de los servicios: reviews/for/passenger/find, reviews/for/driver/find, complaints/find nombre y apellido y cantidad de reviews o denuncias del usuario por el que se consulta.
+
+2017-03-26
+==========
+
+* Continuar con el servicio de contactos.
+
+
+Agregar varios contactos al mismo tiempo, handleando errores:
+
+```js
+it('Register contact', function(done) {
+    Contact.bulkCreate(contacts).catch(function(errors) {
+      console.log(errors);
+    }).then(function() {
+      Contact.findAll().then(function(createdContacts) {
+        console.log(createdContacts);
+        contacts = createdContacts;
+        done();
+      });
+    });
+  });
+```
+
+Para evitar intentar guardar contactos que ya existen usaremos:
+
+```js
+var contact = {
+        userId: students[0].id,
+        contactId: students[1].id
+      };
+
+Contact.findCreateFind({
+      where: contact,
+      defaults: contact
+    }).catch(function(errors) {
+      console.log(errors);
+    }).then(function(result) {
+    //instancia:
+      console.log(result[0]);
+    //si se hizo el insert devuelve true:
+      console.log(result[1]);
+    });
+```
+
+Nota:
+Esta función es más performante que findOrCreate porque no usa transacciones, que para este caso no son necesarias.

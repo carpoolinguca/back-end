@@ -20,29 +20,42 @@ describe('Contact administration', function() {
       }, {
         userId: students[1].id,
         contactId: students[0].id
-      }, {
-        userId: students[0].id,
-        contactId: students[1].id
       }];
       done();
     });
   });
 
-  it('Register contact', function(done) {
-    Contact.bulkCreate(contacts).catch(function(errors) {
+  it('Does not insert already contact saved', function(done) {
+    Contact.findCreateFind({
+      where: contacts[0],
+      defaults: contacts[0]
+    }).catch(function(errors) {
       console.log(errors);
-    }).then(function() {
-      Contact.findAll().then(function(createdContacts) {
-        console.log(createdContacts);
-        contacts = createdContacts;
-        done();
-      });
+    }).then(function(result) {
+      console.log(result[0]);
+      //assert.equal(contactSaved.userId, contacts[0].userId);
+      contacts[0] = result[0];
+      result[0].destroy();
+      done();
+    });
+  });
+
+  it('Does not insert already contact saved2', function(done) {
+    Contact.findCreateFind({
+      where: contacts[1],
+      defaults: contacts[1]
+    }).catch(function(errors) {
+      console.log(errors);
+    }).then(function(result) {
+      console.log(result[1]);
+      //assert.equal(contactSaved.userId, contacts[0].userId);
+      contacts[1] = result[0];
+      result[0].destroy();
+      done();
     });
   });
 
   after(function(done) {
-    contacts[1].destroy();
-    contacts[0].destroy();
     userTestResource.destroy(function() {
       done();
     });
