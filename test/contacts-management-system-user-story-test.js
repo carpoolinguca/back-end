@@ -3,6 +3,8 @@ var sequelize = require('../sequelizeConfigured');
 var User = require('../models/user')(sequelize);
 var UserAdministrationSystem = require('../controllers/user-administration-system');
 var userAdministrationSystem = new UserAdministrationSystem(sequelize);
+var ContactAdministrationSystem = require('../controllers/contact-administration-system');
+var contactAdministrationSystem = new ContactAdministrationSystem(sequelize);
 var Contact = require('../models/contact')(sequelize);
 var UserTestResource = require('./user-test-resource');
 var userTestResource = new UserTestResource(userAdministrationSystem);
@@ -27,8 +29,7 @@ describe('Contact administration', function() {
 
   it('Does not insert already contact saved', function(done) {
     Contact.findCreateFind({
-      where: contacts[0],
-      defaults: contacts[0]
+      where: contacts[0]
     }).catch(function(errors) {
       console.log(errors);
     }).then(function(result) {

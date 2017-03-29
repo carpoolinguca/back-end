@@ -486,3 +486,19 @@ Contact.findCreateFind({
 
 Nota:
 Esta función es más performante que findOrCreate porque no usa transacciones, que para este caso no son necesarias.
+
+2017-03-28
+==========
+
+Se corrije el script sql que calcula las reservas de usuarios para un sumarse a un viaje.
+* Script erróneo:
+
+```sql
+select s.id, s."parentTravel", s."childTravel", s.status, t."userId", u.email, u.name, u.lastname, u.sex, t.origin, t.destination, r."passengerPoints", r.complaints from reputation as r inner join seat_assignation as s on (r."userId"= s."childTravel") inner join travel as t on (s."childTravel" = t.id) inner join "user" as u on (t."userId" = u.id) where s."parentTravel" = ' + parentTravelId + '
+```
+
+* Script corregido:
+
+```sql
+SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" =  
+```

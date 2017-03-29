@@ -13,7 +13,20 @@ ContactAdministrationSystem.prototype.registerAsContacts = function(aDriver, aPa
 		});
 };
 
-ContactAdministrationSystem.prototype.registerAsContactsBetween = function(aDriver, aPassenger, callback) {
+ContactAdministrationSystem.prototype.registerAContactWith = function(aUser, anotherUser, callback) {
+	Contact.findCreateFind({
+      where: {
+        userId: aUser.id,
+        contactId: anotherUser.id
+      },
+    }).catch(function(errors) {
+      console.log(errors);
+    }).then(function(result) {
+    	callback(result[0]);
+    });
+};
+
+ContactAdministrationSystem.prototype.registerAsContactsBetweenAll = function(aDriver, aPassenger, callback) {
 	/*
 	Contact.findOrCreate({where: {username: 'sdepold'}, defaults: {job: 'Technical Lead JavaScript'}})
   .spread(function(user, created) {
