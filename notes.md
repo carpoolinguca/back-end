@@ -502,3 +502,18 @@ select s.id, s."parentTravel", s."childTravel", s.status, t."userId", u.email, u
 ```sql
 SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" =  
 ```
+2017-03-30
+==========
+TO DO:
+
+* Quitar los campos de "isDriver" y "driverId" de los objetos review, y agregar "driverId" al objeto "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).
+
+* Quitar los campos de "isDriver" y "passengerId" de los objetos review, y agregar "passengerId" al objeto "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).
+
+* Separar el servicio de viajes para un usuario en dos servicios diferentes:
+- /travels/for/user/passenger
+- /travels/for/user/driver
+
+* Actualizar la forma en que se hacen las busquedas de viajes para que no aparezcan los que estan en estado ended. 
+
+*  /reviews/for/passenger podría devolverme algo como "receibed": "Ok" para poder controlar si se guardo bien el review
