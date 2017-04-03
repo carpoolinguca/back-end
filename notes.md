@@ -517,3 +517,10 @@ TO DO:
 * Actualizar la forma en que se hacen las busquedas de viajes para que no aparezcan los que estan en estado ended. 
 
 *  /reviews/for/passenger podría devolverme algo como "receibed": "Ok" para poder controlar si se guardo bien el review
+
+2017-04-02
+==========
+
+* Se quitaron los campos de "isDriver" y "driverId" de los objetos review, y se agregó el "id" al "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).
+
+* Se quitaron los campos de "isDriver" y "passengerId" de los objetos review, y agregó el "id" al "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).

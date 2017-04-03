@@ -25,6 +25,7 @@ function ReviewRouter(sequelize) {
       reputationSystem.driverReviewsByUserId(req.body.userId, function(reviews) {
         res.json({
           userReviewed: {
+            id: userReputation.userId,
             name: userReputation.name,
             lastname: userReputation.lastname
           },
@@ -46,6 +47,7 @@ function ReviewRouter(sequelize) {
       reputationSystem.passengerReviewsByUserId(req.body.userId, function(reviews) {
         res.json({
           userReviewed: {
+            id: userReputation.userId,
             name: userReputation.name,
             lastname: userReputation.lastname
           },

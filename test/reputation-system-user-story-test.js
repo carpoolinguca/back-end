@@ -140,7 +140,9 @@ describe('Managing a user', function() {
     it('Find driver reviews for Jacinta', function(done) {
       reputationSystem.driverReviewsByUserId(students[0].id,
         function(foundReviews) {
-          assert.equal(foundReviews[0].driverId, students[0].id);
+          assert.equal(foundReviews[0].passengerId, students[1].id);
+          assert.equal(foundReviews[0].name, students[1].name);
+          assert.equal(foundReviews[0].lastname, students[1].lastname);
           done();
         });
     });
@@ -168,7 +170,9 @@ describe('Managing a user', function() {
     it('Find passenger reviews for Juana', function(done) {
       reputationSystem.passengerReviewsByUserId(students[1].id,
         function(foundReviews) {
-          assert.equal(foundReviews[0].passengerId, students[1].id);
+          assert.equal(foundReviews[0].driverId, students[0].id);
+          assert.equal(foundReviews[0].name, students[0].name);
+          assert.equal(foundReviews[0].lastname, students[0].lastname);
           done();
         });
     });
