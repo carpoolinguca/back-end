@@ -30,6 +30,25 @@ TravelAdministrationSystem.prototype.travelsForUserIdentifiedBy = function(userI
 	}, callback);
 };
 
+TravelAdministrationSystem.prototype.travelsForDriverIdentifiedBy = function(userId, callback) {
+	this.travelsFilteredBy({
+		attributes: ['id', 'origin', 'destination', 'arrivalDateTime', 'status', 'maximumSeats', 'availableSeats', 'observations'],
+		where: {
+			userId: userId,
+			userIsDriver: true
+		}
+	}, callback);
+};
+
+TravelAdministrationSystem.prototype.travelsForPassengerIdentifiedBy = function(userId, callback) {
+	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		callback(results);
+	});
+};
+
 TravelAdministrationSystem.prototype.destroy = function(callback) {
 	Travel.destroy({
 		truncate: true

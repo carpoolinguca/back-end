@@ -35,6 +35,18 @@ function TravelRouter(sequelize) {
     });
   });
 
+  router.route('/for/user/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
+    travelAdministrationSystem.travelsForPassengerIdentifiedBy(req.body.userId, function(travels) {
+      res.json(travels);
+    });
+  });
+
+  router.route('/for/user/driver').post(authorizationSystem.isAuthenticated, function(req, res) {
+    travelAdministrationSystem.travelsForDriverIdentifiedBy(req.body.userId, function(travels) {
+      res.json(travels);
+    });
+  });
+
   router.route('/travel/start').post(authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToInProgressTravel(req.body.travelId, function(successful) {
       res.json({

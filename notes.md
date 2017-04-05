@@ -524,3 +524,50 @@ TO DO:
 * Se quitaron los campos de "isDriver" y "driverId" de los objetos review, y se agregó el "id" al "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).
 
 * Se quitaron los campos de "isDriver" y "passengerId" de los objetos review, y agregó el "id" al "userReviewed" en la consulta de reviews de conductores (/reviews/for/driver/find).
+
+2017-04-05
+==========
+
+* Se separa el servicio de viajes para un usuario en dos servicios diferentes:
+
+/travels/for/user/passenger
+
+Consulta:
+
+{
+	"userId": 2
+}
+
+Respuesta:
+
+[{
+   "id": 2,
+   "origin": "Avenida Alicia Moreau de Justo 1100, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+   "destination": "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+   "arrivalDateTime": "2016-10-21T17:05:06.000Z",
+   "travelStatus": "planed",
+   "seatAssignationStatus": "pending",
+   "observations": "De la biblio a la facu.",  (las observaciones son las del viaje padre)
+   "driverId": 1 (La consulta se me vuelve más complicada si muestro todos los datos del usuario como me pedís. Debería poderse consultar estos datos a partir de otro servicio que todavía no esta implementado jaja. O revisar si lo puedo agregar. Por el momento solo muestra el driverId).
+}]
+
+/travels/for/user/passenger
+
+Consulta:
+
+{
+	"userId": 1
+}
+
+Respuesta:
+
+[{
+   "id": 1,
+   "origin": "Avenida Alicia Moreau de Justo 1000, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+   "destination": "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+   "arrivalDateTime": "2017-02-15T17:05:06.000Z",
+   "status": "planed",
+   "maximumSeats": 4,
+   "availableSeats": 3,
+   "observations": "De la biblio a la facu."
+}]
