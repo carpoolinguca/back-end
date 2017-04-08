@@ -551,7 +551,7 @@ Respuesta:
    "driverId": 1 (La consulta se me vuelve más complicada si muestro todos los datos del usuario como me pedís. Debería poderse consultar estos datos a partir de otro servicio que todavía no esta implementado jaja. O revisar si lo puedo agregar. Por el momento solo muestra el driverId).
 }]
 
-/travels/for/user/passenger
+/travels/for/user/driver
 
 Consulta:
 
@@ -571,3 +571,8 @@ Respuesta:
    "availableSeats": 3,
    "observations": "De la biblio a la facu."
 }]
+
+2017-04-08
+==========
+
+Se agrega a la consulta /travels/for/user/passenger los campos name, lastname, drivingPoints y complaints.

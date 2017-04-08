@@ -41,7 +41,7 @@ TravelAdministrationSystem.prototype.travelsForDriverIdentifiedBy = function(use
 };
 
 TravelAdministrationSystem.prototype.travelsForPassengerIdentifiedBy = function(userId, callback) {
-	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
+	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
