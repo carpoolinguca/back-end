@@ -37,7 +37,26 @@ function TravelRouter(sequelize) {
 
   router.route('/for/user/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.travelsForPassengerIdentifiedBy(req.body.userId, function(travels) {
-      res.json(travels);
+      var formatedTravels = [];
+      travels.forEach(function(travel, index, arr) {
+        formatedTravels.push({
+          id: travel.id,
+          origin: travel.origin,
+          destination: travel.destination,
+          arrivalDateTime: travel.arrivalDateTime,
+          travelStatus: travel.travelStatus,
+          seatAssignationStatus: travel.seatAssignationStatus,
+          observations: travel.observations,
+          driver: {
+            id: travel.driverId,
+            name: travel.name,
+            lastname: travel.lastname,
+            drivingPoints: travel.drivingPoints,
+            complaints: travel.complaints
+          }
+        });
+      });
+      res.json(formatedTravels);
     });
   });
 
