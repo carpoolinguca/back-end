@@ -16,7 +16,18 @@ function ReviewRouter(sequelize) {
 
   router.route('/for/driver').post(authorizationSystem.isAuthenticated, function(req, res) {
     reputationSystem.registerReviewAboutDriver(req.body, function(review) {
-      res.json(review);
+      res.json({
+        receibed: "Ok",
+        error: "",
+        driverReview: {
+          id: review.id,
+          driverId: review.driverId,
+          points: review.points,
+          passengerId: review.passengerId,
+          reviewTitle: review.reviewTitle,
+          detailReview: review.detailReview,
+        }
+      });
     });
   });
 
@@ -38,7 +49,18 @@ function ReviewRouter(sequelize) {
 
   router.route('/for/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
     reputationSystem.registerReviewAboutPassenger(req.body, function(review) {
-      res.json(review);
+      res.json({
+        receibed: "Ok",
+        error: "",
+        passengerReview: {
+          id: review.id,
+          driverId: review.driverId,
+          points: review.points,
+          passengerId: review.passengerId,
+          reviewTitle: review.reviewTitle,
+          detailReview: review.detailReview,
+        }
+      });
     });
   });
 

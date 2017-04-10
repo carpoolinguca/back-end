@@ -575,4 +575,241 @@ Respuesta:
 2017-04-08
 ==========
 
-Se agrega a la consulta /travels/for/user/passenger los campos name, lastname, drivingPoints y complaints.
+* Se agrega a la consulta /travels/for/user/passenger los campos name, lastname, drivingPoints y complaints.
+
+2017-04-09
+==========
+
+* Se cambia la respuestas de review, para que muestren recibido Ok:
+
+POST /reviews/for/driver
+
+{
+   "receibed": "Ok",
+   "error": "",
+   "driverReview":    {
+      "id": 68,
+      "driverId": 1,
+      "points": 5,
+      "passengerId": 2,
+      "reviewTitle": "Exelente conductor",
+      "detailReview": "Fue muy amable conmigo y llegó a la hora que habíamos acordado. Muy crack"
+   }
+}
+
+POST /reviews/for/passenger
+
+{
+   "receibed": "Ok",
+   "error": "",
+   "passengerReview":    {
+      "id": 69,
+      "driverId": 1,
+      "points": 5,
+      "passengerId": 2,
+      "reviewTitle": "Exelente acompañante",
+      "detailReview": "Muy buena onda."
+   }
+}
+
+* Agregado de nuevas tareas:
+
+- Agregar servicio de consulta del perfil del usuario:
+/users/user/profile
+
+Consulta:
+
+{
+	userId: 2
+}
+
+Respuesta:
+
+{
+	id: 2,
+	name: "Quique",
+	lastname: "Quien",
+	ucaid: "020900847",
+	phone: "1148674837",
+	email: "quique@gmail.com",
+	cars: [
+			{
+				id: 1,
+				model: "Volkswagen Up!",
+				color: "Blanco",
+				licensePlate: "AG759LH",
+				hasAirConditioner: true,
+			}
+		  ]
+}
+
+- Agregar servicio de modificación del perfil del usuario:
+/users/user/profile/update
+
+Consulta:
+
+{
+	id: 2,
+	name: "Quique",
+	lastname: "Quien",
+	ucaid: "020900847",
+	phone: "1148674837",
+	email: "quique@gmail.com",
+}
+
+Respuesta
+
+{
+	receibed: "Ok",
+	error: ""
+}
+
+- Agregar servicio de agregado de autos:
+/users/user/cars/
+
+Consulta:
+
+{
+	userid: 2,
+	model: "Volkswagen Up!",
+	color: "Blanco",
+	licensePlate: "AG759LH",
+	hasAirConditioner: true,
+}
+
+Respuesta:
+
+{
+	receibed: "Ok",
+	error: ""
+}
+
+- Agregar servicio de modificación de auto:
+/users/user/cars/car/update
+
+Consulta:
+
+{
+	id: 1
+	userid: 2,
+	model: "Volkswagen Up!",
+	color: "Blanco",
+	licensePlate: "AG759LH",
+	hasAirConditioner: true,
+}
+
+Respuesta:
+
+{
+	receibed: "Ok",
+	error: ""
+}
+
+- Agregar servicio de eliminar auto:
+/users/user/cars/car/update
+
+Consulta:
+
+{
+	id: 1
+}
+
+Respuesta:
+
+{
+	receibed: "Ok",
+	error: ""
+}
+
+(Sólo se debería permitir eliminar, si no se ha realizado ningún viaje con ese auto)
+
+- Agregar servicio para buscar contactos agendados
+/contacts/favorites/find
+
+Consulta:
+
+{
+	userId: 1
+}
+
+Respuesta:
+
+[{
+	contactId: 1
+	userId:
+	name:
+	lastname:
+	passengerPoints:
+	drivingPoints:
+	complaints:
+	phone:
+},{
+	contactId: 2
+	userId:
+	name:
+	lastname:
+	passengerPoints:
+	drivingPoints:
+	complaints:
+	phone:
+}]
+
+Ordenados primero por nombre y luego por apellido.
+
+- Agregar un contacto a los favoritos de la agenda:
+/contacts/favorites
+
+Consulta:
+{
+	contactId: 1
+}
+
+Respuesta:
+{
+	receibed: "Ok",
+	error
+}
+
+- Eliminar contacto de los favoritos de la agenda:
+
+Consulta:
+{
+	contactId: 1
+}
+
+Respuesta:
+{
+	receibed: "Ok",
+	error
+}
+
+- Agregar servicio para buscar contactos no agendados (contactos conocidos)
+/contacts/acquaintances/find
+
+Consulta:
+
+{
+	userId: 1
+}
+
+Respuesta:
+
+[{
+	contactId: 3
+	userId:
+	name:
+	lastname:
+	passengerPoints:
+	drivingPoints:
+	complaints:
+	phone:
+},{
+	contactId: 4
+	userId:
+	name:
+	lastname:
+	passengerPoints:
+	drivingPoints:
+	complaints:
+	phone:
+}]
