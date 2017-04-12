@@ -44,11 +44,11 @@ function TravelRouter(sequelize) {
           origin: travel.origin,
           destination: travel.destination,
           arrivalDateTime: travel.arrivalDateTime,
-          travelStatus: travel.travelStatus,
+          status: travel.travelStatus,
           seatAssignationStatus: travel.seatAssignationStatus,
           observations: travel.observations,
           driver: {
-            id: travel.driverId,
+            driverId: travel.driverId,
             name: travel.name,
             lastname: travel.lastname,
             drivingPoints: travel.drivingPoints,
