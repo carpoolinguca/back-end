@@ -48,7 +48,7 @@ function TravelRouter(sequelize) {
           seatAssignationStatus: travel.seatAssignationStatus,
           observations: travel.observations,
           driver: {
-            driverId: travel.driverId,
+            userId: travel.driverId,
             name: travel.name,
             lastname: travel.lastname,
             drivingPoints: travel.drivingPoints,
