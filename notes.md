@@ -654,7 +654,7 @@ Consulta:
 	lastname: "Quien",
 	ucaid: "020900847",
 	phone: "1148674837",
-	email: "quique@gmail.com",
+	email: "quique@gmail.com"
 }
 
 Respuesta
@@ -813,3 +813,46 @@ Respuesta:
 	complaints:
 	phone:
 }]
+
+2017-04-18
+==========
+
+* Almacenar contraseñas de forma segura en la base de datos.
+
+http://stackoverflow.com/questions/1054022/best-way-to-store-password-in-database
+http://stackoverflow.com/questions/947618/how-to-best-store-user-information-and-user-login-and-password
+
+Don't store passwords. If it's ever sitting on a disk, it can be stolen. Instead, store password hashes. Use the right hashing algorithm, like bcrypt (which includes a salt).
+
+https://security.stackexchange.com/questions/211/how-to-securely-hash-passwords
+https://coderwall.com/p/1pn7cg/correct-way-to-store-passwords-in-node-js
+https://codahale.com/how-to-safely-store-a-password/
+
+
+* Implementación de bcrypt en Nodejs:
+
+https://www.npmjs.com/package/bcrypt
+
+Uso:
+
+var bcrypt = require('bcrypt');
+const saltRounds = 10;
+const myPlaintextPassword = 's0/\/\P4$$w0rD';
+const someOtherPlaintextPassword = 'not_bacon';
+
+bcrypt.hash(myPlaintextPassword, saltRounds, function(err, hash) {
+  // Store hash in your password DB. 
+});
+
+// Load hash from your password DB. 
+bcrypt.compare(myPlaintextPassword, hash, function(err, res) {
+    // res == true 
+});
+bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
+    // res == false 
+});
+
+2017-04-19
+==========
+* Se modifica el almacenamiento y validación de passwords para usar bcrypt.
+* Se elimina el servicio que respondía todos los usuarios.

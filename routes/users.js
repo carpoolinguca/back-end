@@ -7,11 +7,7 @@ function UserRouter(sequelize) {
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
 
-    router.route('/').get(function(req, res) {
-        userSystem.usersFilteredBy({}, function(users) {
-            res.json(users);
-        });
-    }).post(function(req, res) {
+    router.route('/').post(function(req, res) {
         userSystem.register(req.body, function(user) {
             res.json({
                 user: user,
@@ -20,64 +16,29 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/login').post(function(req, res) {
-        userSystem.oneUserFilteredBy({
-            where: {
-                email: req.body.email
-            }
-        }, function(user) {
-            if (!user) {
-                return res.status(401).send({
-                    message: {
-                        email: 'Incorrect email'
-                    }
-                });
-            }
-
-            if (req.body.password == user.password) {
-                var token = authorizationSystem.createTokenFor(user);
-                res.send({
-                    token: token,
-                    user: user
-                });
-            } else {
-                return res.status(401).send({
-                    message: {
-                        password: 'Incorrect password'
-                    }
-                });
-            }
-        });
-    });
-
     router.route('/user/login').post(function(req, res) {
-        userSystem.oneUserFilteredBy({
-            where: {
-                email: req.body.email
-            }
-        }, function(user) {
-            if (!user) {
+        userSystem.validateEmailAndPassword(req.body.email, req.body.password,
+            function() {
                 return res.status(401).send({
                     message: {
                         email: 'Incorrect email'
                     }
                 });
-            }
-
-            if (req.body.password == user.password) {
+            },
+            function() {
+                return res.status(401).send({
+                    message: {
+                        email: 'Incorrect password'
+                    }
+                });
+            },
+            function(user) {
                 var token = authorizationSystem.createTokenFor(user);
                 res.send({
                     token: token,
                     user: user
                 });
-            } else {
-                return res.status(401).send({
-                    message: {
-                        password: 'Incorrect password'
-                    }
-                });
-            }
-        });
+            });
     });
 
     router.route('/user/phone').post(authorizationSystem.isAuthenticated, function(req, res) {
