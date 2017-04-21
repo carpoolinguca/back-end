@@ -9,33 +9,13 @@ function RouteCalculatorSystem(sequelize) {
 	Sequelize = sequelize;
 }
 
-var routeWithLineStringFrom = function(route) {
-	var decodedPolyline = polyline.decode(route.polyline);
-	route.polyline = {
+var lineStringFrom = function(encodedPolyline) {
+	var decodedPolyline = polyline.decode(encodedPolyline);
+	return {
 		type: 'LineString',
 		coordinates: decodedPolyline
 	};
-	return route;
-}
-
-var createRecursive = function(routes, createdRoutes, callback) {
-	if (routes.length = 0) {
-		callback(createdRoutes);
-	} else {
-		Route.create(routes.pop).then(function(createdRoute) {
-			createdRoutes.push(createdRoute);
-			createRecursive(routes, createdRoutes, callback);
-		});
-	}
-}
-
-var createAllRoutes = function(routes, callback) {
-	if (routes.length > 0 && routes.length < 4) {
-		createRecursive(routes, [], callback);
-	} else {
-		callback([]);
-	}
-}
+};
 
 RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) {
 
@@ -59,10 +39,10 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 			var jsonResponse = JSON.parse(body);
 			var routes = [];
 			jsonResponse.routes.forEach(function(currentValue, index, arr) {
-				var polyline = currentValue.overview_polyline.points;
+				var polyline = lineStringFrom(currentValue.overview_polyline.points);
 				var distance = currentValue.legs[0].distance.value;
 				var duration = currentValue.legs[0].duration.text;
-				var route = {
+				routes[index] = {
 					travelId: travel.id,
 					origin: travel.origin,
 					destination: travel.destination,
@@ -71,7 +51,6 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 					duration: duration,
 					summary: currentValue.summary
 				};
-				routes[index] = routeWithLineStringFrom(route);
 				Route.create(routes[index]).then(function(createdRoute) {
 					routes[index] = createdRoute.dataValues;
 				});
