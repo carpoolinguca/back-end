@@ -92,7 +92,7 @@ TravelAdministrationSystem.prototype.startManaging = function(travel, callback) 
 
 TravelAdministrationSystem.prototype.startManagingAndCalculateRoutes = function(travel, callback) {
 	this.startManaging(travel, function(travelCreated) {
-		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function() {
+		routeCalculatorSystem.calculateAndStartManagingForTravel(travelCreated.dataValues, function() {
 			callback(travelCreated.dataValues);
 		});
 	});
@@ -108,15 +108,24 @@ TravelAdministrationSystem.prototype.findAll = function(endFunction) {
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
 	this.startManaging(travel, function(travelCreated) {
 		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
-			var queryString = 'SELECT * FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 and destination = \'' + travelCreated.destination + '\'));';
-			Sequelize.query(queryString, {
-				type: Sequelize.QueryTypes.SELECT
-			}).then(function(results) {
+			if (routes.length > 0) {
+				var lastCoordinate = routes[0].polyline.coordinates.length - 1;
+				var queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[lastCoordinate][0] + ' ' + routes[0].polyline.coordinates[lastCoordinate][1] + ' )\'), 500) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 ));';
+				Sequelize.query(queryString, {
+					type: Sequelize.QueryTypes.SELECT
+				}).then(function(results) {
+					endFunction({
+						queryTravel: travelCreated,
+						travelsFound: results
+					});
+				});
+			} else {
 				endFunction({
 					queryTravel: travelCreated,
-					travelsFound: results
+					travelsFound: []
 				});
-			});
+			}
+
 		});
 	});
 };

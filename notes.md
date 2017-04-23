@@ -856,3 +856,9 @@ bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
 ==========
 * Se modifica el almacenamiento y validación de passwords para usar bcrypt.
 * Se elimina el servicio que respondía todos los usuarios.
+
+2017-04-22
+==========
+* En el sistema rutas, se separa el cálculo de la ruta de su persistencia. Gracias a esto, se modifica el sistema de viajes para que cuando busca viajes padres para un hijo, no almacene las rutas del viaje hijo, innecesariamente.
+* Se corrije el error invalidante que se producía al no encontrar nínguna ruta posible para ir de un origen a un destino.
+* Se mejora la consulta SQL, para que busque en un radio de 500m dentro del destino seleccionado, para poder obtener mejores resultados en la busqueda.
