@@ -1,7 +1,7 @@
 var ReputationSystem = require('../controllers/reputation-system.js');
 var reputationSystem;
 var bcrypt = require('bcrypt');
-const saltRounds = 10;
+var saltRounds = 10;
 
 var Sequelize;
 var User;
@@ -28,6 +28,51 @@ UserAdministrationSystem.prototype.register = function(user, callback) {
 				});
 			});
 		});
+	});
+};
+
+UserAdministrationSystem.prototype.update = function(user, callback, notFoundCallback) {
+	User.findById(user.id).then(function(userFound) {
+		if (userFound !== null) {
+			userFound.update(user, {
+				fields: ['email', 'name', 'lastname', 'ucaid', 'sex', 'phone']
+			}).then(function() {
+				userFound.reload().then(function() {
+					callback({
+						id: userFound.id,
+						email: userFound.email,
+						name: userFound.name,
+						lastname: userFound.lastname,
+						ucaid: userFound.ucaid,
+						sex: userFound.sex,
+						phone: userFound.phone
+					});
+				});
+			});
+		} else {
+			notFoundCallback();
+		}
+	});
+};
+
+UserAdministrationSystem.prototype.changePassword = function(userId, oldPassword, newPassword, successfull, unsuccesfull) {
+	User.findById(userId).then(function(userFound) {
+		if (userFound !== null) {
+			bcrypt.compare(oldPassword, userFound.password, function(err, res) {
+				if (res === true) {
+					bcrypt.hash(newPassword, saltRounds, function(err, hash) {
+						userFound.password = hash;
+						userFound.save().then(function() {
+							successfull();
+						});
+					});
+				} else {
+					unsuccesfull('Contraseña incorrecta.');
+				}
+			});
+		} else {
+			unsuccesfull('No se encontró el usuario.');
+		}
 	});
 };
 
@@ -59,7 +104,7 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 			invalidEmailCallback();
 		} else {
 			bcrypt.compare(password, user.password, function(err, res) {
-				if (res == true) {
+				if (res === true) {
 					validUserCallback({
 						id: user.id,
 						email: user.email,

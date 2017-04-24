@@ -862,3 +862,63 @@ bcrypt.compare(someOtherPlaintextPassword, hash, function(err, res) {
 * En el sistema rutas, se separa el cálculo de la ruta de su persistencia. Gracias a esto, se modifica el sistema de viajes para que cuando busca viajes padres para un hijo, no almacene las rutas del viaje hijo, innecesariamente.
 * Se corrije el error invalidante que se producía al no encontrar nínguna ruta posible para ir de un origen a un destino.
 * Se mejora la consulta SQL, para que busque en un radio de 500m dentro del destino seleccionado, para poder obtener mejores resultados en la busqueda.
+
+2017-04-23
+==========
+* Se agregó el servicio de modificación de usuarios:
+/users/user/update
+
+Consulta:
+{
+	"id": 3,
+	"email" : "vicky@gmail.com",
+	"name" : "Victoria",
+	"lastname" : "Collins",
+	"ucaid" : "021555331",
+	"sex" : "Femenino",
+	"phone": "1569867499"
+}
+Respusta:
+{
+   "user":    {
+      "id": 3,
+      "email": "vicky@gmail.com",
+      "name": "Victoria",
+      "lastname": "Collins",
+      "ucaid": "021555331",
+      "sex": "Femenino",
+      "phone": "1569867499"
+   },
+   "receibed": "Ok",
+   "error": ""
+}
+
+* Se agregó el servicio de cambio de contraseña:
+/users/user/changePassword
+
+Consulta:
+{
+	"id": 3,
+	"password": "1234",
+	"newPassword": "5678"
+}
+
+Respuesta:
+{
+   "receibed": "Ok",
+   "error": ""
+}
+
+Respuesta por contraseña incorrecta:
+{
+   "receibed": "Error",
+   "error": "Contraseña incorrecta."
+}
+
+Respuesta por usuario no encontrado:
+{
+   "receibed": "Error",
+   "error": "No se encontró el usuario."
+}
+
+TODO: expirar todos los tokens, luego de efectuarse el cambio de contraseña.
