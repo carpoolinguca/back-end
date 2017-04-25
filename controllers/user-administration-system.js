@@ -132,11 +132,15 @@ UserAdministrationSystem.prototype.destroy = function(callback) {
 };
 */
 
-UserAdministrationSystem.prototype.destroy = function(user, callback) {
-	reputationSystem.destroyAllOpinionsFor(user, function() {
-		user.destroy();
-		callback();
+UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
+	User.findById(userReceibed.id).then(function(userFound) {
+		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {
+			userFound.destroy().then(function() {
+				callback();
+			});
+		});
 	});
+
 };
 
 

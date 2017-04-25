@@ -9,7 +9,7 @@ var ReputationSystem = require('../controllers/reputation-system');
 var reputationSystem = new ReputationSystem(sequelize);
 var students = [];
 
-describe('Managing a user', function() {
+describe('Managing users reputation', function() {
   before(function(done) {
     sequelize.sync();
     userTestResource.registerUsers(function(users) {
@@ -18,7 +18,7 @@ describe('Managing a user', function() {
     });
   });
 
-  describe('#Complaints', function() {
+  //describe('#Complaints', function() {
 
     it('Initialy Juana have got any complaint', function(done) {
       reputationSystem.nameAndReputationForUserId(students[0].id,

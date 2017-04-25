@@ -1,50 +1,31 @@
 var Sequelize;
-var Reputation;
-var Complaint;
-var Review;
 var User;
+var Car;
 
-function ReputationSystem(sequelize) {
+function CarSystem(sequelize) {
 	User = require('../models/user')(sequelize);
-	Reputation = require('../models/reputation')(sequelize);
-	Complaint = require('../models/complaint')(sequelize);
-	Review = require('../models/review')(sequelize);
+	Car = require('../models/car')(sequelize);
 	Sequelize = sequelize;
 }
 
-ReputationSystem.prototype.initializeReputationFor = function(user, callback) {
-	reputation = {
-		userId: user.id,
-		drivingPoints: 0,
-		passengerPoints: 0,
-		complaints: 0
-	};
-	Reputation.create(reputation).then(function(reputationCreated) {
-		callback(reputationCreated);
+
+CarSystem.prototype.carsForUserById = function(userId, callback) {
+	Car.findAll({
+		where: {
+			userId: userId
+		}
+	}).then(function(carsFound) {
+		callback(carsFound);
 	});
 };
 
-ReputationSystem.prototype.registerComplaint = function(complaint, callback) {
-	Complaint.create(complaint).then(function(complaintCreated) {
-		Reputation.findOne({
-			where: {
-				userId: complaintCreated.userTo
-			}
-		}).then(function(reputationFound) {
-			reputationFound.increment('complaints').then(function() {
-				callback(complaintCreated);
-			});
-		});
-	});
-};
-
-ReputationSystem.prototype.complaints = function(callback) {
+CarSystem.prototype.complaints = function(callback) {
 	Complaint.findAll().then(function(foundComplaints) {
 		callback(foundComplaints);
 	});
 };
 
-ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
+CarSystem.prototype.complaintsToUserById = function(userId, callback) {
 	var queryString = 'select c."userFrom", u.name, u.lastname, c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = ' + userId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
@@ -53,19 +34,19 @@ ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
 	});
 };
 
-ReputationSystem.prototype.reputationsFilteredBy = function(parameters, callback) {
+CarSystem.prototype.reputationsFilteredBy = function(parameters, callback) {
 	Reputation.findAll(parameters).then(function(Reputations) {
 		callback(Reputations);
 	});
 };
 
-ReputationSystem.prototype.reputationIdentifiedBy = function(identification, callback) {
+CarSystem.prototype.reputationIdentifiedBy = function(identification, callback) {
 	Reputation.findById(identification).then(function(readedReputation) {
 		callback(readedReputation);
 	});
 };
 
-ReputationSystem.prototype.nameAndReputationForUserId = function(userId, callback) {
+CarSystem.prototype.nameAndReputationForUserId = function(userId, callback) {
 	var queryString = 'select r."userId", u.name, u.lastname, r.complaints, r."passengerPoints", r."drivingPoints" from "user" as u inner join reputation as r on (u.id = r."userId" ) where r."userId" = ' + userId + ' limit 1;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
@@ -74,7 +55,7 @@ ReputationSystem.prototype.nameAndReputationForUserId = function(userId, callbac
 	});
 };
 
-ReputationSystem.prototype.reputationForUserId = function(userId, callback) {
+CarSystem.prototype.reputationForUserId = function(userId, callback) {
 	Reputation.findOne({
 		where: {
 			userId: userId
@@ -84,13 +65,13 @@ ReputationSystem.prototype.reputationForUserId = function(userId, callback) {
 	});
 };
 
-ReputationSystem.prototype.reviews = function(callback) {
+CarSystem.prototype.reviews = function(callback) {
 	Review.findAll().then(function(foundReviews) {
 		callback(foundReviews);
 	});
 };
 
-ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
+CarSystem.prototype.driverReviewsByUserId = function(userId, callback) {
 	var queryString = 'select d."passengerId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."passengerId" ) where d."driverId" = ' + userId + ' and d."isDriver" = true ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
@@ -99,7 +80,7 @@ ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
 	});
 };
 
-ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback) {
+CarSystem.prototype.passengerReviewsByUserId = function(userId, callback) {
 	var queryString = 'select d."driverId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."driverId" ) where d."passengerId" = ' + userId + ' and d."isDriver" = false ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
@@ -108,7 +89,7 @@ ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback)
 	});
 };
 
-ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, callback) {
+CarSystem.prototype.registerReviewAboutDriver = function(driverReview, callback) {
 	var self = this;
 	Review.create({
 		isDriver: true,
@@ -125,7 +106,7 @@ ReputationSystem.prototype.registerReviewAboutDriver = function(driverReview, ca
 
 };
 
-ReputationSystem.prototype.registerReviewAboutPassenger = function(passengerReview, callback) {
+CarSystem.prototype.registerReviewAboutPassenger = function(passengerReview, callback) {
 	var self = this;
 	Review.create({
 		isDriver: false,
@@ -141,7 +122,7 @@ ReputationSystem.prototype.registerReviewAboutPassenger = function(passengerRevi
 	});
 
 };
-ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
+CarSystem.prototype.refreshReputationForDriver = function(driverId, callback) {
 	self = this;
 	self.caculateReputationForDriver(driverId, function(reputationPoints) {
 		self.reputationForUserId(driverId, function(foundReputation) {
@@ -155,7 +136,7 @@ ReputationSystem.prototype.refreshReputationForDriver = function(driverId, callb
 	});
 };
 
-ReputationSystem.prototype.refreshReputationForPassenger = function(passengerId, callback) {
+CarSystem.prototype.refreshReputationForPassenger = function(passengerId, callback) {
 	self = this;
 	self.caculateReputationForPassenger(passengerId, function(reputationPoints) {
 		self.reputationForUserId(passengerId, function(foundReputation) {
@@ -169,19 +150,19 @@ ReputationSystem.prototype.refreshReputationForPassenger = function(passengerId,
 	});
 };
 
-ReputationSystem.prototype.caculateReputationForDriver = function(driverId, callback) {
+CarSystem.prototype.caculateReputationForDriver = function(driverId, callback) {
 	this.caculateReputationWhere({
 		driverId: driverId
 	}, callback);
 };
 
-ReputationSystem.prototype.caculateReputationForPassenger = function(passengerId, callback) {
+CarSystem.prototype.caculateReputationForPassenger = function(passengerId, callback) {
 	this.caculateReputationWhere({
 		passengerId: passengerId
 	}, callback);
 };
 
-ReputationSystem.prototype.caculateReputationWhere = function(whereCondition, callback) {
+CarSystem.prototype.caculateReputationWhere = function(whereCondition, callback) {
 	//Hacer promedio de todas las reputaciones. 
 	//suma de reputacion / count de reputaciones
 	Review.sum('points', {
@@ -195,18 +176,18 @@ ReputationSystem.prototype.caculateReputationWhere = function(whereCondition, ca
 	});
 };
 
-ReputationSystem.prototype.destroy = function(callback) {
+CarSystem.prototype.destroy = function(callback) {
 	Reputation.destroy({
 		truncate: true
 	}).then(function() {
-		//reputationSystem.destroy(callback());
+		//CarSystem.destroy(callback());
 	});
 };
 
-ReputationSystem.prototype.destroyReputationFor = function(userReceibed, next) {
+CarSystem.prototype.destroyReputationFor = function(user, next) {
 	Reputation.findOne({
 		where: {
-			userId: userReceibed.id
+			userId: user.id
 		}
 	}).then(function(reputation) {
 		reputation.destroy();
@@ -214,7 +195,7 @@ ReputationSystem.prototype.destroyReputationFor = function(userReceibed, next) {
 	});
 };
 
-ReputationSystem.prototype.destroyAllComplaintsFor = function(user, callback) {
+CarSystem.prototype.destroyAllComplaintsFor = function(user, callback) {
 	Complaint.destroy({
 		where: {
 			$or: [{
@@ -228,7 +209,7 @@ ReputationSystem.prototype.destroyAllComplaintsFor = function(user, callback) {
 	});
 };
 
-ReputationSystem.prototype.destroyAllReviewsFor = function(user, callback) {
+CarSystem.prototype.destroyAllReviewsFor = function(user, callback) {
 	Review.destroy({
 		where: {
 			$or: [{
@@ -242,7 +223,7 @@ ReputationSystem.prototype.destroyAllReviewsFor = function(user, callback) {
 	});
 };
 
-ReputationSystem.prototype.destroyAllOpinionsFor = function(user, callback) {
+CarSystem.prototype.destroyAllOpinionsFor = function(user, callback) {
 	var self = this;
 	self.destroyReputationFor(user, function() {
 		self.destroyAllComplaintsFor(user, function() {
@@ -253,4 +234,4 @@ ReputationSystem.prototype.destroyAllOpinionsFor = function(user, callback) {
 	});
 };
 
-module.exports = ReputationSystem;
+module.exports = CarSystem;

@@ -922,3 +922,35 @@ Respuesta por usuario no encontrado:
 }
 
 TODO: expirar todos los tokens, luego de efectuarse el cambio de contraseña.
+
+2017-04-23
+==========
+
+* Buenas prácticas de manejo de errores en node.js
+
+https://fernetjs.com/2012/12/manejando-errores/
+https://engineering.gosquared.com/node-js-error-handling-callbacks-vs-promises
+http://fredkschott.com/post/2014/03/understanding-error-first-callbacks-in-node-js/
+
+https://nodejs.org/dist/latest-v7.x/docs/api/errors.html
+
+Node.js style callbacks
+#
+
+Most asynchronous methods exposed by the Node.js core API follow an idiomatic pattern referred to as a "Node.js style callback". With this pattern, a callback function is passed to the method as an argument. When the operation either completes or an error is raised, the callback function is called with the Error object (if any) passed as the first argument. If no error was raised, the first argument will be passed as null.
+
+```js
+const fs = require('fs');
+
+function nodeStyleCallback(err, data) {
+  if (err) {
+    console.error('There was an error', err);
+    return;
+  }
+  console.log(data);
+}
+
+fs.readFile('/some/file/that/does-not-exist', nodeStyleCallback);
+fs.readFile('/some/file/that/does-exist', nodeStyleCallback);
+
+```
