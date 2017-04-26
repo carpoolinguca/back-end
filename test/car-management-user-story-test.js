@@ -18,8 +18,6 @@ describe('Managing users cars', function() {
     });
   });
 
-  //describe('CARS', function() {
-
   it('Initialy Juana have got any cars', function(done) {
     carSystem.carsForUserById(students[0].id,
       function(cars) {
@@ -38,7 +36,7 @@ describe('Managing users cars', function() {
         hasAirConditioner: true,
       },
       function(err, registeredCar) {
-        assert.isOk(err);
+        assert.isNull(err);
         assert.equal(registeredCar.userId, students[0].id);
         assert.equal(registeredCar.model, 'Volkswagen Up!');
         assert.equal(registeredCar.color, 'Blanco');
@@ -57,8 +55,9 @@ describe('Managing users cars', function() {
         hasAirConditioner: true,
       },
       function(err, registeredCar) {
-        assert.fail(err);
-        assert.isNull(registeredCar);
+        assert.isOk(err);
+        assert.equal(err.message,'Ya existe un auto registrado con la patente: AG759LH')
+        assert.isUndefined(registeredCar);
         done();
       });
   });

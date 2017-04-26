@@ -4,6 +4,8 @@ function UserRouter(sequelize) {
 
     var UserSystem = require('../controllers/user-administration-system');
     var userSystem = new UserSystem(sequelize);
+    var CarSystem = require('../controllers/car-administration-system');
+    var carSystem = new CarSystem(sequelize);
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
 
@@ -78,6 +80,46 @@ function UserRouter(sequelize) {
                 userId: foundUser.id,
                 phone: foundUser.phone
             });
+        });
+    });
+
+    router.route('/user/profile').post(authorizationSystem.isAuthenticated, function(req, res) {
+        userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
+            carSystem.carsForUserById(foundUser.id, function(foundCars) {
+                res.send({
+                    id: foundUser.id,
+                    name: foundUser.name,
+                    lastname: foundUser.lastname,
+                    ucaid: foundUser.ucaid,
+                    phone: foundUser.phone,
+                    email: foundUser.email,
+                    cars: foundCars
+                });
+            });
+        });
+    });
+
+    router.route('/user/cars').post(authorizationSystem.isAuthenticated, function(req, res) {
+        carSystem.register(req.body, function(err, registeredCar) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+            } else {
+                res.send({
+                    car: {
+                        id: registeredCar.id,
+                        userId: registeredCar.userId,
+                        model: registeredCar.model,
+                        color: registeredCar.color,
+                        licensePlate: registeredCar.licensePlate,
+                        hasAirConditioner: registeredCar.hasAirConditioner
+                    },
+                    receibed: 'Ok',
+                    error: ''
+                });
+            }
         });
     });
 

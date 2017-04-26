@@ -878,7 +878,7 @@ Consulta:
 	"sex" : "Femenino",
 	"phone": "1569867499"
 }
-Respusta:
+Respuesta:
 {
    "user":    {
       "id": 3,
@@ -954,3 +954,7 @@ fs.readFile('/some/file/that/does-not-exist', nodeStyleCallback);
 fs.readFile('/some/file/that/does-exist', nodeStyleCallback);
 
 ```
+
+2017-04-25
+==========
+* Se agregan el servicio de consulta de perfil de usuario y el servicio de creación de auto.

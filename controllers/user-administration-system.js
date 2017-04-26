@@ -1,5 +1,7 @@
 var ReputationSystem = require('../controllers/reputation-system.js');
 var reputationSystem;
+var CarSystem = require('../controllers/car-administration-system.js');
+var carSystem;
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 
@@ -9,6 +11,7 @@ var User;
 function UserAdministrationSystem(sequelize) {
 	User = require('../models/user')(sequelize);
 	reputationSystem = new ReputationSystem(sequelize);
+	carSystem = new CarSystem(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -135,8 +138,10 @@ UserAdministrationSystem.prototype.destroy = function(callback) {
 UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 	User.findById(userReceibed.id).then(function(userFound) {
 		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {
-			userFound.destroy().then(function() {
-				callback();
+			carSystem.destroyAllCarsFor(userReceibed, function() {
+				userFound.destroy().then(function() {
+					callback();
+				});
 			});
 		});
 	});

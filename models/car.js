@@ -10,7 +10,8 @@ module.exports = function(sequelize) {
 			type: Sequelize.INTEGER,
 			references: {
 				model: User
-			}
+			},
+			unique: 'userAndLicensePlate'
 		},
 		model: {
 			type: Sequelize.STRING
@@ -19,7 +20,8 @@ module.exports = function(sequelize) {
 			type: Sequelize.STRING
 		},
 		licensePlate: {
-			type: Sequelize.STRING
+			type: Sequelize.STRING,
+			unique: 'userAndLicensePlate'
 		},
 		hasAirConditioner: {
 			type: Sequelize.BOOLEAN

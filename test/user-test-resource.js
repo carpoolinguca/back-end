@@ -13,6 +13,7 @@ UserTestResource.prototype.registerUsers = function(callback) {
 		lastname: 'La Loca',
 		ucaid: '020800233',
 		sex: 'Femenino',
+		phone: '1138475937'
 	};
 	var userJacinta = {
 		email: 'jacinta@gmail.com',
@@ -21,6 +22,7 @@ UserTestResource.prototype.registerUsers = function(callback) {
 		lastname: 'La Cinta',
 		ucaid: '020800234',
 		sex: 'Femenino',
+		phone: '1138475938'
 	};
 	users = [userJuana, userJacinta];
 
@@ -35,10 +37,10 @@ UserTestResource.prototype.registerUsers = function(callback) {
 
 UserTestResource.prototype.destroy = function(callback) {
 	userAdministrationSystem.destroy(users[0], function() {
-        userAdministrationSystem.destroy(users[1], function() {
-          callback();
-        });
-      });
+		userAdministrationSystem.destroy(users[1], function() {
+			callback();
+		});
+	});
 };
 
 module.exports = UserTestResource;
