@@ -123,6 +123,22 @@ function UserRouter(sequelize) {
         });
     });
 
+    router.route('/user/cars/car/delete').post(authorizationSystem.isAuthenticated, function(req, res) {
+        carSystem.unregister(req.body.id, function(err, registeredCar) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+            } else {
+                res.send({
+                    receibed: 'Ok',
+                    error: ''
+                });
+            }
+        });
+    });
+
     return router;
 }
 

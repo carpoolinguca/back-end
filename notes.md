@@ -706,7 +706,7 @@ Respuesta:
 }
 
 - Agregar servicio de eliminar auto:
-/users/user/cars/car/update
+/users/user/cars/car/delete
 
 Consulta:
 

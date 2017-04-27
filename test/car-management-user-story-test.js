@@ -8,6 +8,7 @@ var userTestResource = new UserTestResource(userAdministrationSystem);
 var CarSystem = require('../controllers/car-administration-system');
 var carSystem = new CarSystem(sequelize);
 var students = [];
+var car;
 
 describe('Managing users cars', function() {
   before(function(done) {
@@ -21,7 +22,6 @@ describe('Managing users cars', function() {
   it('Initialy Juana have got any cars', function(done) {
     carSystem.carsForUserById(students[0].id,
       function(cars) {
-        console.log(cars);
         assert.equal(cars.length, 0);
         done();
       });
@@ -42,12 +42,13 @@ describe('Managing users cars', function() {
         assert.equal(registeredCar.color, 'Blanco');
         assert.equal(registeredCar.licensePlate, 'AG759LH');
         assert.equal(registeredCar.hasAirConditioner, true);
+        car = registeredCar;
         done();
       });
   });
 
-  it('Juana can not register a repeated car', function(done) {
-    carSystem.register({
+  it('Juana can update a car', function(done) {
+    carSystem.update({
         userId: students[0].id,
         model: 'Volkswagen Up!',
         color: 'Blanco',
@@ -56,9 +57,21 @@ describe('Managing users cars', function() {
       },
       function(err, registeredCar) {
         assert.isOk(err);
-        assert.equal(err.message,'Ya existe un auto registrado con la patente: AG759LH')
+        assert.equal(err.message, 'Ya existe un auto registrado con la patente: AG759LH')
         assert.isUndefined(registeredCar);
         done();
+      });
+  });
+
+  it('Juana delete her car', function(done) {
+    carSystem.unregister(car.id,
+      function(err) {
+        assert.isNotOk(err);
+        carSystem.carsForUserById(students[0].id,
+          function(cars) {
+            assert.equal(cars.length, 0);
+            done();
+          });
       });
   });
 

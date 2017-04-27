@@ -38,6 +38,25 @@ CarSystem.prototype.register = function(car, callback) {
 	});
 };
 
+CarSystem.prototype.update = function(car, callback) {
+	Car.findById(car.id).then(function(foundCar) {
+		/*
+		UPDATE
+		foundCar.destroy().then(function() {
+			callback(null);
+		});
+		*/
+	});
+};
+
+CarSystem.prototype.unregister = function(carId, callback) {
+	Car.findById(carId).then(function(foundCar) {
+		foundCar.destroy().then(function() {
+			callback(null);
+		});
+	});
+};
+
 CarSystem.prototype.destroyAllCarsFor = function(user, callback) {
 	Car.destroy({
 		where: {
