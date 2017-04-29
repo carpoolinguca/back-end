@@ -40,12 +40,17 @@ CarSystem.prototype.register = function(car, callback) {
 
 CarSystem.prototype.update = function(car, callback) {
 	Car.findById(car.id).then(function(foundCar) {
-		/*
-		UPDATE
-		foundCar.destroy().then(function() {
-			callback(null);
+		if (car.licensePlate != foundCar.licensePlate) {
+			callback(new Error('No se puede modificar la patente'));
+			return;
+		}
+		foundCar.update(car, {
+			fields: ['model', 'color', 'hasAirConditioner']
+		}).then(function() {
+			foundCar.reload().then(function() {
+				callback(null, foundCar);
+			});
 		});
-		*/
 	});
 };
 

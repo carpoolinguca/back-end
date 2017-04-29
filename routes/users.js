@@ -139,6 +139,30 @@ function UserRouter(sequelize) {
         });
     });
 
+    router.route('/user/cars/car/update').post(authorizationSystem.isAuthenticated, function(req, res) {
+        carSystem.update(req.body, function(err, updatedCar) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+            } else {
+                res.send({
+                    car: {
+                        id: updatedCar.id,
+                        userId: updatedCar.userId,
+                        model: updatedCar.model,
+                        color: updatedCar.color,
+                        licensePlate: updatedCar.licensePlate,
+                        hasAirConditioner: updatedCar.hasAirConditioner
+                    },
+                    receibed: 'Ok',
+                    error: ''
+                });
+            }
+        });
+    });
+
     return router;
 }
 

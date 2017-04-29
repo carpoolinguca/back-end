@@ -685,6 +685,7 @@ Respuesta:
 }
 
 - Agregar servicio de modificación de auto:
+(Sólo se puede cambiar modelo, color y aire acondicionado)
 /users/user/cars/car/update
 
 Consulta:
