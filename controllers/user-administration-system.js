@@ -108,14 +108,17 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 		} else {
 			bcrypt.compare(password, user.password, function(err, res) {
 				if (res === true) {
-					validUserCallback({
-						id: user.id,
-						email: user.email,
-						name: user.name,
-						lastname: user.lastname,
-						ucaid: user.ucaid,
-						sex: user.sex,
-						phone: user.phone
+					carSystem.carsForUserById(user.id, function(cars) {
+						validUserCallback({
+							id: user.id,
+							email: user.email,
+							name: user.name,
+							lastname: user.lastname,
+							ucaid: user.ucaid,
+							sex: user.sex,
+							phone: user.phone,
+							cars: cars
+						});
 					});
 				} else {
 					invalidPasswordCallback();
@@ -123,6 +126,10 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 			});
 		}
 	});
+};
+
+UserAdministrationSystem.prototype.registerCar = function(car, callback) {
+	carSystem.register(car, callback);
 };
 
 /*

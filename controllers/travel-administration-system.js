@@ -81,6 +81,7 @@ TravelAdministrationSystem.prototype.startManaging = function(travel, callback) 
 		userIsDriver: travel.userIsDriver,
 		maximumSeats: travel.seats,
 		availableSeats: travel.seats,
+		car: travel.car,
 		arrivalDateTime: travel.arrivalDateTime,
 		observations: travel.observations,
 		status: 'planed'
@@ -130,8 +131,13 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 	});
 };
 
+TravelAdministrationSystem.prototype.startManagingOfflineRoute = function(route, callback) {
+	routeCalculatorSystem.startManagingOfflineRoute(route, function(routes) {
+		callback(routes);
+	});
+};
+
 TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback) {
-	console.log(travel);
 	routeCalculatorSystem.routesForTravel(travel, function(routes) {
 		callback(routes);
 	});

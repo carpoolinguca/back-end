@@ -3,6 +3,7 @@ var Sequelize = require('sequelize');
 module.exports = function(sequelize) {
 
 	var User = require('./user')(sequelize);
+	var Car = require('./car')(sequelize);
 
 	var Travel = sequelize.define('travel', {
 		userId: {
@@ -25,6 +26,12 @@ module.exports = function(sequelize) {
 		},
 		availableSeats: {
 			type: Sequelize.INTEGER,
+		},
+		carId: {
+			type: Sequelize.INTEGER,
+			references: {
+				model: Car
+			}
 		},
 		arrivalDateTime: {
 			type: Sequelize.DATE

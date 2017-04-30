@@ -959,3 +959,8 @@ fs.readFile('/some/file/that/does-exist', nodeStyleCallback);
 2017-04-25
 ==========
 * Se agregan el servicio de consulta de perfil de usuario y el servicio de creación de auto.
+
+2017-04-29
+==========
+* Se agregan el servicio eliminación y modificación de auto.
+

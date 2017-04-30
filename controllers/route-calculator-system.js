@@ -64,6 +64,10 @@ RouteCalculatorSystem.prototype.calculateAndStartManagingForTravel = function(tr
 	});
 };
 
+RouteCalculatorSystem.prototype.startManagingOfflineRoute = function(route, callback) {
+	Route.create(route).then(callback);
+};
+
 RouteCalculatorSystem.prototype.destroy = function(callback) {
 	Route.destroy({
 		truncate: true
@@ -83,7 +87,6 @@ RouteCalculatorSystem.prototype.countAll = function(endingFunction) {
 };
 
 RouteCalculatorSystem.prototype.routesForTravel = function(travel, endingFunction) {
-	console.log(travel);
 	Route.findAll({
 		where: {
 			travelId: travel.id
