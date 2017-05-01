@@ -37,26 +37,7 @@ function TravelRouter(sequelize) {
 
   router.route('/for/user/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.travelsForPassengerIdentifiedBy(req.body.userId, function(travels) {
-      var formatedTravels = [];
-      travels.forEach(function(travel, index, arr) {
-        formatedTravels.push({
-          id: travel.id,
-          origin: travel.origin,
-          destination: travel.destination,
-          arrivalDateTime: travel.arrivalDateTime,
-          status: travel.travelStatus,
-          seatAssignationStatus: travel.seatAssignationStatus,
-          observations: travel.observations,
-          driver: {
-            userId: travel.driverId,
-            name: travel.name,
-            lastname: travel.lastname,
-            drivingPoints: travel.drivingPoints,
-            complaints: travel.complaints
-          }
-        });
-      });
-      res.json(formatedTravels);
+      res.json(travels);
     });
   });
 
@@ -87,6 +68,23 @@ function TravelRouter(sequelize) {
       res.json({
         canceled: successful
       });
+    });
+  });
+
+  router.route('/travel/car/update').post(authorizationSystem.isAuthenticated, function(req, res) {
+    travelAdministrationSystem.updateCarForTravelById(req.body.travelId, req.body.carId, function(err, updatedTravel) {
+      if (err) {
+        res.send({
+          receibed: 'Error',
+          error: err.message
+        });
+      } else {
+        res.send({
+          travel: updatedTravel,
+          receibed: 'Ok',
+          error: ''
+        });
+      }
     });
   });
 

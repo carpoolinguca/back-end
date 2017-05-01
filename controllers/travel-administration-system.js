@@ -2,7 +2,8 @@ var RouteCalculatorSystem = require('../controllers/route-calculator-system.js')
 var routeCalculatorSystem;
 var ContactAdministrationSystem = require('../controllers/contact-administration-system.js');
 var contactAdministrationSystem;
-
+var CarSystem = require('../controllers/car-administration-system.js');
+var carSystem;
 
 var Sequelize;
 var Travel;
@@ -12,6 +13,7 @@ function TravelAdministrationSystem(sequelize) {
 	SeatAsignation = require('../models/seat-assignation')(sequelize);
 	routeCalculatorSystem = new RouteCalculatorSystem(sequelize);
 	contactAdministrationSystem = new ContactAdministrationSystem(sequelize);
+	carSystem = new CarSystem(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -32,7 +34,7 @@ TravelAdministrationSystem.prototype.travelsForUserIdentifiedBy = function(userI
 
 TravelAdministrationSystem.prototype.travelsForDriverIdentifiedBy = function(userId, callback) {
 	this.travelsFilteredBy({
-		attributes: ['id', 'origin', 'destination', 'arrivalDateTime', 'status', 'maximumSeats', 'availableSeats', 'observations'],
+		attributes: ['id', 'origin', 'destination', 'arrivalDateTime', 'status', 'maximumSeats', 'availableSeats', 'carId', 'observations'],
 		where: {
 			userId: userId,
 			userIsDriver: true
@@ -40,12 +42,43 @@ TravelAdministrationSystem.prototype.travelsForDriverIdentifiedBy = function(use
 	}, callback);
 };
 
+TravelAdministrationSystem.prototype.formatTravelsForPassenger = function(travels) {
+	var formatedTravels = [];
+	travels.forEach(function(travel, index, arr) {
+		formatedTravels.push({
+			id: travel.id,
+			origin: travel.origin,
+			destination: travel.destination,
+			arrivalDateTime: travel.arrivalDateTime,
+			status: travel.travelStatus,
+			seatAssignationStatus: travel.seatAssignationStatus,
+			observations: travel.observations,
+			driver: {
+				userId: travel.driverId,
+				name: travel.name,
+				lastname: travel.lastname,
+				drivingPoints: travel.drivingPoints,
+				complaints: travel.complaints
+			},
+			car: {
+				id: travel.carId,
+				model: travel.model,
+				color: travel.color,
+				licensePlate: travel.licensePlate,
+				hasAirConditioner: travel.hasAirConditioner
+			}
+		});
+	});
+	return formatedTravels;
+};
+
 TravelAdministrationSystem.prototype.travelsForPassengerIdentifiedBy = function(userId, callback) {
-	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
+	var self = this;
+	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints, y."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id INNER JOIN car AS ca ON ca.id= y."carId" WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
-		callback(results);
+		callback(self.formatTravelsForPassenger(results));
 	});
 };
 
@@ -81,7 +114,7 @@ TravelAdministrationSystem.prototype.startManaging = function(travel, callback) 
 		userIsDriver: travel.userIsDriver,
 		maximumSeats: travel.seats,
 		availableSeats: travel.seats,
-		car: travel.car,
+		carId: travel.carId,
 		arrivalDateTime: travel.arrivalDateTime,
 		observations: travel.observations,
 		status: 'planed'
@@ -105,28 +138,85 @@ TravelAdministrationSystem.prototype.findAll = function(endFunction) {
 	});
 };
 
+TravelAdministrationSystem.prototype.formatFoundTravels = function(travels) {
+	var formatedTravels = [];
+	travels.forEach(function(travel, index, arr) {
+		formatedTravels.push({
+			id: travel.id,
+			origin: travel.origin,
+			destination: travel.destination,
+			arrivalDateTime: travel.arrivalDateTime,
+			status: travel.travelStatus,
+			observations: travel.observations,
+			compatibility: "Se deja los datos de usuario desencapsulados para compatibilidad con versiones anteriores de la app. Quitar esto cuando ya no se use",
+			userId: travel.userId,
+			drivingPoints: travel.drivingPoints,
+			complaints: travel.complaints,
+			email: travel.email,
+			name: travel.name,
+			lastname: travel.lastname,
+			sex: travel.sex,
+			ucaid: travel.ucaid,
+			phone: travel.phone,
+			driver: {
+				userId: travel.userId,
+				name: travel.name,
+				lastname: travel.lastname,
+				email: travel.email,
+				sex: travel.sex,
+				ucaid: travel.ucaid,
+				phone: travel.phone,
+				drivingPoints: travel.drivingPoints,
+				complaints: travel.complaints
+			},
+			car: {
+				id: travel.carId,
+				model: travel.model,
+				color: travel.color,
+				licensePlate: travel.licensePlate,
+				hasAirConditioner: travel.hasAirConditioner
+			}
+		});
+	});
+	return formatedTravels;
+};
+
+TravelAdministrationSystem.prototype.formatQueriedTravel = function(travel) {
+	return {
+		id: travel.id,
+		userId: travel.userId,
+		origin: travel.origin,
+		destination: travel.destination,
+		arrivalDateTime: travel.arrivalDateTime,
+		status: travel.travelStatus,
+		observations: travel.observations
+	};
+};
+
 //TODO: agregar filtrado por día de la fecha!
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
-	this.startManaging(travel, function(travelCreated) {
+	self = this;
+	self.startManaging(travel, function(travelCreated) {
+		var travelQueriedFormated = self.formatQueriedTravel(travelCreated);
 		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
 			if (routes.length > 0) {
 				var lastCoordinate = routes[0].polyline.coordinates.length - 1;
-				var queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[lastCoordinate][0] + ' ' + routes[0].polyline.coordinates[lastCoordinate][1] + ' )\'), 500) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 ));';
+				var queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[lastCoordinate][0] + ' ' + routes[0].polyline.coordinates[lastCoordinate][1] + ' )\'), 500) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 ));';
 				Sequelize.query(queryString, {
 					type: Sequelize.QueryTypes.SELECT
 				}).then(function(results) {
+					var formatedTravels = self.formatFoundTravels(results);
 					endFunction({
-						queryTravel: travelCreated,
-						travelsFound: results
+						queryTravel: travelQueriedFormated,
+						travelsFound: formatedTravels
 					});
 				});
 			} else {
 				endFunction({
-					queryTravel: travelCreated,
+					queryTravel: travelQueriedFormated,
 					travelsFound: []
 				});
 			}
-
 		});
 	});
 };
@@ -280,6 +370,27 @@ TravelAdministrationSystem.prototype.seatIdentifiedBy = function(seatId, foundCa
 		} else {
 			notFoundCallback('No se ha encontrado un asiento con ese id');
 		}
+	});
+};
+
+TravelAdministrationSystem.prototype.updateCarForTravelById = function(travelId, carId, callback) {
+	Travel.findById(travelId).then(function(foundTravel) {
+		if (!foundTravel) {
+			callback(new Error('No se ha encontrado un viaje para el id:' + travelId));
+			return;
+		}
+		carSystem.findById(carId, function(err, foundCar) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			foundTravel.carId = carId;
+			foundTravel.save().then(function() {
+				foundTravel.reload().then(function() {
+					callback(null, foundTravel);
+				});
+			});
+		});
 	});
 };
 

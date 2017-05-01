@@ -62,6 +62,16 @@ CarSystem.prototype.unregister = function(carId, callback) {
 	});
 };
 
+CarSystem.prototype.findById = function(carId, callback) {
+	Car.findById(carId).then(function(foundCar) {
+		if (!foundCar) {
+			callback(new Error('No se ha encontrado un auto con el id: ' + carId));
+			return;
+		}
+		callback(null, foundCar);
+	});
+};
+
 CarSystem.prototype.destroyAllCarsFor = function(user, callback) {
 	Car.destroy({
 		where: {

@@ -964,3 +964,12 @@ fs.readFile('/some/file/that/does-exist', nodeStyleCallback);
 ==========
 * Se agregan el servicio eliminación y modificación de auto.
 
+2017-04-30
+==========
+* Se agrega la información del auto, en los servicios:
+- Creación de viaje
+- Busqueda de viaje
+- Consulta de viajes como pasajero
+- Consulta de viajes como conductor
+* Se agrega en el login, que se devuelva al usuario incluyendo todos los autos que tiene registrados.
+* Se agrega el servicio de modificación de auto para el viaje como conductor.

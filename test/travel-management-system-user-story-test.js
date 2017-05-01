@@ -51,6 +51,7 @@ describe('Managing a travel', function() {
         }
       }, function(readTravels) {
         assert.equal(readTravels[0].observations, "De la biblio a la facu.");
+        assert.isNotNull(readTravels[0].car);
         done();
       });
     });
@@ -63,8 +64,10 @@ describe('Managing a travel', function() {
     });
 
     after(function(done) {
-      travelTestResource.destroy(function() {
-        done();
+      route.destroy().then(function() {
+        travelTestResource.destroy(function() {
+          done();
+        });
       });
     });
 
