@@ -9,6 +9,7 @@ var users = require('./routes/users')(sequelize);
 var travels = require('./routes/travels')(sequelize);
 var complaints = require('./routes/complaints')(sequelize);
 var reviews = require('./routes/reviews')(sequelize);
+var contacts = require('./routes/contacts')(sequelize);
 
 var app = express();
 
@@ -29,6 +30,7 @@ app.use('/users', users);
 app.use('/travels', travels);
 app.use('/complaints', complaints);
 app.use('/reviews', reviews);
+app.use('/contacts', contacts);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

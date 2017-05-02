@@ -736,7 +736,7 @@ Consulta:
 Respuesta:
 
 [{
-	contactId: 1
+	id: 1
 	userId:
 	name:
 	lastname:
@@ -745,7 +745,7 @@ Respuesta:
 	complaints:
 	phone:
 },{
-	contactId: 2
+	id: 2
 	userId:
 	name:
 	lastname:
@@ -760,9 +760,10 @@ Ordenados primero por nombre y luego por apellido.
 - Agregar un contacto a los favoritos de la agenda:
 /contacts/favorites
 
+Envio el id del contacto:
 Consulta:
 {
-	contactId: 1
+	id: 1 
 }
 
 Respuesta:
@@ -773,9 +774,10 @@ Respuesta:
 
 - Eliminar contacto de los favoritos de la agenda:
 
+Envio el id del contacto:
 Consulta:
 {
-	contactId: 1
+	id: 1
 }
 
 Respuesta:
@@ -796,23 +798,25 @@ Consulta:
 Respuesta:
 
 [{
-	contactId: 3
-	userId:
+	id: 3
+	userId:2
 	name:
 	lastname:
+	email:
+	phone:
 	passengerPoints:
 	drivingPoints:
 	complaints:
-	phone:
 },{
-	contactId: 4
-	userId:
+	id: 4
+	userId:3
 	name:
 	lastname:
+	email:
+	phone:
 	passengerPoints:
 	drivingPoints:
 	complaints:
-	phone:
 }]
 
 2017-04-18
@@ -973,3 +977,32 @@ fs.readFile('/some/file/that/does-exist', nodeStyleCallback);
 - Consulta de viajes como conductor
 * Se agrega en el login, que se devuelva al usuario incluyendo todos los autos que tiene registrados.
 * Se agrega el servicio de modificación de auto para el viaje como conductor.
+
+2017-05-01
+==========
+* ¿Cómo hago para evaluar un callback cuando todos los callbacks dentro de un foreach fueron ejecutados?
+
+https://stackoverflow.com/questions/18983138/callback-after-all-asynchronous-foreach-callbacks-are-completed/18983245
+
+Array.forEach does not provide this nicety (oh if it would) but there are several ways to accomplish what you want:
+
+Using a simple counter
+
+```js
+function callback () { console.log('all done'); }
+
+var itemsProcessed = 0;
+
+[1, 2, 3].forEach((item, index, array) => {
+  asyncFunction(item, () => {
+    itemsProcessed++;
+    if(itemsProcessed === array.length) {
+      callback();
+    }
+  });
+});
+```
+TODO: Estudiar ES6 y sobre todo como define promisses.
+
+* Cómo se modifica el timeout de un test:
+this.timeout(15000);

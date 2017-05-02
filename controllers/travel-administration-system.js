@@ -12,7 +12,7 @@ function TravelAdministrationSystem(sequelize) {
 	Travel = require('../models/travel')(sequelize);
 	SeatAsignation = require('../models/seat-assignation')(sequelize);
 	routeCalculatorSystem = new RouteCalculatorSystem(sequelize);
-	contactAdministrationSystem = new ContactAdministrationSystem(sequelize);
+	contactSystem = new ContactAdministrationSystem(sequelize);
 	carSystem = new CarSystem(sequelize);
 	Sequelize = sequelize;
 }
@@ -335,6 +335,27 @@ TravelAdministrationSystem.prototype.changeStatusToChildTravelsRelatedTo = funct
 	});
 };
 
+TravelAdministrationSystem.prototype.passengerIdsForEndedTravelIdentifiedBy = function(parentTravelId, callback) {
+	var queryString = 'SELECT "userId" FROM travel WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"=' + parentTravelId + ' AND "status"=\'booked\' ) ;';
+	Sequelize.query(queryString, {
+		type: Sequelize.QueryTypes.SELECT
+	}).then(function(results) {
+		var passengerIds = [];
+		results.forEach(function(result, index, arr) {
+			passengerIds.push(result.userId);
+		});
+		callback(passengerIds);
+	});
+};
+
+TravelAdministrationSystem.prototype.registerAllContactsFor = function(parentTravelId) {
+	this.passengerIdsForEndedTravelIdentifiedBy(parentTravelId, function(passengerIds) {
+		Travel.findById(parentTravelId).then(function(parentTravel) {
+			contactSystem.registerAllContactsWith(parentTravel.userId, passengerIds, function() {});
+		});
+	});
+};
+
 TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravelId, callback) {
 	var self = this;
 	var condition = function(travel) {
@@ -342,6 +363,7 @@ TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravel
 	};
 	self.changeToStatusSatisfayingCondition(parentTravelId, 'ended', condition, function() {
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'ended', condition, function(successfull) {
+			self.registerAllContactsFor(parentTravelId);
 			callback(successfull);
 		});
 	}, function() {

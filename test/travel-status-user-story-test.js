@@ -59,6 +59,7 @@ describe('Changing travel status', function() {
     travelAdministrationSystem.changeToEndedTravel(studyTravels[1].id,
       function(isEnded) {
         assert.equal(true, isEnded);
+        travelAdministrationSystem.registerAllContactsFor(studyTravels[1].id);
         done();
       });
   });
@@ -68,6 +69,14 @@ describe('Changing travel status', function() {
       assert.equal('ended', travelRelouded.status);
       done();
     });
+  });
+
+  it('child travel users for ended parent travel', function(done) {
+    travelAdministrationSystem.passengerIdsForEndedTravelIdentifiedBy(parentTravel.id,
+      function(passengerIds) {
+        assert.equal(passengerIds[0], childTravel.userId);
+        done();
+      });
   });
 
   after(function(done) {

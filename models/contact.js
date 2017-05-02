@@ -18,7 +18,10 @@ module.exports = function(sequelize) {
 				model: User
 			},
 			unique : 'userAndContact'
-		}
+		},
+		isFavorite: {
+			type: Sequelize.BOOLEAN,
+		},
 	}, {
 		freezeTableName: true
 	});
