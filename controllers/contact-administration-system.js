@@ -44,7 +44,7 @@ ContactAdministrationSystem.prototype.registerAllContactsWith = function(aDriver
 };
 
 ContactAdministrationSystem.prototype.acquaintancesForUserIdentifedBy = function(anUserId, callback) {
-	var queryString = 'SELECT c.id, r."userId", u.name, u.lastname, u.email, u.phone, r."passengerPoints", r."drivingPoints", r.complaints from "user" as u INNER JOIN reputation as r on (u.id = r."userId" ) INNER JOIN contact as c ON (c."contactId"=r."userId") WHERE c."userId" = ' + anUserId + ' AND "isFavorite"=false ;';
+	var queryString = 'SELECT c.id, r."userId", u.name, u.lastname, u.email, u.phone, r."passengerPoints", r."drivingPoints", r.complaints from "user" as u INNER JOIN reputation as r on (u.id = r."userId" ) INNER JOIN contact as c ON (c."contactId"=r."userId") WHERE c."userId" = ' + anUserId + ' AND "isFavorite"=false ORDER BY u.name, u.lastname ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
@@ -83,7 +83,7 @@ ContactAdministrationSystem.prototype.becomeAcquaintance = function(aContactId, 
 };
 
 ContactAdministrationSystem.prototype.favoritesForUserIdentifedBy = function(anUserId, callback) {
-	var queryString = 'SELECT c.id, r."userId", u.name, u.lastname, u.email, u.phone, r."passengerPoints", r."drivingPoints", r.complaints from "user" as u INNER JOIN reputation as r on (u.id = r."userId" ) INNER JOIN contact as c ON (c."contactId"=r."userId") WHERE c."userId" = ' + anUserId + ' AND "isFavorite"=true ;';
+	var queryString = 'SELECT c.id, r."userId", u.name, u.lastname, u.email, u.phone, r."passengerPoints", r."drivingPoints", r.complaints from "user" as u INNER JOIN reputation as r on (u.id = r."userId" ) INNER JOIN contact as c ON (c."contactId"=r."userId") WHERE c."userId" = ' + anUserId + ' AND "isFavorite"=true ORDER BY u.name, u.lastname ;';
 	Sequelize.query(queryString, {
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
