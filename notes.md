@@ -1006,3 +1006,11 @@ TODO: Estudiar ES6 y sobre todo como define promisses.
 
 * Cómo se modifica el timeout de un test:
 this.timeout(15000);
+
+2017-05-03
+==========
+¿Cómo hacer para subir archivos a traves de node.js?
+
+To upload images using Node.js and Express, I've enlisted the help of the Formidable module. So lets get started in creating our image upload application using Node.js, Express, Formidable and Quickthumb. 
+
+https://tonyspiro.com/uploading-resizing-images-fly-node-js-express/

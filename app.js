@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('morgan'); //??
 var bodyParser = require('body-parser');
+var qt = require('quickthumb');
 var sequelize = require('./sequelizeConfigured');
 
 var routes = require('./routes/index');
@@ -10,6 +11,7 @@ var travels = require('./routes/travels')(sequelize);
 var complaints = require('./routes/complaints')(sequelize);
 var reviews = require('./routes/reviews')(sequelize);
 var contacts = require('./routes/contacts')(sequelize);
+var photos = require('./routes/photos')(sequelize);
 
 var app = express();
 
@@ -23,6 +25,9 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Use quickthumb
+app.use(qt.static(__dirname + '/'));
+
 sequelize.sync();
 
 app.use('/', routes);
@@ -31,6 +36,7 @@ app.use('/travels', travels);
 app.use('/complaints', complaints);
 app.use('/reviews', reviews);
 app.use('/contacts', contacts);
+app.use('/photos', photos);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
