@@ -3,6 +3,7 @@ function PhotoRouter(sequelize) {
     var router = express.Router();
     var formidable = require('formidable');
     var util = require('util');
+    var fs = require('fs');
 
     var UserSystem = require('../controllers/user-administration-system');
     var userSystem = new UserSystem(sequelize);
@@ -78,6 +79,26 @@ function PhotoRouter(sequelize) {
         });
         var form = '<form action="/photos/upload" enctype="multipart/form-data" method="post">userId: <input name="userId" type="text" /><br><br><input multiple="multiple" name="upload" type="file" /><br><br><input type="submit" value="Upload" /></form>';
         res.end(form);
+    });
+
+    router.route('/profile/delete').post(authorizationSystem.isAuthenticated, function(req, res) {
+        photoSystem.unregister(req.body.userId, function(err, deletedFileName) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+            } else {
+                fs.unlink(deletedFileName, (err) => {
+                    if (err) throw err;
+                      console.log('successfully deleted '+ deletedFileName);
+                      res.send({
+                         receibed: 'Ok',
+                         error: ''
+                      });
+                });
+            }
+        });
     });
 
     return router;

@@ -6,6 +6,8 @@ function UserRouter(sequelize) {
     var userSystem = new UserSystem(sequelize);
     var CarSystem = require('../controllers/car-administration-system');
     var carSystem = new CarSystem(sequelize);
+    var PhotoSystem = require('../controllers/profile-photo-administration-system');
+    var photoSystem = new PhotoSystem(sequelize);
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
 
@@ -86,14 +88,21 @@ function UserRouter(sequelize) {
     router.route('/user/profile').post(authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
             carSystem.carsForUserById(foundUser.id, function(foundCars) {
-                res.send({
-                    id: foundUser.id,
-                    name: foundUser.name,
-                    lastname: foundUser.lastname,
-                    ucaid: foundUser.ucaid,
-                    phone: foundUser.phone,
-                    email: foundUser.email,
-                    cars: foundCars
+                photoSystem.profilePhotoForUserById(foundUser.id, function(foundPhoto){
+                    var fileName = '';
+                    if(foundPhoto){
+                        fileName = foundPhoto.fileName;
+                    } 
+                    res.send({
+                            id: foundUser.id,
+                            name: foundUser.name,
+                            lastname: foundUser.lastname,
+                            ucaid: foundUser.ucaid,
+                            phone: foundUser.phone,
+                            email: foundUser.email,
+                            cars: foundCars,
+                            photo: fileName
+                    });
                 });
             });
         });

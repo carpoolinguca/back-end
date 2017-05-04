@@ -43,10 +43,14 @@ PhotoSystem.prototype.registerOrUpdateIfExists = function(photo, callback) {
 	});
 };
 
-PhotoSystem.prototype.unregister = function(photoId, callback) {
-	Photo.findById(photoId).then(function(foundPhoto) {
+PhotoSystem.prototype.unregister = function(userId, callback) {
+	Photo.findOne({
+		where: {
+			userId: userId
+		}
+	}).then(function(foundPhoto) {
 		if(!foundPhoto){
-			callback(new Error('No se ha encontrado una foto con el id: ' + photoId));
+			callback(new Error('No se ha encontrado una foto para el usuario con id: ' + userId));
 			return;
 		}
 		var fileName = foundPhoto.fileName;

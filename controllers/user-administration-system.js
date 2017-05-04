@@ -4,6 +4,8 @@ var CarSystem = require('../controllers/car-administration-system.js');
 var carSystem;
 var ContactSystem = require('../controllers/contact-administration-system.js');
 var contactSystem;
+var PhotoSystem = require('../controllers/profile-photo-administration-system');
+var photoSystem;
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 
@@ -15,6 +17,7 @@ function UserAdministrationSystem(sequelize) {
 	reputationSystem = new ReputationSystem(sequelize);
 	carSystem = new CarSystem(sequelize);
 	contactSystem = new ContactSystem(sequelize);
+	photoSystem = new PhotoSystem(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -150,8 +153,10 @@ UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {
 			carSystem.destroyAllCarsFor(userReceibed, function() {
 				contactSystem.destroyAllContactsFor(userReceibed, function() {
-					userFound.destroy().then(function() {
+					photoSystem.destroyAllPhotosFor(userReceibed, function(){
+						userFound.destroy().then(function() {
 						callback();
+						});
 					});
 				});
 			});

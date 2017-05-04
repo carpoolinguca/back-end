@@ -66,7 +66,7 @@ describe('Managing users profile photo', function() {
   });
 
   it('Juana delete her profile photo', function(done) {
-    photoSystem.unregister(photo.id,
+    photoSystem.unregister(students[0].id,
       function(err, photoName) {
         assert.isNotOk(err);
         assert.equal(photoName, photo.fileName);
