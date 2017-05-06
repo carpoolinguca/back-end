@@ -31,11 +31,7 @@ describe('Managing a user', function() {
   describe('#findAll()', function() {
 
     it('should find without error', function(done) {
-      User.findOne({
-        where: {
-          email: userUpdate.email
-        }
-      }).then(function(readUser) {
+      User.findById(user.id).then(function(readUser) {
         assert.equal(readUser.email, 'juana@gmail.com');
         assert.equal(readUser.phone, user.phone);
         done();

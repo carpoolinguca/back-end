@@ -268,6 +268,7 @@ TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignati
 
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
 	Travel.findById(parentTravelId).then(function(parentTravel) {
+		if(parentTravel.userIsDriver){
 		if (parentTravel.availableSeats > 0) {
 			parentTravel.decrement('availableSeats');
 			SeatAsignation.create({
@@ -287,6 +288,12 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 				error: 'No quedan más asientos disponibles.'
 			});
 		}
+	} else {
+		callback({
+				booked: false,
+				error: 'No se le puede reservar un asiento a un viaje de pasajero.'
+			});
+	}
 	});
 };
 

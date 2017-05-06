@@ -44,9 +44,13 @@ ReputationSystem.prototype.complaints = function(callback) {
 	});
 };
 
+
 ReputationSystem.prototype.complaintsToUserById = function(userId, callback) {
-	var queryString = 'select c."userFrom", u.name, u.lastname, c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = ' + userId + ' ;';
+	var queryString = 'select c."userFrom", u.name, u.lastname, c."reason" from "user" as u inner join complaint as c on (u.id = c."userFrom" ) where c."userTo" = $userId ;';
 	Sequelize.query(queryString, {
+		bind: {
+			userId: userId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results);
@@ -66,8 +70,11 @@ ReputationSystem.prototype.reputationIdentifiedBy = function(identification, cal
 };
 
 ReputationSystem.prototype.nameAndReputationForUserId = function(userId, callback) {
-	var queryString = 'select r."userId", u.name, u.lastname, r.complaints, r."passengerPoints", r."drivingPoints" from "user" as u inner join reputation as r on (u.id = r."userId" ) where r."userId" = ' + userId + ' limit 1;';
+	var queryString = 'select r."userId", u.name, u.lastname, r.complaints, r."passengerPoints", r."drivingPoints" from "user" as u inner join reputation as r on (u.id = r."userId" ) where r."userId" = $userId limit 1;';
 	Sequelize.query(queryString, {
+		bind: {
+			userId: userId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results[0]);
@@ -91,8 +98,11 @@ ReputationSystem.prototype.reviews = function(callback) {
 };
 
 ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
-	var queryString = 'select d."passengerId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."passengerId" ) where d."driverId" = ' + userId + ' and d."isDriver" = true ;';
+	var queryString = 'select d."passengerId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."passengerId" ) where d."driverId" = $userId and d."isDriver" = true ;';
 	Sequelize.query(queryString, {
+		bind: {
+			userId: userId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results);
@@ -100,8 +110,11 @@ ReputationSystem.prototype.driverReviewsByUserId = function(userId, callback) {
 };
 
 ReputationSystem.prototype.passengerReviewsByUserId = function(userId, callback) {
-	var queryString = 'select d."driverId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."driverId" ) where d."passengerId" = ' + userId + ' and d."isDriver" = false ;';
+	var queryString = 'select d."driverId", u.name, u.lastname, d."points", d."reviewTitle", d."detailReview" from "user" as u inner join review as d on (u.id = d."driverId" ) where d."passengerId" = $userId and d."isDriver" = false ;';
 	Sequelize.query(queryString, {
+		bind: {
+			userId: userId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results);

@@ -1,6 +1,6 @@
 var express = require('express');
 var path = require('path');
-var logger = require('morgan'); //??
+var morgan = require('morgan'); // HTTP request logger middleware
 var bodyParser = require('body-parser');
 var qt = require('quickthumb');
 var sequelize = require('./sequelizeConfigured');
@@ -18,7 +18,7 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
-app.use(logger('dev'));
+app.use(morgan('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false

@@ -48,19 +48,7 @@ describe('Managing users reputation', function() {
         done();
       });
   });
-  /*
-  Este test solo funcionará con la tabla de complaints limpia.
 
-  it('Find all complaints', function(done) {
-    reputationSystem.complaints(
-      function(foundComplaints) {
-        assert.equal(foundComplaints[0].userFrom, students[1].id);
-        assert.equal(foundComplaints[0].userTo, students[0].id);
-        assert.equal(foundComplaints[0].reason, 'Me faltó el respeto');
-        done();
-      });
-  });
-  */
   it('Find complaints to Juana', function(done) {
     reputationSystem.complaintsToUserById(students[0].id,
       function(foundComplaints) {

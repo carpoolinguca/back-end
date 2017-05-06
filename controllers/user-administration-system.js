@@ -115,15 +115,22 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 			bcrypt.compare(password, user.password, function(err, res) {
 				if (res === true) {
 					carSystem.carsForUserById(user.id, function(cars) {
-						validUserCallback({
-							id: user.id,
-							email: user.email,
-							name: user.name,
-							lastname: user.lastname,
-							ucaid: user.ucaid,
-							sex: user.sex,
-							phone: user.phone,
-							cars: cars
+						photoSystem.profilePhotoForUserById(user.id, function(photo) {
+							var fileName = '';
+							if (foundPhoto) {
+								fileName = foundPhoto.fileName;
+							}
+							validUserCallback({
+								id: user.id,
+								email: user.email,
+								name: user.name,
+								lastname: user.lastname,
+								ucaid: user.ucaid,
+								sex: user.sex,
+								phone: user.phone,
+								cars: cars,
+								photo: fileName
+							});
 						});
 					});
 				} else {
@@ -153,9 +160,9 @@ UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {
 			carSystem.destroyAllCarsFor(userReceibed, function() {
 				contactSystem.destroyAllContactsFor(userReceibed, function() {
-					photoSystem.destroyAllPhotosFor(userReceibed, function(){
+					photoSystem.destroyAllPhotosFor(userReceibed, function() {
 						userFound.destroy().then(function() {
-						callback();
+							callback();
 						});
 					});
 				});
