@@ -14,11 +14,19 @@ function TravelRouter(sequelize) {
     });
   }).post(authorizationSystem.isAuthenticated, function(req, res) {
     console.log(req.body);
-    travelAdministrationSystem.startManagingAndCalculateRoutes(req.body, function(registeredTravel) {
-      res.json({
-        travel: registeredTravel,
-        receibed: 'Ok'
-      });
+    travelAdministrationSystem.startManagingAndCalculateRoutes(req.body, function(err, registeredTravel) {
+      if (err) {
+        res.json({
+          travel: registeredTravel,
+          receibed: 'Error',
+          error: err
+        });
+      } else {
+        res.json({
+          travel: registeredTravel,
+          receibed: 'Ok'
+        });
+      }
     });
   });
 

@@ -145,16 +145,6 @@ UserAdministrationSystem.prototype.registerCar = function(car, callback) {
 	carSystem.register(car, callback);
 };
 
-/*
-UserAdministrationSystem.prototype.destroy = function(callback) {
-	User.destroy({
-		truncate: true
-	}).then(function() {
-		reputationSystem.destroy(callback());
-	});
-};
-*/
-
 UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 	User.findById(userReceibed.id).then(function(userFound) {
 		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {

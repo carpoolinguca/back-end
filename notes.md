@@ -1014,3 +1014,11 @@ this.timeout(15000);
 To upload images using Node.js and Express, I've enlisted the help of the Formidable module. So lets get started in creating our image upload application using Node.js, Express, Formidable and Quickthumb. 
 
 https://tonyspiro.com/uploading-resizing-images-fly-node-js-express/
+
+2017-05-06
+==========
+
+* Se agregaron handleos de errores de comunicación con el servidor de google directions.
+- Durante la creación de viajes y sus rutas.
+- Durante la busqueda de viajes y sus rutas.
+* Se modificaron todas las raw queries para bindeen los parametros o utilicen replacements.

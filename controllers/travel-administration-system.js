@@ -74,8 +74,11 @@ TravelAdministrationSystem.prototype.formatTravelsForPassenger = function(travel
 
 TravelAdministrationSystem.prototype.travelsForPassengerIdentifiedBy = function(userId, callback) {
 	var self = this;
-	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints, y."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id INNER JOIN car AS ca ON ca.id= y."carId" WHERE t."userIsDriver" = false AND t."userId" = ' + userId + ' ;';
+	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints, y."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id INNER JOIN car AS ca ON ca.id= y."carId" WHERE t."userIsDriver" = false AND t."userId" = $userId ;';
 	Sequelize.query(queryString, {
+		bind: {
+			userId: userId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(self.formatTravelsForPassenger(results));
@@ -125,9 +128,16 @@ TravelAdministrationSystem.prototype.startManaging = function(travel, callback) 
 };
 
 TravelAdministrationSystem.prototype.startManagingAndCalculateRoutes = function(travel, callback) {
-	this.startManaging(travel, function(travelCreated) {
-		routeCalculatorSystem.calculateAndStartManagingForTravel(travelCreated.dataValues, function() {
-			callback(travelCreated.dataValues);
+	var self = this;
+	self.startManaging(travel, function(travelCreated) {
+		routeCalculatorSystem.calculateAndStartManagingForTravel(travelCreated.dataValues, function(err) {
+			if (err) {
+				self.destroyWithoutRoutes(travelCreated, function() {
+					callback(err);
+				});
+				return;
+			}
+			callback(null, travelCreated);
 		});
 	});
 };
@@ -198,11 +208,27 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 	self = this;
 	self.startManaging(travel, function(travelCreated) {
 		var travelQueriedFormated = self.formatQueriedTravel(travelCreated);
-		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(routes) {
+		routeCalculatorSystem.calculateForTravel(travelCreated.dataValues, function(err, routes) {
+			if (err) {
+				console.error(err);
+				endFunction({
+					queryTravel: travelQueriedFormated,
+					travelsFound: [],
+					error: err
+				});
+				return;
+			}
 			if (routes.length > 0) {
 				var lastCoordinate = routes[0].polyline.coordinates.length - 1;
-				var queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[0][0] + ' ' + routes[0].polyline.coordinates[0][1] + ' )\'), 1000) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(' + routes[0].polyline.coordinates[lastCoordinate][0] + ' ' + routes[0].polyline.coordinates[lastCoordinate][1] + ' )\'), 500) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != ' + travelCreated.userId + ' and "availableSeats" > 0 ));';
+				var queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1000) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 500) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 ));';
 				Sequelize.query(queryString, {
+					replacements: {
+						xOrigin: routes[0].polyline.coordinates[0][0],
+						yOrigin: routes[0].polyline.coordinates[0][1],
+						xDestination: routes[0].polyline.coordinates[lastCoordinate][0],
+						yDestination: routes[0].polyline.coordinates[lastCoordinate][1],
+						userId: travelCreated.userId
+					},
 					type: Sequelize.QueryTypes.SELECT
 				}).then(function(results) {
 					var formatedTravels = self.formatFoundTravels(results);
@@ -268,38 +294,41 @@ TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignati
 
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
 	Travel.findById(parentTravelId).then(function(parentTravel) {
-		if(parentTravel.userIsDriver){
-		if (parentTravel.availableSeats > 0) {
-			parentTravel.decrement('availableSeats');
-			SeatAsignation.create({
-				parentTravel: parentTravelId,
-				childTravel: childTravelId,
-				status: 'pending'
-			}).then(function(assignationCreated) {
-				callback({
-					assignationCreated: assignationCreated,
-					booked: true,
-					error: ''
+		if (parentTravel.userIsDriver) {
+			if (parentTravel.availableSeats > 0) {
+				parentTravel.decrement('availableSeats');
+				SeatAsignation.create({
+					parentTravel: parentTravelId,
+					childTravel: childTravelId,
+					status: 'pending'
+				}).then(function(assignationCreated) {
+					callback({
+						assignationCreated: assignationCreated,
+						booked: true,
+						error: ''
+					});
 				});
-			});
+			} else {
+				callback({
+					booked: false,
+					error: 'No quedan más asientos disponibles.'
+				});
+			}
 		} else {
 			callback({
 				booked: false,
-				error: 'No quedan más asientos disponibles.'
-			});
-		}
-	} else {
-		callback({
-				booked: false,
 				error: 'No se le puede reservar un asiento a un viaje de pasajero.'
 			});
-	}
+		}
 	});
 };
 
 TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" = ' + parentTravelId + ' ;';
+	var queryString = 'SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" = $parentTravelId ;';
 	Sequelize.query(queryString, {
+		bind: {
+			parentTravelId: parentTravelId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		callback(results);
@@ -336,15 +365,23 @@ TravelAdministrationSystem.prototype.changeToStatusSatisfayingCondition = functi
 
 TravelAdministrationSystem.prototype.changeStatusToChildTravelsRelatedTo = function(parentTravelId, status, condition, callback) {
 	// Sólo me interesa cambiar el estado de los viajes hijos que fueron confirmados por el conductor, por eso busco en estado 'booked'
-	var queryString = 'UPDATE "travel" SET "status"=\'' + status + '\' WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"=' + parentTravelId + ' AND "status"=\'booked\' ) ;';
-	Sequelize.query(queryString).then(function(results) {
+	var queryString = 'UPDATE "travel" SET "status"= $status::varchar WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"= $parentTravelId AND "status"=\'booked\' ) ;';
+	Sequelize.query(queryString, {
+		bind: {
+			status: status,
+			parentTravelId: parentTravelId,
+		}
+	}).then(function(results) {
 		callback(true);
 	});
 };
 
 TravelAdministrationSystem.prototype.passengerIdsForEndedTravelIdentifiedBy = function(parentTravelId, callback) {
-	var queryString = 'SELECT "userId" FROM travel WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"=' + parentTravelId + ' AND "status"=\'booked\' ) ;';
+	var queryString = 'SELECT "userId" FROM travel WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"= $parentTravelId AND "status"=\'booked\' ) ;';
 	Sequelize.query(queryString, {
+		bind: {
+			parentTravelId: parentTravelId
+		},
 		type: Sequelize.QueryTypes.SELECT
 	}).then(function(results) {
 		var passengerIds = [];

@@ -51,15 +51,21 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 					};
 				});
 			};
-			callback(routes);
+			callback(null, routes);
 		});
+	}).on('error', (e) => {
+		callback(e);
 	});
 };
 
 RouteCalculatorSystem.prototype.calculateAndStartManagingForTravel = function(travel, callback) {
-	this.calculateForTravel(travel, function(routes) {
+	this.calculateForTravel(travel, function(err, routes) {
+		if(err){
+			callback(err);
+			return;
+		}
 		Route.bulkCreate(routes).then(function() {
-			callback(routes);
+			callback(err, routes);
 		});
 	});
 };
