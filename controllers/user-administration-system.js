@@ -115,7 +115,7 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 			bcrypt.compare(password, user.password, function(err, res) {
 				if (res === true) {
 					carSystem.carsForUserById(user.id, function(cars) {
-						photoSystem.profilePhotoForUserById(user.id, function(photo) {
+						photoSystem.profilePhotoForUserById(user.id, function(foundPhoto) {
 							var fileName = '';
 							if (foundPhoto) {
 								fileName = foundPhoto.fileName;
