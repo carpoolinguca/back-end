@@ -38,17 +38,23 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 			if (jsonResponse.status == 'OK') {
 				jsonResponse.routes.forEach(function(currentValue, index, arr) {
 					var polyline = lineStringFrom(currentValue.overview_polyline.points);
+					var origin = currentValue.legs[0].start_address;
+					var destination = currentValue.legs[0].end_address;
 					var distance = currentValue.legs[0].distance.value;
 					var duration = currentValue.legs[0].duration.text;
 					routes[index] = {
 						travelId: travel.id,
-						origin: travel.origin,
-						destination: travel.destination,
+						origin: origin,
+						destination: destination,
 						polyline: polyline,
 						distance: distance,
 						duration: duration,
 						summary: currentValue.summary
 					};
+					console.log('------------------------------------------------');
+					console.log('origin: '+ routes[0].origin);
+					console.log('destination: '+ routes[0].destination);
+					console.log('------------------------------------------------');
 				});
 			};
 			console.log(routes);
