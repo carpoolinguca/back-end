@@ -85,7 +85,8 @@ ReputationSystem.prototype.reputationForUserId = function(userId, callback) {
 	Reputation.findOne({
 		where: {
 			userId: userId
-		}
+		},
+		attributes: ['id', 'userId', 'drivingPoints', 'passengerPoints', 'complaints'],
 	}).then(function(reputationFound) {
 		callback(reputationFound);
 	});

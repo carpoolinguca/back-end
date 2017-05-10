@@ -231,6 +231,7 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 					},
 					type: Sequelize.QueryTypes.SELECT
 				}).then(function(results) {
+					console.log(results);
 					var formatedTravels = self.formatFoundTravels(results);
 					endFunction({
 						queryTravel: travelQueriedFormated,

@@ -10,6 +10,8 @@ function UserRouter(sequelize) {
     var photoSystem = new PhotoSystem(sequelize);
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
+    var ReputationSystem = require('../controllers/reputation-system');
+    var reputationSystem = new ReputationSystem(sequelize);
 
     router.route('/').post(function(req, res) {
         userSystem.register(req.body, function(user) {
@@ -88,12 +90,13 @@ function UserRouter(sequelize) {
     router.route('/user/profile').post(authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
             carSystem.carsForUserById(foundUser.id, function(foundCars) {
-                photoSystem.profilePhotoForUserById(foundUser.id, function(foundPhoto){
-                    var fileName = '';
-                    if(foundPhoto){
-                        fileName = foundPhoto.fileName;
-                    } 
-                    res.send({
+                photoSystem.profilePhotoForUserById(foundUser.id, function(foundPhoto) {
+                    reputationSystem.reputationForUserId(foundUser.id, function(foundReputation) {
+                        var fileName = '';
+                        if (foundPhoto) {
+                            fileName = foundPhoto.fileName;
+                        }
+                        res.send({
                             id: foundUser.id,
                             name: foundUser.name,
                             lastname: foundUser.lastname,
@@ -101,7 +104,11 @@ function UserRouter(sequelize) {
                             phone: foundUser.phone,
                             email: foundUser.email,
                             cars: foundCars,
-                            photo: fileName
+                            photo: fileName,
+                            drivingPoints: foundReputation.drivingPoints,
+                            passengerPoints: foundReputation.passengerPoints,
+                            complaints: foundReputation.complaints
+                        });
                     });
                 });
             });
@@ -145,6 +152,12 @@ function UserRouter(sequelize) {
                     error: ''
                 });
             }
+        });
+    });
+
+    router.route('/user/cars/car/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+        carSystem.carsForUserById(req.body.userId, function(cars) {
+            res.send(cars);
         });
     });
 

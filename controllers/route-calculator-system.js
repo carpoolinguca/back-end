@@ -51,6 +51,7 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 					};
 				});
 			};
+			console.log(routes);
 			callback(null, routes);
 		});
 	}).on('error', (e) => {

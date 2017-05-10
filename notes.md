@@ -1022,3 +1022,9 @@ https://tonyspiro.com/uploading-resizing-images-fly-node-js-express/
 - Durante la creación de viajes y sus rutas.
 - Durante la busqueda de viajes y sus rutas.
 * Se modificaron todas las raw queries para bindeen los parametros o utilicen replacements.
+
+2017-05-09
+==========
+
+* Se agrega al servicio userProfile su reputación y sus denuncias.
+* Se agrega servicio de consulta de autos por id de usuario.
