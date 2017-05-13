@@ -296,6 +296,7 @@ TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignati
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
 	Travel.findById(parentTravelId).then(function(parentTravel) {
 		if (parentTravel.userIsDriver) {
+			console.log(parentTravel);
 			if (parentTravel.availableSeats > 0) {
 				parentTravel.decrement('availableSeats');
 				SeatAsignation.create({
@@ -416,14 +417,29 @@ TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravel
 	});
 };
 
-TravelAdministrationSystem.prototype.changeToCanceledTravel = function(parentTravelId, callback) {
+TravelAdministrationSystem.prototype.changeToCanceledTravel = function(travelId, callback) {
 	var self = this;
 	var condition = function(travel) {
 		return (travel.status != 'ended');
 	};
-	self.changeToStatusSatisfayingCondition(parentTravelId, 'canceled', condition, function() {
-		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'canceled', condition, function(successfull) {
-			callback(successfull);
+	self.changeToStatusSatisfayingCondition(travelId, 'canceled', condition, function() {
+		self.changeStatusToChildTravelsRelatedTo(travelId, 'canceled', condition, function(successfull) {
+			SeatAsignation.findOne({
+				where: {
+					childTravel: travelId
+				}
+			}).then(function(seatFound) {
+				if (seatFound != null) {
+					Travel.findById(seatFound.parentTravel).then(function(travelFound) {
+						travelFound.increment('availableSeats').then(function() {
+							callback(successfull);
+						});
+					});
+				} else {
+					callback(successfull);
+
+				}
+			});
 		});
 	}, function() {
 		callback(false);

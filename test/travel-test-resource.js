@@ -44,7 +44,8 @@ TravelTestResource.prototype.registerTravels = function(users, callback) {
 			origin: "Avenida Alicia Moreau de Justo 1300, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
 			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
 			userIsDriver: false,
-			seats: 0,
+			maximumSeats: 0,
+			availableSeats: 0,
 			arrivalDateTime: "2016-10-21 14:05:06",
 			observations: "De la biblio a la facu."
 		};
@@ -54,7 +55,7 @@ TravelTestResource.prototype.registerTravels = function(users, callback) {
 			destination: "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
 			userIsDriver: true,
 			carId: car.id,
-			seats: 1,
+			seats: 3,
 			arrivalDateTime: "2016-10-21 14:05:06",
 			observations: "De la biblio a la Purmamarca."
 		};
