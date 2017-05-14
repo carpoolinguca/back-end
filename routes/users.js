@@ -78,6 +78,14 @@ function UserRouter(sequelize) {
             });
     });
 
+    router.route('/user/sendNewPassword').post(function(req, res) {
+        res.send({
+            email: req.body.email,
+            receibed: 'Ok',
+            error: ''
+        });
+    });
+
     router.route('/user/phone').post(authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
             res.send({
