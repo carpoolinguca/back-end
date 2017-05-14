@@ -1028,3 +1028,21 @@ https://tonyspiro.com/uploading-resizing-images-fly-node-js-express/
 
 * Se agrega al servicio userProfile su reputación y sus denuncias.
 * Se agrega servicio de consulta de autos por id de usuario.
+
+2017-05-14
+==========
+¿Cómo remplazo los espacios en blanco por otro caracter?
+http://stackoverflow.com/questions/6507056/replace-all-whitespace-characters
+
+You want \s
+
+    Matches a single white space character, including space, tab, form feed, line feed.
+
+Equivalent to
+
+[ \f\n\r\t\v​\u00A0\u1680​\u180e\u2000​\u2001\u2002​\u2003\u2004​\u2005\u2006​\u2007\u2008​\u2009\u200a​\u2028\u2029​\u2028\u2029​\u202f\u205f​\u3000]
+
+in Firefox and [ \f\n\r\t\v] in IE.
+
+str = str.replace(/\s/g, "X");
+
