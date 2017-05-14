@@ -100,6 +100,7 @@ function UserRouter(sequelize) {
                             id: foundUser.id,
                             name: foundUser.name,
                             lastname: foundUser.lastname,
+                            sex: foundUser.sex,
                             ucaid: foundUser.ucaid,
                             phone: foundUser.phone,
                             email: foundUser.email,
