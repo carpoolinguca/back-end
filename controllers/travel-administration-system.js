@@ -477,4 +477,20 @@ TravelAdministrationSystem.prototype.updateCarForTravelById = function(travelId,
 	});
 };
 
+TravelAdministrationSystem.prototype.unregisterCar = function(carId, callback) {
+	Travel.findOne({
+		where: {
+			carId: carId
+		}
+	}).then(function(foundTravel) {
+		if (!foundTravel) {
+			carSystem.unregister(carId, function() {
+				callback(null);
+			});
+		} else {
+			callback(new Error('No se puede eliminar auto, tiene viajes relacionados.'));
+		}
+	});
+};
+
 module.exports = TravelAdministrationSystem;

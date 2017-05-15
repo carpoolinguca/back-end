@@ -6,6 +6,8 @@ function UserRouter(sequelize) {
     var userSystem = new UserSystem(sequelize);
     var CarSystem = require('../controllers/car-administration-system');
     var carSystem = new CarSystem(sequelize);
+    var TravelAdministrationSystem = require('../controllers/travel-administration-system');
+    var travelAdministrationSystem = new TravelAdministrationSystem(sequelize);
     var PhotoSystem = require('../controllers/profile-photo-administration-system');
     var photoSystem = new PhotoSystem(sequelize);
     var AuthorizationSystem = require('../controllers/authorization-system.js');
@@ -149,7 +151,7 @@ function UserRouter(sequelize) {
     });
 
     router.route('/user/cars/car/delete').post(authorizationSystem.isAuthenticated, function(req, res) {
-        carSystem.unregister(req.body.id, function(err, registeredCar) {
+        travelAdministrationSystem.unregisterCar(req.body.id, function(err, registeredCar) {
             if (err) {
                 res.send({
                     receibed: 'Error',
