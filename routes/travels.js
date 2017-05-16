@@ -2,17 +2,21 @@ function TravelRouter(sequelize) {
   var express = require('express');
   var router = express.Router();
 
+  var ExpressBrute = require('express-brute');
+  var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
+  var bruteforce = new ExpressBrute(store);
+
   var TravelAdministrationSystem = require('../controllers/travel-administration-system');
   var travelAdministrationSystem = new TravelAdministrationSystem(sequelize);
   var AuthorizationSystem = require('../controllers/authorization-system.js');
   var authorizationSystem = new AuthorizationSystem(sequelize);
 
 
-  router.route('/').get(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/').get(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.findAll(function(travels) {
       res.json(travels);
     });
-  }).post(authorizationSystem.isAuthenticated, function(req, res) {
+  }).post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     console.log(req.body);
     travelAdministrationSystem.startManagingAndCalculateRoutes(req.body, function(err, registeredTravel) {
       if (err) {
@@ -30,32 +34,32 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/find').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.findClosestTravelsForTravel(req.body, function(searchResult) {
       res.json(searchResult);
     });
   });
 
 
-  router.route('/for/user').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/for/user').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.travelsForUserIdentifiedBy(req.body.userId, function(travels) {
       res.json(travels);
     });
   });
 
-  router.route('/for/user/passenger').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/for/user/passenger').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.travelsForPassengerIdentifiedBy(req.body.userId, function(travels) {
       res.json(travels);
     });
   });
 
-  router.route('/for/user/driver').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/for/user/driver').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.travelsForDriverIdentifiedBy(req.body.userId, function(travels) {
       res.json(travels);
     });
   });
 
-  router.route('/travel/start').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/start').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToInProgressTravel(req.body.travelId, function(successful) {
       res.json({
         started: successful
@@ -63,7 +67,7 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/travel/end').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/end').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToEndedTravel(req.body.travelId, function(successful) {
       res.json({
         ended: successful
@@ -71,7 +75,7 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/travel/cancel').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/cancel').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.changeToCanceledTravel(req.body.travelId, function(successful) {
       res.json({
         canceled: successful
@@ -79,7 +83,7 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/travel/car/update').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/travel/car/update').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.updateCarForTravelById(req.body.travelId, req.body.carId, function(err, updatedTravel) {
       if (err) {
         res.send({
@@ -96,13 +100,13 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/suits/book').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/suits/book').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.bookSeatWith(req.body.parentTravel, req.body.childTravel, function(bookingResult) {
       res.json(bookingResult);
     });
   });
 
-  router.route('/suits/confirm').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/suits/confirm').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.confirmSeatBookingWith(req.body.seatAssignationId, function(isConfirmed) {
       if (isConfirmed) {
         res.json({
@@ -118,7 +122,7 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/suits/reject').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/suits/reject').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.rejectSeatBookingWith(req.body.seatAssignationId, function(isRejected) {
       if (isRejected) {
         res.json({
@@ -134,13 +138,13 @@ function TravelRouter(sequelize) {
     });
   });
 
-  router.route('/suits/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/suits/find').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.seatsForParentTravel(req.body.parentTravel, function(seats) {
       res.json(seats);
     });
   });
 
-  router.route('/suits/status').post(authorizationSystem.isAuthenticated, function(req, res) {
+  router.route('/suits/status').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
     travelAdministrationSystem.seatIdentifiedBy(req.body.seatId, function(seat) {
       res.json({
         suit: seat,

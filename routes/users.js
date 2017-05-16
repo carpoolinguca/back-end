@@ -2,6 +2,10 @@ function UserRouter(sequelize) {
     var express = require('express');
     var router = express.Router();
 
+    var ExpressBrute = require('express-brute');
+    var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
+    var bruteforce = new ExpressBrute(store);
+
     var UserSystem = require('../controllers/user-administration-system');
     var userSystem = new UserSystem(sequelize);
     var CarSystem = require('../controllers/car-administration-system');
@@ -15,7 +19,7 @@ function UserRouter(sequelize) {
     var ReputationSystem = require('../controllers/reputation-system');
     var reputationSystem = new ReputationSystem(sequelize);
 
-    router.route('/').post(function(req, res) {
+    router.route('/').post(bruteforce.prevent, function(req, res) {
         userSystem.register(req.body, function(user) {
             res.json({
                 user: user,
@@ -24,7 +28,7 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/login').post(function(req, res) {
+    router.route('/user/login').post(bruteforce.prevent, function(req, res) {
         userSystem.validateEmailAndPassword(req.body.email, req.body.password,
             function() {
                 return res.status(401).send({
@@ -49,7 +53,7 @@ function UserRouter(sequelize) {
             });
     });
 
-    router.route('/user/update').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/update').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.update(req.body, function(updatedUser) {
                 res.send({
                     user: updatedUser,
@@ -65,7 +69,7 @@ function UserRouter(sequelize) {
             });
     });
 
-    router.route('/user/changePassword').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/changePassword').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.changePassword(req.body.id, req.body.password, req.body.newPassword, function() {
                 res.send({
                     receibed: 'Ok',
@@ -80,7 +84,7 @@ function UserRouter(sequelize) {
             });
     });
 
-    router.route('/user/sendNewPassword').post(function(req, res) {
+    router.route('/user/sendNewPassword').post(bruteforce.prevent, function(req, res) {
         res.send({
             email: req.body.email,
             receibed: 'Ok',
@@ -88,7 +92,7 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/phone').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/phone').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
             res.send({
                 userId: foundUser.id,
@@ -97,7 +101,7 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/profile').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/profile').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         userSystem.userIdentifiedBy(req.body.userId, function(foundUser) {
             carSystem.carsForUserById(foundUser.id, function(foundCars) {
                 photoSystem.profilePhotoForUserById(foundUser.id, function(foundPhoto) {
@@ -126,7 +130,7 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/cars').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/cars').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         carSystem.register(req.body, function(err, registeredCar) {
             if (err) {
                 res.send({
@@ -150,7 +154,7 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/cars/car/delete').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/cars/car/delete').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         travelAdministrationSystem.unregisterCar(req.body.id, function(err, registeredCar) {
             if (err) {
                 res.send({
@@ -166,13 +170,13 @@ function UserRouter(sequelize) {
         });
     });
 
-    router.route('/user/cars/car/find').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/cars/car/find').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         carSystem.carsForUserById(req.body.userId, function(cars) {
             res.send(cars);
         });
     });
 
-    router.route('/user/cars/car/update').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/user/cars/car/update').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         carSystem.update(req.body, function(err, updatedCar) {
             if (err) {
                 res.send({

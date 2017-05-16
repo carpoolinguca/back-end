@@ -5,6 +5,10 @@ function PhotoRouter(sequelize) {
     var util = require('util');
     var fs = require('fs');
 
+    var ExpressBrute = require('express-brute');
+    var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
+    var bruteforce = new ExpressBrute(store);
+
     var UserSystem = require('../controllers/user-administration-system');
     var userSystem = new UserSystem(sequelize);
     var PhotoSystem = require('../controllers/profile-photo-administration-system');
@@ -12,7 +16,7 @@ function PhotoRouter(sequelize) {
     var AuthorizationSystem = require('../controllers/authorization-system.js');
     var authorizationSystem = new AuthorizationSystem(sequelize);
 
-    router.route('/upload').post(function(req, res) {
+    router.route('/upload').post(bruteforce.prevent, function(req, res) {
         var form = new formidable.IncomingForm();
         form.uploadDir = "uploads";
         form.keepExtensions = true;
@@ -73,7 +77,7 @@ function PhotoRouter(sequelize) {
     });
 
     // Show the upload form 
-    router.route('/').get(function(req, res) {
+    router.route('/').get(bruteforce.prevent, function(req, res) {
         res.writeHead(200, {
             'Content-Type': 'text/html'
         });
@@ -81,7 +85,7 @@ function PhotoRouter(sequelize) {
         res.end(form);
     });
 
-    router.route('/profile/delete').post(authorizationSystem.isAuthenticated, function(req, res) {
+    router.route('/profile/delete').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         photoSystem.unregister(req.body.userId, function(err, deletedFileName) {
             if (err) {
                 res.send({
