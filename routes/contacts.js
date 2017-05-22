@@ -4,7 +4,7 @@ function ContactRouter(sequelize) {
 
     var ExpressBrute = require('express-brute');
     var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
-    var bruteforce = new ExpressBrute(store);
+    var bruteforce = new ExpressBrute(store, {freeRetries: 100});
 
     var ContactAdministrationSystem = require('../controllers/contact-administration-system');
     var contactSystem = new ContactAdministrationSystem(sequelize);

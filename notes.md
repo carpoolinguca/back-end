@@ -1046,3 +1046,8 @@ in Firefox and [ \f\n\r\t\v] in IE.
 
 str = str.replace(/\s/g, "X");
 
+2017-05-14
+==========
+
+Para prevenir ataques por fuerza bruta, se agrega el módulo express-brute. En la configuración por default solo permite hacer 2 request sin tener que esperar. 
+Por lo que se configura el módulo para que no sea tan restrictivo y permita el uso común de la apliación sin problemas.
