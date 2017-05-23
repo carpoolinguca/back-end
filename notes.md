@@ -1051,3 +1051,11 @@ str = str.replace(/\s/g, "X");
 
 Para prevenir ataques por fuerza bruta, se agrega el módulo express-brute. En la configuración por default solo permite hacer 2 request sin tener que esperar. 
 Por lo que se configura el módulo para que no sea tan restrictivo y permita el uso común de la apliación sin problemas.
+
+2017-05-23
+==========
+Hacer busqueda de viajes, con opción de buscar por fecha, y con opción de buscar por hora.
+Si recibo nil en la fecha, no tengo en cuenta la fecha. Si recibo fecha busco por fecha y ordeno el resultado por la hora.
+
+https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
+https://www.postgresql.org/docs/9.2/static/functions-datetime.html 

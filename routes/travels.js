@@ -35,6 +35,7 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/find').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
+    console.log(req.body);
     travelAdministrationSystem.findClosestTravelsForTravel(req.body, function(searchResult) {
       res.json(searchResult);
     });
