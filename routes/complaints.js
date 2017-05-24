@@ -4,7 +4,7 @@ function ComplaintRouter(sequelize) {
 
   var ExpressBrute = require('express-brute');
   var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
-  var bruteforce = new ExpressBrute(store, {freeRetries: 100});
+  var bruteforce = new ExpressBrute(store, {freeRetries: 1000});
 
   var ReputationSystem = require('../controllers/reputation-system');
   var reputationSystem = new ReputationSystem(sequelize);
