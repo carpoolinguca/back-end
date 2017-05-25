@@ -18,13 +18,32 @@ describe('Managing a user', function() {
 
   describe('#findAll()', function() {
 
-    it('should find without error', function(done) {
+    it('Should find without error', function(done) {
       userAdministrationSystem.userIdentifiedBy(
         students[0].id,
         function(readUser) {
           assert.equal(readUser.email, 'juana@gmail.com');
           done();
         });
+    });
+
+    it('Can not register new user with email already registered', function(done) {
+      var userAlreadyRegistered = {
+        email: 'jacinta@gmail.com',
+        password: '4321',
+        name: 'Jacinta',
+        lastname: 'La Cinta',
+        ucaid: '020800234',
+        sex: 'Femenino',
+        phone: '1138475938'
+      };
+
+      userAdministrationSystem.register(userAlreadyRegistered, function(err, anUser) {
+        assert.isOk(err);
+        assert.equal(err.message, 'Ya existe un usuario registrado con el email: jacinta@gmail.com')
+        assert.isUndefined(anUser);
+        done();
+      });
     });
 
   });
@@ -34,6 +53,4 @@ describe('Managing a user', function() {
       done();
     });
   });
-
-
 });

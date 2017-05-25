@@ -22,23 +22,34 @@ function UserAdministrationSystem(sequelize) {
 }
 
 UserAdministrationSystem.prototype.register = function(user, callback) {
-	bcrypt.hash(user.password, saltRounds, function(err, hash) {
-		user.password = hash;
-		User.create(user).then(function(userCreated) {
-			reputationSystem.initializeReputationFor(userCreated, function() {
-				callback({
-					id: userCreated.id,
-					email: userCreated.email,
-					name: userCreated.name,
-					lastname: userCreated.lastname,
-					ucaid: userCreated.ucaid,
-					sex: userCreated.sex,
-					phone: userCreated.phone
+	this.oneUserFilteredBy({
+		where: {
+			email: user.email
+		}
+	}, function(userFound) {
+		if(userFound!==null){
+			callback(new Error('Ya existe un usuario registrado con el email: ' + userFound.email));
+			return;
+		}
+		bcrypt.hash(user.password, saltRounds, function(err, hash) {
+			user.password = hash;
+			User.create(user).then(function(userCreated) {
+				reputationSystem.initializeReputationFor(userCreated, function() {
+					callback(null, {
+						id: userCreated.id,
+						email: userCreated.email,
+						name: userCreated.name,
+						lastname: userCreated.lastname,
+						ucaid: userCreated.ucaid,
+						sex: userCreated.sex,
+						phone: userCreated.phone
+					});
 				});
 			});
 		});
 	});
 };
+
 
 UserAdministrationSystem.prototype.update = function(user, callback, notFoundCallback) {
 	User.findById(user.id).then(function(userFound) {
@@ -160,6 +171,5 @@ UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 		});
 	});
 };
-
 
 module.exports = UserAdministrationSystem;

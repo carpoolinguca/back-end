@@ -26,9 +26,9 @@ UserTestResource.prototype.registerUsers = function(callback) {
 	};
 	users = [userJuana, userJacinta];
 
-	userAdministrationSystem.register(userJuana, function(anUser) {
+	userAdministrationSystem.register(userJuana, function(err, anUser) {
 		users[0] = anUser;
-		userAdministrationSystem.register(userJacinta, function(anotherUser) {
+		userAdministrationSystem.register(userJacinta, function(err, anotherUser) {
 			users[1] = anotherUser;
 			callback(users);
 		});

@@ -4,7 +4,9 @@ function UserRouter(sequelize) {
 
     var ExpressBrute = require('express-brute');
     var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
-    var bruteforce = new ExpressBrute(store, {freeRetries: 1000});
+    var bruteforce = new ExpressBrute(store, {
+        freeRetries: 1000
+    });
 
     var UserSystem = require('../controllers/user-administration-system');
     var userSystem = new UserSystem(sequelize);
@@ -20,7 +22,14 @@ function UserRouter(sequelize) {
     var reputationSystem = new ReputationSystem(sequelize);
 
     router.route('/').post(bruteforce.prevent, function(req, res) {
-        userSystem.register(req.body, function(user) {
+        userSystem.register(req.body, function(err, user) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+                return;
+            }
             res.json({
                 user: user,
                 receibed: 'Ok'
