@@ -1059,3 +1059,45 @@ Si recibo nil en la fecha, no tengo en cuenta la fecha. Si recibo fecha busco po
 
 https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date
 https://www.postgresql.org/docs/9.2/static/functions-datetime.html 
+
+2017-05-25
+==========
+Se modifica el servicio de reserva de asiento, para que devuelva el viaje como pasajero con la fecha y hora del viaje del conductor.
+
+En el servicio:
+/travels/suits/book
+
+Consulta:
+{
+    "parentTravel" : 18,
+    "childTravel" : 19
+}
+
+Respuesta:
+{
+   "assignationCreated":    {
+      "id": 6,
+      "parentTravel": 18,
+      "childTravel": 19,
+      "status": "pending",
+      "updatedAt": "2017-05-25T20:28:43.583Z",
+      "createdAt": "2017-05-25T20:28:43.583Z"
+   },
+   "booked": true,
+   "travel":    {
+      "id": 19,
+      "userId": 2,
+      "origin": "Avenida Alicia Moreau de Justo 1100, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+      "destination": "Avenida Alicia Moreau de Justo 1500, Ciudad Autónoma de Buenos Aires, Buenos Aires, Argentina",
+      "userIsDriver": false,
+      "maximumSeats": 0,
+      "availableSeats": 0,
+      "carId": null,
+      "arrivalDateTime": "2017-05-25T18:05:06.000Z",
+      "observations": "De la biblio a la facu.",
+      "status": "planed",
+      "createdAt": "2017-05-25T20:25:50.334Z",
+      "updatedAt": "2017-05-25T20:28:43.622Z"
+   },
+   "error": ""
+}

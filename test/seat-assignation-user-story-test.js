@@ -36,6 +36,7 @@ describe('Seat assignation', function() {
       travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
         function(seatBookingSuccessful) {
           assert.isOk(seatBookingSuccessful.booked);
+          assert.equal(seatBookingSuccessful.travel.arrivalDateTime.toString, studyTravels[1].arrivalDateTime.toString);
           done();
         });
     });

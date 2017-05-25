@@ -121,6 +121,7 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 		}
 	}, function(user) {
 		if (!user) {
+			console.log(user);
 			invalidEmailCallback();
 		} else {
 			bcrypt.compare(password, user.password, function(err, res) {

@@ -38,7 +38,10 @@ TravelAdministrationSystem.prototype.travelsForDriverIdentifiedBy = function(use
 		where: {
 			userId: userId,
 			userIsDriver: true
-		}
+		},
+		order: [
+			['arrivalDateTime']
+		]
 	}, callback);
 };
 
@@ -74,7 +77,7 @@ TravelAdministrationSystem.prototype.formatTravelsForPassenger = function(travel
 
 TravelAdministrationSystem.prototype.travelsForPassengerIdentifiedBy = function(userId, callback) {
 	var self = this;
-	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints, y."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id INNER JOIN car AS ca ON ca.id= y."carId" WHERE t."userIsDriver" = false AND t."userId" = $userId ;';
+	var queryString = 'SELECT t.id, t.origin, t.destination, t."arrivalDateTime", t.status AS "travelStatus", s.status AS "seatAssignationStatus", y.observations, y."userId" AS "driverId", d.name, d.lastname, r."drivingPoints", r.complaints, y."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM travel as t INNER JOIN seat_assignation as s ON t.id = s."childTravel" INNER JOIN travel as y ON s."parentTravel" = y.id INNER JOIN "user" AS d ON y."userId" = d.id INNER JOIN reputation AS r ON r."userId"= d.id INNER JOIN car AS ca ON ca.id= y."carId" WHERE t."userIsDriver" = false AND t."userId" = $userId ORDER BY t."arrivalDateTime";';
 	Sequelize.query(queryString, {
 		bind: {
 			userId: userId
@@ -203,7 +206,6 @@ TravelAdministrationSystem.prototype.formatQueriedTravel = function(travel) {
 	};
 };
 
-//TODO: agregar filtrado por día de la fecha!
 TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(travel, endFunction) {
 	self = this;
 	self.startManaging(travel, function(travelCreated) {
@@ -232,7 +234,6 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 						userId: travelCreated.userId
 					};
 				} else {
-					console.log(travelCreated.arrivalDateTime);
 					queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1500) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 and "arrivalDateTime"::date = :arrivalDateTime ::date)) ORDER BY tr."arrivalDateTime", re."drivingPoints" DESC, re.complaints;';
 					replacements = {
 						xOrigin: routes[0].polyline.coordinates[0][0],
@@ -310,7 +311,19 @@ TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignati
 		});
 };
 
+TravelAdministrationSystem.prototype.updateArrivalDatetimeInChildTravel = function(parentTravel, childTravelId, callback) {
+	Travel.findById(childTravelId).then(function(childTravel) {
+		childTravel.arrivalDateTime = parentTravel.arrivalDateTime;
+		childTravel.save().then(function() {
+			childTravel.reload().then(function() {
+				callback(childTravel);
+			});
+		});
+	});
+};
+
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
+	var self = this;
 	Travel.findById(parentTravelId).then(function(parentTravel) {
 		if (parentTravel.userIsDriver) {
 			console.log(parentTravel);
@@ -321,10 +334,13 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 					childTravel: childTravelId,
 					status: 'pending'
 				}).then(function(assignationCreated) {
-					callback({
-						assignationCreated: assignationCreated,
-						booked: true,
-						error: ''
+					self.updateArrivalDatetimeInChildTravel(parentTravel, childTravelId, function(updatedChildTravel) {
+						callback({
+							assignationCreated: assignationCreated,
+							booked: true,
+							travel: updatedChildTravel,
+							error: ''
+						});
 					});
 				});
 			} else {
