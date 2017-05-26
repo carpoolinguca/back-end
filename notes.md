@@ -1062,7 +1062,7 @@ https://www.postgresql.org/docs/9.2/static/functions-datetime.html
 
 2017-05-25
 ==========
-Se modifica el servicio de reserva de asiento, para que devuelva el viaje como pasajero con la fecha y hora del viaje del conductor.
+* Se modifica el servicio de reserva de asiento, para que devuelva el viaje como pasajero con la fecha y hora del viaje del conductor.
 
 En el servicio:
 /travels/suits/book
@@ -1101,3 +1101,8 @@ Respuesta:
    },
    "error": ""
 }
+
+* Envio de emails
+
+Utilizaremos el modulo nodemailer:
+https://nodemailer.com/about/
