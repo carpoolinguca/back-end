@@ -6,6 +6,8 @@ var ContactSystem = require('../controllers/contact-administration-system.js');
 var contactSystem;
 var PhotoSystem = require('../controllers/profile-photo-administration-system');
 var photoSystem;
+var EmailSenderSystem = require('../controllers/email-sender-system');
+var emailSenderSystem;
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 
@@ -18,6 +20,7 @@ function UserAdministrationSystem(sequelize) {
 	carSystem = new CarSystem(sequelize);
 	contactSystem = new ContactSystem(sequelize);
 	photoSystem = new PhotoSystem(sequelize);
+	emailSenderSystem = new EmailSenderSystem();
 	Sequelize = sequelize;
 }
 
@@ -27,7 +30,7 @@ UserAdministrationSystem.prototype.register = function(user, callback) {
 			email: user.email
 		}
 	}, function(userFound) {
-		if(userFound!==null){
+		if (userFound !== null) {
 			callback(new Error('Ya existe un usuario registrado con el email: ' + userFound.email));
 			return;
 		}
@@ -35,6 +38,7 @@ UserAdministrationSystem.prototype.register = function(user, callback) {
 			user.password = hash;
 			User.create(user).then(function(userCreated) {
 				reputationSystem.initializeReputationFor(userCreated, function() {
+					emailSenderSystem.sendWelcome(userCreated, function() {});
 					callback(null, {
 						id: userCreated.id,
 						email: userCreated.email,

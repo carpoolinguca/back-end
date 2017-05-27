@@ -1106,3 +1106,7 @@ Respuesta:
 
 Utilizaremos el modulo nodemailer:
 https://nodemailer.com/about/
+
+2017-05-27
+==========
+Se agrega sistema para envio de emails utilizando nodemailer y sparkpost.
