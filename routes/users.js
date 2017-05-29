@@ -39,25 +39,28 @@ function UserRouter(sequelize) {
 
     router.route('/user/login').post(bruteforce.prevent, function(req, res) {
         userSystem.validateEmailAndPassword(req.body.email, req.body.password,
-            function() {
-                return res.status(401).send({
-                    message: {
-                        email: 'Incorrect email'
-                    }
-                });
-            },
-            function() {
-                return res.status(401).send({
-                    message: {
-                        password: 'Incorrect password'
-                    }
-                });
-            },
-            function(user) {
+            function(err, user) {
+                if (err) {
+                    var errorResponse = {
+                        receibed: 'Error',
+                        error: err.message,
+                    };
+                    if (err.message == 'Incorrect email')
+                        errorResponse.message = {
+                            email: 'Incorrect email'
+                        };
+                    if (err.message == 'Incorrect password')
+                        errorResponse.message = {
+                            password: 'Incorrect password'
+                        };
+                    res.status(401).send(errorResponse);
+                    return;
+                }
                 var token = authorizationSystem.createTokenFor(user);
                 res.send({
                     token: token,
-                    user: user
+                    user: user,
+                    receibed: 'Ok'
                 });
             });
     });
@@ -94,10 +97,19 @@ function UserRouter(sequelize) {
     });
 
     router.route('/user/sendNewPassword').post(bruteforce.prevent, function(req, res) {
-        res.send({
-            email: req.body.email,
-            receibed: 'Ok',
-            error: ''
+        userSystem.sendNewPassword(req.body.email, function(err) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+                return;
+            }
+            res.send({
+                email: req.body.email,
+                receibed: 'Ok',
+                error: ''
+            });
         });
     });
 

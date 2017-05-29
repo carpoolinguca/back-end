@@ -40,9 +40,30 @@ describe('Managing a user', function() {
 
       userAdministrationSystem.register(userAlreadyRegistered, function(err, anUser) {
         assert.isOk(err);
-        assert.equal(err.message, 'Ya existe un usuario registrado con el email: jacinta@gmail.com')
+        assert.equal(err.message, 'Ya existe un usuario registrado con el email: jacinta@gmail.com');
         assert.isUndefined(anUser);
         done();
+      });
+    });
+
+    it('Validate email and password', function(done) {
+
+      userAdministrationSystem.validateEmailAndPassword(students[0].email, '1234',
+        function(err, user) {
+          assert.isNull(err);
+          assert.equal(user.email, students[0].email);
+          done();
+        });
+    });
+
+    it('Generate and validate temporaryPassword', function(done) {
+
+      userAdministrationSystem.temporaryPasswordFor(students[0], function(newPassword) {
+        console.log(newPassword);
+        userAdministrationSystem.validateTemporaryPassword(students[0], newPassword, function(err) {
+          assert.isNull(err);
+          done();
+        });
       });
     });
 

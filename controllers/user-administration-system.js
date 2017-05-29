@@ -10,12 +10,15 @@ var EmailSenderSystem = require('../controllers/email-sender-system');
 var emailSenderSystem;
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
+var passwordGenerator = require('generate-password');
 
 var Sequelize;
 var User;
+var TemporaryPassword;
 
 function UserAdministrationSystem(sequelize) {
 	User = require('../models/user')(sequelize);
+	TemporaryPassword = require('../models/temporary-password')(sequelize);
 	reputationSystem = new ReputationSystem(sequelize);
 	carSystem = new CarSystem(sequelize);
 	contactSystem = new ContactSystem(sequelize);
@@ -118,42 +121,116 @@ UserAdministrationSystem.prototype.userIdentifiedBy = function(identification, c
 	});
 };
 
-UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, password, invalidEmailCallback, invalidPasswordCallback, validUserCallback) {
-	this.oneUserFilteredBy({
+UserAdministrationSystem.prototype.validatePassword = function(user, password, callback) {
+	var self = this;
+	bcrypt.compare(password, user.password, function(err, res) {
+		if (res === false) {
+			self.validateTemporaryPassword(user, password, function(err) {
+				if (err) {
+					callback(err);
+					return;
+				}
+				callback(null);
+			});
+		} else {
+			callback(null);
+		}
+	});
+};
+
+UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, password, callback, invalidPasswordCallback, validUserCallback) {
+	var self = this;
+	self.oneUserFilteredBy({
 		where: {
 			email: email
 		}
 	}, function(user) {
 		if (!user) {
 			console.log(user);
-			invalidEmailCallback();
-		} else {
-			bcrypt.compare(password, user.password, function(err, res) {
-				if (res === true) {
-					carSystem.carsForUserById(user.id, function(cars) {
-						photoSystem.profilePhotoForUserById(user.id, function(foundPhoto) {
-							var fileName = '';
-							if (foundPhoto) {
-								fileName = foundPhoto.fileName;
-							}
-							validUserCallback({
-								id: user.id,
-								email: user.email,
-								name: user.name,
-								lastname: user.lastname,
-								ucaid: user.ucaid,
-								sex: user.sex,
-								phone: user.phone,
-								cars: cars,
-								photo: fileName
-							});
-						});
-					});
-				} else {
-					invalidPasswordCallback();
-				}
-			});
+			callback(new Error('Incorrect email'));
+			return;
 		}
+		self.validatePassword(user, password, function(err) {
+			if (err) {
+				callback(err);
+				return;
+			}
+			carSystem.carsForUserById(user.id, function(cars) {
+				photoSystem.profilePhotoForUserById(user.id, function(foundPhoto) {
+					var fileName = '';
+					if (foundPhoto) {
+						fileName = foundPhoto.fileName;
+					}
+					callback(null, {
+						id: user.id,
+						email: user.email,
+						name: user.name,
+						lastname: user.lastname,
+						ucaid: user.ucaid,
+						sex: user.sex,
+						phone: user.phone,
+						cars: cars,
+						photo: fileName
+					});
+				});
+			});
+		});
+	});
+};
+
+UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
+	TemporaryPassword.findOne({
+		where: {
+			userId: user.id
+		},
+		order: [
+			['createdAt', 'DESC']
+		]
+	}).then(function(foundTemporaryPassword) {
+		if (!foundTemporaryPassword)
+			return callback(new Error('Incorrect password'));
+		bcrypt.compare(password, foundTemporaryPassword.password, function(err, res) {
+			if (res === false) {
+				return callback(new Error('Incorrect password'));
+			}
+			callback(null);
+		});
+	});
+};
+
+UserAdministrationSystem.prototype.temporaryPasswordFor = function(user, callback) {
+	var newPassword = passwordGenerator.generate({
+		length: 10,
+		numbers: true,
+		symbols: true
+	});
+	bcrypt.hash(newPassword, saltRounds, function(err, hash) {
+		TemporaryPassword.create({
+			userId: user.id,
+			password: hash
+		}).then(function(temporaryPassword) {
+			callback(newPassword);
+		});
+	});
+};
+
+UserAdministrationSystem.prototype.sendNewPassword = function(email, callback) {
+	var self = this;
+	self.oneUserFilteredBy({
+		where: {
+			email: email
+		}
+	}, function(userFound) {
+		if (!userFound) {
+			callback(new Error('No se ha encontrado un usuario registrado con el email: ' + email));
+			return;
+		}
+		self.temporaryPasswordFor(userFound, function(newPassword) {
+			console.log(newPassword);
+			emailSenderSystem.sendNewPassword(userFound, newPassword, function(err) {
+				callback(err);
+			});
+		});
 	});
 };
 
@@ -161,14 +238,27 @@ UserAdministrationSystem.prototype.registerCar = function(car, callback) {
 	carSystem.register(car, callback);
 };
 
+UserAdministrationSystem.prototype.destroyAllTemporaryPasswordsFor = function(user, callback) {
+	TemporaryPassword.destroy({
+		where: {
+			userId: user.id
+		}
+	}).then(function(numberOfDelated) {
+		callback();
+	});
+};
+
 UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
+	var self = this;
 	User.findById(userReceibed.id).then(function(userFound) {
 		reputationSystem.destroyAllOpinionsFor(userReceibed, function() {
 			carSystem.destroyAllCarsFor(userReceibed, function() {
 				contactSystem.destroyAllContactsFor(userReceibed, function() {
 					photoSystem.destroyAllPhotosFor(userReceibed, function() {
-						userFound.destroy().then(function() {
-							callback();
+						self.destroyAllTemporaryPasswordsFor(userReceibed, function() {
+							userFound.destroy().then(function() {
+								callback();
+							});
 						});
 					});
 				});

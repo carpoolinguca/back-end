@@ -26,7 +26,7 @@ EmailSenderSystem.prototype.sendWelcome = function(user, callback) {
 		transporter.sendMail({
 			from: '"Ecotravel Carpooling - No responder" <' + emailConfig.auth.user + '>', // sender address
 			to: user.email,
-			subject: 'Bienvenido a Ecotravel - Carpooling ',
+			subject: 'Bienvenido a Ecotravel - Carpooling',
 			text: text
 		}, function(error, info) {
 			if (error) {
@@ -34,6 +34,28 @@ EmailSenderSystem.prototype.sendWelcome = function(user, callback) {
 			}
 			console.log('Message %s sent: %s', info.messageId, info.response);
 		});
+	}
+};
+
+EmailSenderSystem.prototype.sendNewPassword = function(user, newPassword, callback) {
+	var body = '<p> ' + user.name + ':</p><p> Si usted ha expresado que se olvidó la contraseña, puede ingresar con la siguiente contraseña: </p><p>' + newPassword + '</p><p> Esta nueva contraseña tiene una validez de 24hs. Al ingresar nuevamente le rogamos que asigne una nueva contraseña. </p><p> En caso de no haber olivado su contraseña, desestime este mensaje. </p><p> Saludos.</p>';
+	if (emailConfig.enabled) {
+		transporter.sendMail({
+			from: '"Ecotravel Carpooling - No responder" <' + emailConfig.auth.user + '>',
+			to: user.email,
+			subject: 'Cambio de contraseña en Ecotravel - Carpooling',
+			html: body
+		}, function(error, info) {
+			if (error) {
+				callback(new Error('No se ha podido enviar el email'));
+				console.log(error);
+				return;
+			}
+			console.log('Message %s sent: %s', info.messageId, info.response);
+			callback(null);
+		});
+	} else {
+		callback(null);
 	}
 };
 

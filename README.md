@@ -14,20 +14,12 @@ npm install
 
 Se necesita tener creada la base de datos de carpooling.
 Nos logueamos como usuario postgres
+sudo su
 su postgres
 
 Desde el usuario de postgres ejecutamos:
 createdb -O carpooling -E UTF8 carpooling
-
-API REST
---------
-Se utiliza Basic Authentication utilizando usuario y contraseña previamente cargado mediante el POST de usuario.
-
-GET todos los usuarios: 
-http://localhost:3000/users
-
-POST un usuario: 
-curl --data "username=Fangio&password=1111" http://localhost:3000/users
+psql --dbname=carpooling --command='CREATE EXTENSION POSTGIS;'
 
 Referencias
 -----------
@@ -48,10 +40,6 @@ Se tomaron como referencia estos tutoriales:
 To do:
 ------
 * Agregar descripción a todos los servicios. (Ver ejemplos en proyecto de soapui)
-* Guardar datos sensibles hasheados.
-* Agregar servicios faltantes.
-* Agregar manejo de errores, de muchos muchos errores.
-* Verificar que todos los nombres de las columnas de las tablas esten normalizados.	
 
 En la creación de un viaje:
 * Administración del tiempo: Se asume que se utiliza la hora local, Buenos Aires GMT-3. Revisar si más adelante es necesario agregar soporte para diferentes zonas horarias.
