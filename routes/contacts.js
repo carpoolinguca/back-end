@@ -4,7 +4,9 @@ function ContactRouter(sequelize) {
 
     var ExpressBrute = require('express-brute');
     var store = new ExpressBrute.MemoryStore(); // stores state locally, don't use this in production 
-    var bruteforce = new ExpressBrute(store, {freeRetries: 1000});
+    var bruteforce = new ExpressBrute(store, {
+        freeRetries: 1000
+    });
 
     var ContactAdministrationSystem = require('../controllers/contact-administration-system');
     var contactSystem = new ContactAdministrationSystem(sequelize);
@@ -26,7 +28,24 @@ function ContactRouter(sequelize) {
                 });
             } else {
                 res.send({
-                    car: acquaintance,
+                    contact: acquaintance,
+                    receibed: 'Ok',
+                    error: ''
+                });
+            }
+        });
+    });
+
+    router.route('/favorites/delete').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
+        contactSystem.becomeAcquaintance(req.body.id, function(err, acquaintance) {
+            if (err) {
+                res.send({
+                    receibed: 'Error',
+                    error: err.message
+                });
+            } else {
+                res.send({
+                    contact: acquaintance,
                     receibed: 'Ok',
                     error: ''
                 });
@@ -49,7 +68,7 @@ function ContactRouter(sequelize) {
                 });
             } else {
                 res.send({
-                    car: favorite,
+                    contact: favorite,
                     receibed: 'Ok',
                     error: ''
                 });
