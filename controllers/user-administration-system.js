@@ -181,7 +181,11 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
 	TemporaryPassword.findOne({
 		where: {
-			userId: user.id
+			userId: user.id,
+			createdAt: {
+				$lt: new Date(),
+				$gt: new Date(new Date() - 24 * 60 * 60 * 1000)
+			}
 		},
 		order: [
 			['createdAt', 'DESC']

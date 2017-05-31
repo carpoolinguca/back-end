@@ -1110,3 +1110,18 @@ https://nodemailer.com/about/
 2017-05-27
 ==========
 Se agrega sistema para envio de emails utilizando nodemailer y sparkpost.
+
+
+2017-05-30
+==========
+
+¿Cómo filtro por los que se crearon en las últimas 24hs?
+http://docs.sequelizejs.com/manual/tutorial/querying.html
+
+{
+  createdAt: {
+    $lt: new Date(),
+    $gt: new Date(new Date() - 24 * 60 * 60 * 1000)
+  }
+}
+// createdAt < [timestamp] AND createdAt > [timestamp]
