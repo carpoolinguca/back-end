@@ -178,7 +178,7 @@ UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, pa
 	});
 };
 
-UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
+UserAdministrationSystem.prototype.findOneTemporaryPasswordForToday = function(user, callback) {
 	TemporaryPassword.findOne({
 		where: {
 			userId: user.id,
@@ -191,6 +191,12 @@ UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, pa
 			['createdAt', 'DESC']
 		]
 	}).then(function(foundTemporaryPassword) {
+		callback(foundTemporaryPassword);
+	});
+};
+
+UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
+	this.findOneTemporaryPasswordForToday(user, function(foundTemporaryPassword) {
 		if (!foundTemporaryPassword)
 			return callback(new Error('Incorrect password'));
 		bcrypt.compare(password, foundTemporaryPassword.password, function(err, res) {
@@ -229,11 +235,18 @@ UserAdministrationSystem.prototype.sendNewPassword = function(email, callback) {
 			callback(new Error('No se ha encontrado un usuario registrado con el email: ' + email));
 			return;
 		}
-		self.temporaryPasswordFor(userFound, function(newPassword) {
-			console.log(newPassword);
-			emailSenderSystem.sendNewPassword(userFound, newPassword, function(err) {
-				callback(err);
-			});
+		self.findOneTemporaryPasswordForToday(userFound, function(foundTemporaryPassword) {
+			if (!foundTemporaryPassword) {
+				self.temporaryPasswordFor(userFound, function(newPassword) {
+					console.log(newPassword);
+					emailSenderSystem.sendNewPassword(userFound, newPassword, function(err) {
+						callback(err);
+					});
+				});
+			} else {
+				callback(new Error('En las últimas 24hs ya se ha enviado un mail de recuperación de contraseña.'));
+				return;
+			}
 		});
 	});
 };
