@@ -1125,3 +1125,8 @@ http://docs.sequelizejs.com/manual/tutorial/querying.html
   }
 }
 // createdAt < [timestamp] AND createdAt > [timestamp]
+
+2017-06-02
+==========
+
+Se modifica la busqueda de viajes para que filtre también por viajes planeados.
