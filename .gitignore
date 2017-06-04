@@ -2,3 +2,6 @@
 /uploads
 *.log
 *~
+ecotravel-csr.pem
+ecotravel-key.pem
+ecotravel-cert.pem
