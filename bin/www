@@ -21,8 +21,9 @@ app.set('port', port);
  */
 
 var options = {
-  key: fs.readFileSync('ecotravel-key.pem'),
-  cert: fs.readFileSync('ecotravel-cert.pem')
+  key: fs.readFileSync('ecotravel-key-certbot.pem'),
+  cert: fs.readFileSync('ecotravel-fullchain.pem'),
+  ca: fs.readFileSync('ecotravel-chain.pem')
 };
 var server = https.createServer(options, app);
 
