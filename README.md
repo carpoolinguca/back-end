@@ -46,3 +46,8 @@ En la creación de un viaje:
 * Verificar si para trazar la trayectoria de la ruta, alcanza con utilizar overview_polyline o si es necesario utilizar polyline.
 
 * Leer mejor sobre migrations.
+
+## License / Licencia
+
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
+Ver derechos de licencia y limitaciones (MIT) en el archivo: [LICENSE](LICENSE.md).
