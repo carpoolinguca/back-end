@@ -215,7 +215,7 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 				var querystring;
 				var replacements;
 				if (!travel.arrivalDateTime) {
-					queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1500) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 and status=\'planed\')) ORDER BY tr."arrivalDateTime", re."drivingPoints" DESC, re.complaints;';
+					queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id IN (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1500) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 and status=\'planed\')) AND tr.id NOT IN (SELECT "parentTravel" FROM seat_assignation where "childTravel" IN (SELECT id from travel where "userId" = :userId AND "userIsDriver"=\'f\')) ORDER BY tr."arrivalDateTime", re."drivingPoints" DESC, re.complaints;';
 					replacements = {
 						xOrigin: routes[0].polyline.coordinates[0][0],
 						yOrigin: routes[0].polyline.coordinates[0][1],
@@ -224,7 +224,7 @@ TravelAdministrationSystem.prototype.findClosestTravelsForTravel = function(trav
 						userId: travelCreated.userId
 					};
 				} else {
-					queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id in (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1500) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 and status=\'planed\' and "arrivalDateTime"::date = :arrivalDateTime ::date)) ORDER BY tr."arrivalDateTime", re."drivingPoints" DESC, re.complaints;';
+					queryString = 'SELECT tr.id, tr.origin, tr.destination, tr."availableSeats", tr."availableSeats", tr."arrivalDateTime", tr.observations, tr.status, re."userId", re."drivingPoints", re."complaints", us.email, us.name, us.lastname, us.sex, us.ucaid, us.phone, tr."carId", ca.model, ca.color, ca."licensePlate", ca."hasAirConditioner" FROM reputation AS re INNER JOIN "user" AS us ON re."userId"=us.id  INNER JOIN travel AS tr ON us.id = tr."userId" INNER JOIN car AS ca ON ca.id = tr."carId" WHERE tr.id IN (select ro."travel_id" from route as ro where  ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xOrigin :yOrigin )\'), 1500) and ST_DWithin(ro.polyline,ST_GeographyFromText(\'SRID=4326; POINT(:xDestination :yDestination)\'), 1000) and ro."travel_id" IN (select id from travel where "userIsDriver"=\'t\' and "userId" != :userId and "availableSeats" > 0 and status=\'planed\' and "arrivalDateTime"::date = :arrivalDateTime ::date)) AND tr.id NOT IN (SELECT "parentTravel" FROM seat_assignation where "childTravel" IN (SELECT id from travel where "userId" = :userId AND "userIsDriver"=\'f\')) ORDER BY tr."arrivalDateTime", re."drivingPoints" DESC, re.complaints;';
 					replacements = {
 						xOrigin: routes[0].polyline.coordinates[0][0],
 						yOrigin: routes[0].polyline.coordinates[0][1],
@@ -312,37 +312,59 @@ TravelAdministrationSystem.prototype.updateArrivalDatetimeInChildTravel = functi
 	});
 };
 
+TravelAdministrationSystem.prototype.userHasAlreadyBookedParentTravel = function(parentTravelId, childTravelId, callback) {
+	var queryString = 'SELECT * FROM seat_assignation WHERE "parentTravel" = $parentTravelId AND "childTravel" IN (SELECT id FROM travel WHERE "userId" = ANY (SELECT "userId" FROM travel where id = $childTravelId )); ';
+	Sequelize.query(queryString, {
+		bind: {
+			parentTravelId: parentTravelId,
+			childTravelId: childTravelId
+		},
+		type: Sequelize.QueryTypes.RAW
+	}).then(function(results) {
+		callback(results[0].length > 0);
+	});
+};
+
 TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, childTravelId, callback) {
 	var self = this;
-	Travel.findById(parentTravelId).then(function(parentTravel) {
-		if (parentTravel.userIsDriver) {
-			console.log(parentTravel);
-			if (parentTravel.availableSeats > 0) {
-				parentTravel.decrement('availableSeats');
-				SeatAsignation.create({
-					parentTravel: parentTravelId,
-					childTravel: childTravelId,
-					status: 'pending'
-				}).then(function(assignationCreated) {
-					self.updateArrivalDatetimeInChildTravel(parentTravel, childTravelId, function(updatedChildTravel) {
-						callback({
-							assignationCreated: assignationCreated,
-							booked: true,
-							travel: updatedChildTravel,
-							error: ''
-						});
-					});
-				});
-			} else {
-				callback({
-					booked: false,
-					error: 'No quedan más asientos disponibles.'
-				});
-			}
-		} else {
+	self.userHasAlreadyBookedParentTravel(parentTravelId, childTravelId, function(alreadyBooked) {
+		if (alreadyBooked) {
 			callback({
 				booked: false,
-				error: 'No se le puede reservar un asiento a un viaje de pasajero.'
+				error: 'El pasajero ya ha reservado un asiento en este viaje. No esta permitido reservar otro.'
+			});
+		} else {
+			Travel.findById(parentTravelId).then(function(parentTravel) {
+				if (parentTravel.userIsDriver) {
+					console.log(parentTravel);
+					if (parentTravel.availableSeats > 0) {
+						parentTravel.decrement('availableSeats');
+						SeatAsignation.create({
+							parentTravel: parentTravelId,
+							childTravel: childTravelId,
+							status: 'pending'
+						}).then(function(assignationCreated) {
+							self.updateArrivalDatetimeInChildTravel(parentTravel, childTravelId, function(updatedChildTravel) {
+								callback({
+									assignationCreated: assignationCreated,
+									booked: true,
+									travel: updatedChildTravel,
+									error: ''
+								});
+							});
+						});
+					} else {
+						callback({
+							booked: false,
+							error: 'No quedan más asientos disponibles.'
+						});
+					}
+				} else {
+					callback({
+						booked: false,
+						error: 'No se le puede reservar un asiento a un viaje de pasajero.'
+					});
+				}
 			});
 		}
 	});
@@ -452,7 +474,7 @@ TravelAdministrationSystem.prototype.changeToCanceledTravel = function(travelId,
 					childTravel: travelId
 				}
 			}).then(function(seatFound) {
-				if (seatFound != null) {
+				if (seatFound !== null) {
 					Travel.findById(seatFound.parentTravel).then(function(travelFound) {
 						travelFound.increment('availableSeats').then(function() {
 							callback(successfull);

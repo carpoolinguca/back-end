@@ -41,6 +41,14 @@ describe('Seat assignation', function() {
         });
     });
 
+    it('should fail child travel book seat in parent travel because user has already booked this parentTravel', function(done) {
+      travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
+        function(seatBookingSuccessful) {
+          assert.isNotOk(seatBookingSuccessful.booked);
+          done();
+        });
+    });
+
     it('parent travel should has one seats booked with pending confirmation', function(done) {
       travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
         function(bookedSeats) {
