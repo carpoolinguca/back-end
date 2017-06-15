@@ -125,18 +125,19 @@ function UserRouter(sequelize) {
     });
 
     router.route('/user/changePassword').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
-        userSystem.changePassword(req.body.id, req.body.password, req.body.newPassword, function() {
-                res.send({
-                    receibed: 'Ok',
-                    error: ''
-                });
-            },
-            function(errorDescription) {
+        userSystem.changePassword(req.body.id, req.body.password, req.body.newPassword, function(err) {
+            if (err) {
                 res.send({
                     receibed: 'Error',
-                    error: errorDescription
+                    error: err.message
                 });
+                return;
+            }
+            res.send({
+                receibed: 'Ok',
+                error: ''
             });
+        });
     });
 
     router.route('/user/sendNewPassword').post(bruteforce.prevent, userBruteforce.prevent, function(req, res) {

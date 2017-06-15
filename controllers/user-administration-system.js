@@ -82,24 +82,26 @@ UserAdministrationSystem.prototype.update = function(user, callback, notFoundCal
 	});
 };
 
-UserAdministrationSystem.prototype.changePassword = function(userId, oldPassword, newPassword, successfull, unsuccesfull) {
+UserAdministrationSystem.prototype.changePassword = function(userId, oldPassword, newPassword, callback) {
+	var self = this;
 	User.findById(userId).then(function(userFound) {
-		if (userFound !== null) {
-			bcrypt.compare(oldPassword, userFound.password, function(err, res) {
-				if (res === true) {
-					bcrypt.hash(newPassword, saltRounds, function(err, hash) {
-						userFound.password = hash;
-						userFound.save().then(function() {
-							successfull();
-						});
-					});
-				} else {
-					unsuccesfull('Contraseña incorrecta.');
-				}
-			});
-		} else {
-			unsuccesfull('No se encontró el usuario.');
+		if (!userFound) {
+			return callback(new Error('No se encontró el usuario.'));
 		}
+		self.validatePassword(userFound, oldPassword, function(err) {
+			if (err) {
+				return (err);
+			}
+			bcrypt.hash(newPassword, saltRounds, function(err, hash) {
+				console.log(hash);
+				userFound.password = hash;
+				userFound.save().then(function() {
+					self.destroyAllTemporaryPasswordsFor(userFound, function() {
+						callback(null);
+					});
+				});
+			});
+		});
 	});
 };
 
@@ -138,7 +140,7 @@ UserAdministrationSystem.prototype.validatePassword = function(user, password, c
 	});
 };
 
-UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, password, callback, invalidPasswordCallback, validUserCallback) {
+UserAdministrationSystem.prototype.validateEmailAndPassword = function(email, password, callback) {
 	var self = this;
 	self.oneUserFilteredBy({
 		where: {
@@ -198,10 +200,10 @@ UserAdministrationSystem.prototype.findOneTemporaryPasswordForToday = function(u
 UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
 	this.findOneTemporaryPasswordForToday(user, function(foundTemporaryPassword) {
 		if (!foundTemporaryPassword)
-			return callback(new Error('Incorrect password'));
+			return callback(new Error('Contraseña incorrecta'));
 		bcrypt.compare(password, foundTemporaryPassword.password, function(err, res) {
 			if (res === false) {
-				return callback(new Error('Incorrect password'));
+				return callback(new Error('Contraseña incorrecta'));
 			}
 			callback(null);
 		});
@@ -211,8 +213,7 @@ UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, pa
 UserAdministrationSystem.prototype.temporaryPasswordFor = function(user, callback) {
 	var newPassword = passwordGenerator.generate({
 		length: 10,
-		numbers: true,
-		symbols: true
+		numbers: true
 	});
 	bcrypt.hash(newPassword, saltRounds, function(err, hash) {
 		TemporaryPassword.create({
