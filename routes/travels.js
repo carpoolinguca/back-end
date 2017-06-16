@@ -140,7 +140,7 @@ function TravelRouter(sequelize) {
   });
 
   router.route('/suits/find').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
-    travelAdministrationSystem.seatsForParentTravel(req.body.parentTravel, function(seats) {
+    travelAdministrationSystem.activeSeatsForParentTravel(req.body.parentTravel, function(seats) {
       res.json(seats);
     });
   });

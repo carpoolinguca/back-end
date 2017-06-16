@@ -24,7 +24,7 @@ describe('Changing travel status', function() {
       childTravel = studyTravels[0];
       travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
         function(seatBookingSuccessful) {
-          travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+          travelAdministrationSystem.activeSeatsForParentTravel(studyTravels[1].id,
             function(bookedSeats) {
               travelAdministrationSystem.confirmSeatBookingWith(bookedSeats[0].id,
                 function(seatBookingSuccessful) {

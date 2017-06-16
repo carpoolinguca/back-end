@@ -24,7 +24,7 @@ describe('Parent Travel cancellation', function() {
       childTravel = studyTravels[0];
       travelAdministrationSystem.bookSeatWith(studyTravels[1].id, studyTravels[0].id,
         function(seatBookingSuccessful) {
-          travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+          travelAdministrationSystem.activeSeatsForParentTravel(studyTravels[1].id,
             function(bookedSeats) {
               travelAdministrationSystem.confirmSeatBookingWith(bookedSeats[0].id,
                 function(seatBookingSuccessful) {
@@ -51,7 +51,10 @@ describe('Parent Travel cancellation', function() {
   it('planed child travels change status to "canceled" too', function(done) {
     childTravel.reload().then(function(travelRelouded) {
       assert.equal('canceled', travelRelouded.status);
-      done();
+      travelAdministrationSystem.seatAssignationForTravels(parentTravel.id, childTravel.id, function(seatAssignationFound) {
+        assert.equal(seatAssignationFound.status, 'canceled');
+        done();
+      });
     });
   });
 
@@ -75,7 +78,7 @@ describe('Child Travel cancellation', function() {
           //console.log('-------------------------------------------------');
           //console.log(seatBookingSuccessful);
           //console.log('-------------------------------------------------');
-          travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+          travelAdministrationSystem.activeSeatsForParentTravel(studyTravels[1].id,
             function(bookedSeats) {
               travelAdministrationSystem.confirmSeatBookingWith(bookedSeats[0].id,
                 function(seatBookingSuccessful) {
@@ -99,7 +102,10 @@ describe('Child Travel cancellation', function() {
     travelAdministrationSystem.changeToCanceledTravel(childTravel.id,
       function(isCanceled) {
         assert.isOk(isCanceled);
-        done();
+        childTravel.reload().then(function() {
+          assert.equal(childTravel.status, 'canceled');
+          done();
+        });
       });
   });
 
@@ -109,6 +115,25 @@ describe('Child Travel cancellation', function() {
       assert.equal('planed', parentTravel.status);
       assert.equal(parentTravel.maximumSeats, 3);
       assert.equal(parentTravel.availableSeats, 3);
+      done();
+    });
+  });
+
+  it('canceled child travel can not be acepted.', function(done) {
+    travelAdministrationSystem.seatAssignationForTravels(parentTravel.id, childTravel.id, function(seatAssignationFound) {
+      seatAssignation = seatAssignationFound;
+      assert.isNotNull(seatAssignation);
+      travelAdministrationSystem.confirmSeatBookingWith(seatAssignation.id,
+        function(confirmationSuccessful) {
+          assert.notOk(confirmationSuccessful);
+          done();
+        });
+    });
+  });
+
+  it('canceled child travel can not be found in active seat assignations for parentTravel', function(done) {
+    travelAdministrationSystem.activeSeatsForParentTravel(parentTravel.id, function(seatAssignations) {
+      assert.equal(seatAssignations.length, 0);
       done();
     });
   });

@@ -50,7 +50,7 @@ describe('Seat assignation', function() {
     });
 
     it('parent travel should has one seats booked with pending confirmation', function(done) {
-      travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+      travelAdministrationSystem.activeSeatsForParentTravel(studyTravels[1].id,
         function(bookedSeats) {
           console.log(bookedSeats);
           seatAssignation = bookedSeats[0];
@@ -80,7 +80,7 @@ describe('Seat assignation', function() {
     });
 
     it('parent travel should has one seats booked confirmed', function(done) {
-      travelAdministrationSystem.seatsForParentTravel(studyTravels[1].id,
+      travelAdministrationSystem.activeSeatsForParentTravel(studyTravels[1].id,
         function(bookedSeats) {
           console.log(bookedSeats);
           assert.equal(1, bookedSeats.length);

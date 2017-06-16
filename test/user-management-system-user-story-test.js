@@ -83,7 +83,7 @@ describe('Managing a user', function() {
 
     userAdministrationSystem.validateEmailAndPassword(students[0].email, temporaryPassword, function(err, anUser) {
       assert.isOk(err);
-      assert.equal(err.message, 'Contraseña incorrecta');
+      assert.equal(err.message, 'Incorrect password');
       assert.isUndefined(anUser);
       done();
     });

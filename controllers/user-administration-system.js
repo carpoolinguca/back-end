@@ -200,10 +200,10 @@ UserAdministrationSystem.prototype.findOneTemporaryPasswordForToday = function(u
 UserAdministrationSystem.prototype.validateTemporaryPassword = function(user, password, callback) {
 	this.findOneTemporaryPasswordForToday(user, function(foundTemporaryPassword) {
 		if (!foundTemporaryPassword)
-			return callback(new Error('Contraseña incorrecta'));
+			return callback(new Error('Incorrect password'));
 		bcrypt.compare(password, foundTemporaryPassword.password, function(err, res) {
 			if (res === false) {
-				return callback(new Error('Contraseña incorrecta'));
+				return callback(new Error('Incorrect password'));
 			}
 			callback(null);
 		});

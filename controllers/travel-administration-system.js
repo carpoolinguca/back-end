@@ -10,7 +10,7 @@ var Travel;
 
 function TravelAdministrationSystem(sequelize) {
 	Travel = require('../models/travel')(sequelize);
-	SeatAsignation = require('../models/seat-assignation')(sequelize);
+	SeatAssignation = require('../models/seat-assignation')(sequelize);
 	routeCalculatorSystem = new RouteCalculatorSystem(sequelize);
 	contactSystem = new ContactAdministrationSystem(sequelize);
 	carSystem = new CarSystem(sequelize);
@@ -98,7 +98,7 @@ TravelAdministrationSystem.prototype.destroy = function(callback) {
 
 
 TravelAdministrationSystem.prototype.destroyWithoutRoutes = function(travel, callback) {
-	SeatAsignation.destroy({
+	SeatAssignation.destroy({
 		where: {
 			$or: [{
 				childTravel: travel.id
@@ -269,7 +269,7 @@ TravelAdministrationSystem.prototype.routesForTravel = function(travel, callback
 };
 
 TravelAdministrationSystem.prototype.rejectSeatBookingWith = function(assignationId, callback) {
-	SeatAsignation.findById(assignationId).then(
+	SeatAssignation.findById(assignationId).then(
 		function(seatAssignation) {
 			if (seatAssignation.status == 'pending' || seatAssignation.status == 'booked') {
 				seatAssignation.status = 'rejected';
@@ -286,8 +286,19 @@ TravelAdministrationSystem.prototype.rejectSeatBookingWith = function(assignatio
 		});
 };
 
+TravelAdministrationSystem.prototype.seatAssignationForTravels = function(parentTravelId, childTravelId, callback) {
+	SeatAssignation.findOne({
+		where: {
+			childTravel: childTravelId,
+			parentTravel: parentTravelId
+		}
+	}).then(function(seatAssignationFound) {
+		callback(seatAssignationFound);
+	});
+};
+
 TravelAdministrationSystem.prototype.confirmSeatBookingWith = function(assignationId, callback) {
-	SeatAsignation.findById(assignationId).then(
+	SeatAssignation.findById(assignationId).then(
 		function(seatAssignation) {
 			if (seatAssignation.status == 'pending') {
 				seatAssignation.status = 'booked';
@@ -339,7 +350,7 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 					console.log(parentTravel);
 					if (parentTravel.availableSeats > 0) {
 						parentTravel.decrement('availableSeats');
-						SeatAsignation.create({
+						SeatAssignation.create({
 							parentTravel: parentTravelId,
 							childTravel: childTravelId,
 							status: 'pending'
@@ -370,8 +381,8 @@ TravelAdministrationSystem.prototype.bookSeatWith = function(parentTravelId, chi
 	});
 };
 
-TravelAdministrationSystem.prototype.seatsForParentTravel = function(parentTravelId, callback) {
-	var queryString = 'SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" = $parentTravelId ;';
+TravelAdministrationSystem.prototype.activeSeatsForParentTravel = function(parentTravelId, callback) {
+	var queryString = 'SELECT s.id, s.status, s."parentTravel", s."childTravel", t.origin, t.destination, t."userId", u.name, u.lastname, u.email, r."passengerPoints", r.complaints FROM seat_assignation AS s INNER JOIN travel AS t ON (s."childTravel"=t.id) INNER JOIN "user" AS u ON (t."userId"=u.id) INNER JOIN reputation AS r ON (u.id=r."userId") WHERE s."parentTravel" = $parentTravelId AND s.status != \'canceled\' ;';
 	Sequelize.query(queryString, {
 		bind: {
 			parentTravelId: parentTravelId
@@ -423,6 +434,17 @@ TravelAdministrationSystem.prototype.changeStatusToChildTravelsRelatedTo = funct
 	});
 };
 
+TravelAdministrationSystem.prototype.cancelChildTravelSeatAssignationsRelatedTo = function(parentTravelId, callback) {
+	var queryString = 'UPDATE seat_assignation SET "status"=\'canceled\' WHERE "parentTravel" = $parentTravelId AND "status"<>\'rejected\';';
+	Sequelize.query(queryString, {
+		bind: {
+			parentTravelId: parentTravelId,
+		}
+	}).then(function(results) {
+		callback();
+	});
+};
+
 TravelAdministrationSystem.prototype.passengerIdsForEndedTravelIdentifiedBy = function(parentTravelId, callback) {
 	var queryString = 'SELECT "userId" FROM travel WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"= $parentTravelId AND "status"=\'booked\' ) ;';
 	Sequelize.query(queryString, {
@@ -469,7 +491,7 @@ TravelAdministrationSystem.prototype.changeToCanceledTravel = function(travelId,
 	};
 	self.changeToStatusSatisfayingCondition(travelId, 'canceled', condition, function() {
 		self.changeStatusToChildTravelsRelatedTo(travelId, 'canceled', condition, function(successfull) {
-			SeatAsignation.findOne({
+			SeatAssignation.findOne({
 				where: {
 					childTravel: travelId
 				}
@@ -477,12 +499,16 @@ TravelAdministrationSystem.prototype.changeToCanceledTravel = function(travelId,
 				if (seatFound !== null) {
 					Travel.findById(seatFound.parentTravel).then(function(travelFound) {
 						travelFound.increment('availableSeats').then(function() {
-							callback(successfull);
+							seatFound.status = 'canceled';
+							seatFound.save().then(function() {
+								callback(successfull);
+							});
 						});
 					});
 				} else {
-					callback(successfull);
-
+					self.cancelChildTravelSeatAssignationsRelatedTo(travelId, function() {
+						callback(successfull);
+					});
 				}
 			});
 		});
@@ -492,7 +518,7 @@ TravelAdministrationSystem.prototype.changeToCanceledTravel = function(travelId,
 };
 
 TravelAdministrationSystem.prototype.seatIdentifiedBy = function(seatId, foundCallback, notFoundCallback) {
-	SeatAsignation.findById(seatId).then(function(foundSeat) {
+	SeatAssignation.findById(seatId).then(function(foundSeat) {
 		if (foundSeat !== null) {
 			foundCallback(foundSeat);
 		} else {
