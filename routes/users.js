@@ -195,6 +195,25 @@ function UserRouter(sequelize) {
         });
     });
 
+    router.route('/user/statistics').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
+        res.send({
+            id: 1,
+            userId: req.body.userId,
+            passengerTravels: 20,
+            driverTravels: 50,
+            totalTravels: 70,
+            distanceAsPassenger: 200,
+            distanceAsDriver: 500,
+            totalDistance: 700,
+            passengersTransported: 100,
+            driverCarbonFootprint: 222.20,
+            driverSabedCarbonFootprint: 444.40,
+            passengerSabedCarbonFootprint: 111.12,
+            totalSabedCarbonFootprint: 555.52,
+            warning: 'Demo response'
+        });
+    });
+
     router.route('/user/cars').post(bruteforce.prevent, authorizationSystem.isAuthenticated, function(req, res) {
         carSystem.register(req.body, function(err, registeredCar) {
             if (err) {

@@ -1130,3 +1130,58 @@ http://docs.sequelizejs.com/manual/tutorial/querying.html
 ==========
 
 Se modifica la busqueda de viajes para que filtre también por viajes planeados.
+
+2017-06-25
+==========
+Información estadística sobre la actividad del usuario: cantidad de viajes, distancia recorrida, pasajeros transportados, reducción de huella de carbono. Distinguiendo viajes como conductor y como pasajero. Y luego mostrando un totalizadores de ambos
+
+Agregar a la información de perfil?
+Totalizadores de los siguientes datos:
+
+- Cantidad de viajes como conductor
+- Cantidad de viajes como pasajero
+- Cantidad de viajes totales
+- Distancia recorrida como conductor
+- Distancia recorrida como pasajero
+- Distancia total
+- Cantidad de pasajeros transportados
+- Huella de carbono producida como conductor
+- Ahorro de huella de carbono como pasajero
+- Ahorro de huella de carbono como conductor
+
+Para esto sería conveniente hacer el cálculo para cada viaje en particular, y luego sumarlo.
+
+Estadisticas de viaje como conductor: driverTravelStatistics
+{
+	id: 1,
+	travelId: 14,
+	distance: 10.23,
+	passengers: 3,
+	carbonFootprint: 2.45,
+	sabedCarbonFootprint: 1.45
+}
+
+Estadisticas de viaje como pasajero: passengerTravelStatistics
+{
+	id: 11,
+	travelId: 15,
+	distance: 9.12,
+	sabedCarbonFootprint: 1.30
+}
+
+Estadisticas de usuario: userStatistics
+{
+	id: 2,
+	userId: 14,
+	passengerTravels: 20,
+	driverTravels: 50,
+	totalTravels: 70,
+	distanceAsPassenger: 200,
+	distanceAsDriver: 500,
+	totalDistance: 700,
+	passengersTransported: 100,
+	driverCarbonFootprint: 222.20,
+	driverSabedCarbonFootprint: 444.40,
+	passengerSabedCarbonFootprint: 111.12,
+	totalSabedCarbonFootprint: 555.52
+}
