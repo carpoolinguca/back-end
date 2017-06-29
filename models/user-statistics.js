@@ -4,7 +4,7 @@ module.exports = function(sequelize) {
 
 	var User = require('./user')(sequelize);
 
-	var Travel = sequelize.define('user_statistics', {
+	var UserStatistics = sequelize.define('user_statistics', {
 		userId: {
 			type: Sequelize.INTEGER,
 			references: {
@@ -29,24 +29,24 @@ module.exports = function(sequelize) {
 		totalDistance: {
 			type: Sequelize.DOUBLE
 		},
-		passengerTransported: {
+		passengersTransported: {
 			type: Sequelize.INTEGER
 		},
 		driverCarbonFootprint: {
 			type: Sequelize.DOUBLE
 		},
-		driverSabedCarbonFootprint: {
+		driverSavedCarbonFootprint: {
 			type: Sequelize.DOUBLE
 		},
-		passengerSabedCarbonFootprint: {
+		passengerSavedCarbonFootprint: {
 			type: Sequelize.DOUBLE
 		},
-		totalSabedCarbonFootprint: {
+		totalSavedCarbonFootprint: {
 			type: Sequelize.DOUBLE
 		},
 	}, {
 		freezeTableName: true
 	});
 
-	return Travel;
+	return UserStatistics;
 };

@@ -1181,7 +1181,7 @@ Estadisticas de usuario: userStatistics
 	totalDistance: 700,
 	passengersTransported: 100,
 	driverCarbonFootprint: 222.20,
-	driverSabedCarbonFootprint: 444.40,
-	passengerSabedCarbonFootprint: 111.12,
-	totalSabedCarbonFootprint: 555.52
+	driverSavedCarbonFootprint: 444.40,
+	passengerSavedCarbonFootprint: 111.12,
+	totalSavedCarbonFootprint: 555.52
 }

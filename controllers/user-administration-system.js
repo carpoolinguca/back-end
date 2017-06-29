@@ -8,6 +8,8 @@ var PhotoSystem = require('../controllers/profile-photo-administration-system');
 var photoSystem;
 var EmailSenderSystem = require('../controllers/email-sender-system');
 var emailSenderSystem;
+var UserStatisticsSystem = require('../controllers/user-statistics-calculator-system.js');
+var userStatisticsSystem;
 var bcrypt = require('bcrypt');
 var saltRounds = 10;
 var passwordGenerator = require('generate-password');
@@ -24,6 +26,7 @@ function UserAdministrationSystem(sequelize) {
 	contactSystem = new ContactSystem(sequelize);
 	photoSystem = new PhotoSystem(sequelize);
 	emailSenderSystem = new EmailSenderSystem();
+	userStatisticsSystem = new UserStatisticsSystem(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -41,15 +44,17 @@ UserAdministrationSystem.prototype.register = function(user, callback) {
 			user.password = hash;
 			User.create(user).then(function(userCreated) {
 				reputationSystem.initializeReputationFor(userCreated, function() {
-					emailSenderSystem.sendWelcome(userCreated, function() {});
-					callback(null, {
-						id: userCreated.id,
-						email: userCreated.email,
-						name: userCreated.name,
-						lastname: userCreated.lastname,
-						ucaid: userCreated.ucaid,
-						sex: userCreated.sex,
-						phone: userCreated.phone
+					userStatisticsSystem.initializeUserStatisticsFor(userCreated, function() {
+						emailSenderSystem.sendWelcome(userCreated, function() {});
+						callback(null, {
+							id: userCreated.id,
+							email: userCreated.email,
+							name: userCreated.name,
+							lastname: userCreated.lastname,
+							ucaid: userCreated.ucaid,
+							sex: userCreated.sex,
+							phone: userCreated.phone
+						});
 					});
 				});
 			});
@@ -274,8 +279,10 @@ UserAdministrationSystem.prototype.destroy = function(userReceibed, callback) {
 				contactSystem.destroyAllContactsFor(userReceibed, function() {
 					photoSystem.destroyAllPhotosFor(userReceibed, function() {
 						self.destroyAllTemporaryPasswordsFor(userReceibed, function() {
-							userFound.destroy().then(function() {
-								callback();
+							userStatisticsSystem.destroyUserStatisticsFor(userReceibed, function() {
+								userFound.destroy().then(function() {
+									callback();
+								});
 							});
 						});
 					});
