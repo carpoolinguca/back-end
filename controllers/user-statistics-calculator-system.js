@@ -40,58 +40,6 @@ UserStatisticsSystem.prototype.userStatisticsForUserById = function(userId, call
 	});
 };
 
-UserStatisticsSystem.prototype.register = function(car, callback) {
-	UserStatistics.findOne({
-		where: {
-			userId: car.userId,
-			licensePlate: car.licensePlate
-		}
-	}).then(function(foundUserStatistics) {
-		if (!foundUserStatistics) {
-			UserStatistics.create(car).then(function(createdUserStatistics) {
-				callback(null, createdUserStatistics);
-			});
-		} else {
-			callback(new Error('Ya existe un auto registrado con la patente: ' + car.licensePlate));
-			return;
-		}
-	});
-};
-
-UserStatisticsSystem.prototype.update = function(car, callback) {
-	UserStatistics.findById(car.id).then(function(foundUserStatistics) {
-		if (car.licensePlate != foundUserStatistics.licensePlate) {
-			callback(new Error('No se puede modificar la patente'));
-			return;
-		}
-		foundUserStatistics.update(car, {
-			fields: ['model', 'color', 'hasAirConditioner']
-		}).then(function() {
-			foundUserStatistics.reload().then(function() {
-				callback(null, foundUserStatistics);
-			});
-		});
-	});
-};
-
-UserStatisticsSystem.prototype.unregister = function(carId, callback) {
-	UserStatistics.findById(carId).then(function(foundUserStatistics) {
-		foundUserStatistics.destroy().then(function() {
-			callback(null);
-		});
-	});
-};
-
-UserStatisticsSystem.prototype.findById = function(carId, callback) {
-	UserStatistics.findById(carId).then(function(foundUserStatistics) {
-		if (!foundUserStatistics) {
-			callback(new Error('No se ha encontrado un auto con el id: ' + carId));
-			return;
-		}
-		callback(null, foundUserStatistics);
-	});
-};
-
 UserStatisticsSystem.prototype.destroyUserStatisticsFor = function(user, callback) {
 	UserStatistics.destroy({
 		where: {

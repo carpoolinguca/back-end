@@ -37,9 +37,9 @@ var routeWithLineStringFrom = function(route) {
 		coordinates: decodedPolyline
 	};
 	return route;
-}
+};
 
-var route = routeWithLineStringFrom(calculatedRoute);;
+var route = routeWithLineStringFrom(calculatedRoute);
 
 describe('Calculating route with string polyline', function() {
 	it('should return a route with a string array', function(done) {

@@ -26,13 +26,12 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 	};
 	var url = baseUrl + querystring.stringify(query);
 	var body = '';
-	//Mejorar este código para evitar responses repetidos
-	https.get(url, (response) => {
+	https.get(url, function(response) {
 		response.setEncoding('utf8');
-		response.on('data', (chunk) => {
+		response.on('data', function(chunk) {
 			body += chunk;
 		});
-		response.on('end', () => {
+		response.on('end', function() {
 			var routes = [];
 			var jsonResponse = JSON.parse(body);
 			if (jsonResponse.status == 'OK') {
@@ -52,22 +51,22 @@ RouteCalculatorSystem.prototype.calculateForTravel = function(travel, callback) 
 						summary: currentValue.summary
 					};
 					console.log('------------------------------------------------');
-					console.log('origin: '+ routes[0].origin);
-					console.log('destination: '+ routes[0].destination);
+					console.log('origin: ' + routes[0].origin);
+					console.log('destination: ' + routes[0].destination);
 					console.log('------------------------------------------------');
 				});
 			};
 			console.log(routes);
 			callback(null, routes);
 		});
-	}).on('error', (e) => {
-		callback(e);
+	}).on('error', function(error) {
+		callback(error);
 	});
 };
 
 RouteCalculatorSystem.prototype.calculateAndStartManagingForTravel = function(travel, callback) {
 	this.calculateForTravel(travel, function(err, routes) {
-		if(err){
+		if (err) {
 			callback(err);
 			return;
 		}

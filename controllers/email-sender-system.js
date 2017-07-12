@@ -35,6 +35,7 @@ EmailSenderSystem.prototype.sendWelcome = function(user, callback) {
 			console.log('Message %s sent: %s', info.messageId, info.response);
 		});
 	}
+	callback(null);
 };
 
 EmailSenderSystem.prototype.sendNewPassword = function(user, newPassword, callback) {
@@ -52,11 +53,9 @@ EmailSenderSystem.prototype.sendNewPassword = function(user, newPassword, callba
 				return;
 			}
 			console.log('Message %s sent: %s', info.messageId, info.response);
-			callback(null);
 		});
-	} else {
-		callback(null);
 	}
+	callback(null);
 };
 
 module.exports = EmailSenderSystem;
