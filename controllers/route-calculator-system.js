@@ -1,6 +1,6 @@
-const querystring = require('querystring');
-const https = require('https');
-const polyline = require('polyline');
+var querystring = require('querystring');
+var https = require('https');
+var polyline = require('polyline');
 var Sequelize;
 var Route;
 

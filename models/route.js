@@ -14,7 +14,7 @@ module.exports = function(sequelize) {
 		origin: Sequelize.STRING,
 		destination: Sequelize.STRING,
 		polyline: {
-			type: Sequelize.GEOMETRY('LINESTRING')
+			type: Sequelize.GEOGRAPHY('LINESTRING')
 		},
 		distance: Sequelize.INTEGER,
 		duration: Sequelize.STRING,

@@ -16,17 +16,17 @@ var photos = require('./routes/photos')(sequelize);
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-app.use(morgan('dev'));
+//app.set('views', path.join(__dirname, 'views'));
+//app.set('view engine', 'jade');
+app.use(morgan('combined')); //Para desarrollo en vez de 'combined' puede usarse 'dev'.
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
   extended: false
 }));
-app.use(express.static(path.join(__dirname, 'public')));
+//app.use(express.static(path.join(__dirname, 'public')));
 
 // Use quickthumb
-app.use(qt.static(__dirname + '/'));
+//app.use(qt.static(__dirname + '/'));
 
 sequelize.sync();
 
