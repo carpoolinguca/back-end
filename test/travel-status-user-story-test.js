@@ -79,6 +79,14 @@ describe('Changing travel status', function() {
       });
   });
 
+  it('should find a childTravel for parentTravel', function(done) {
+      travelAdministrationSystem.childTravelsFor(parentTravel, function(childTravels) {
+        console.log(childTravels);
+        //assert.equal(childTravels.lenght,1);
+        done();
+      });
+  });
+
   after(function(done) {
     travelTestResource.destroy(function() {
       done();

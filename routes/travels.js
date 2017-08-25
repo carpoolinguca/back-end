@@ -71,6 +71,13 @@ function TravelRouter(sequelize) {
     });
   });
 
+  router.route('/for/user/driver').get(function(req, res) {
+    var userId = req.query.userId;
+    travelAdministrationSystem.travelsForDriverIdentifiedBy(userId, function(travels) {
+      res.json(travels);
+    });
+  }); 
+
   router.route('/travel/start').post(function(req, res) {
     travelAdministrationSystem.changeToInProgressTravel(req.body.travelId, function(successful) {
       res.json({

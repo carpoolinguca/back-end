@@ -4,6 +4,8 @@ var ContactAdministrationSystem = require('../controllers/contact-administration
 var contactAdministrationSystem;
 var CarSystem = require('../controllers/car-administration-system.js');
 var carSystem;
+var UserStatisticsSystem = require('../controllers/user-statistics-calculator-system.js');
+var userStatisticsSystem;
 
 var Sequelize;
 var Travel;
@@ -14,6 +16,7 @@ function TravelAdministrationSystem(sequelize) {
 	routeCalculatorSystem = new RouteCalculatorSystem(sequelize);
 	contactSystem = new ContactAdministrationSystem(sequelize);
 	carSystem = new CarSystem(sequelize);
+	userStatisticsSystem = new UserStatisticsSystem(sequelize);
 	Sequelize = sequelize;
 }
 
@@ -445,6 +448,19 @@ TravelAdministrationSystem.prototype.cancelChildTravelSeatAssignationsRelatedTo 
 	});
 };
 
+TravelAdministrationSystem.prototype.childTravelsFor = function(parentTravel, callback){
+	var identifications = [];
+	SeatAssignation.findAll(
+		{where : {parentTravel : parentTravel.id, status: 'booked'}, attributes : ['childTravel']}).then(function(ids){
+			ids.forEach(function(childTravel, index, arr) {
+			identifications.push(childTravel.id);
+		});
+		Travel.findAll({where: {id: {$in: identifications}}}).then(function(childTravels){
+			callback(childTravels);
+		});
+	});
+};
+
 TravelAdministrationSystem.prototype.passengerIdsForEndedTravelIdentifiedBy = function(parentTravelId, callback) {
 	var queryString = 'SELECT "userId" FROM travel WHERE "id"  IN (SELECT "childTravel" FROM "seat_assignation" WHERE "parentTravel"= $parentTravelId AND "status"=\'booked\' ) ;';
 	Sequelize.query(queryString, {
@@ -475,6 +491,12 @@ TravelAdministrationSystem.prototype.changeToEndedTravel = function(parentTravel
 		return (travel.status == 'inProgress' || travel.status == 'ended');
 	};
 	self.changeToStatusSatisfayingCondition(parentTravelId, 'ended', condition, function() {
+		Travel.findById(parentTravelId).then(function(parentTravel) {
+			routeCalculatorSystem.routesForTravel(parentTravel, function(routes){
+				if(routes.length > 0)
+				userStatisticsSystem.updateUsingParentTravelAndRoute(parentTravel, routes[0], function(userStatistics){});
+			});	
+		});
 		self.changeStatusToChildTravelsRelatedTo(parentTravelId, 'ended', condition, function(successfull) {
 			self.registerAllContactsFor(parentTravelId);
 			callback(successfull);
